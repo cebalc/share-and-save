@@ -4,7 +4,7 @@
   "description": "Web application to manage and analyze household accounts",
   "main": "index.js",
   "scripts": {
-    "start": "node server/index.js",
+    "start": "cd server/src && tsc && cd ../dist && node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cd client && npm install && npm run build"
   },
@@ -17,5 +17,9 @@
   },
   "engines": {
     "node": "19.8.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.15.10"
   }
 }
