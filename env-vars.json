@@ -1,0 +1,10 @@
+{
+    "development": {
+        "SERVERURL": "http://localhost:3001",
+        "PORT": 3001,
+        "MYSQL_SERVER": "localhost",
+        "MYSQL_DB_NAME": "shareandsave",
+        "MYSQL_DB_USER": "root",
+        "MYSQL_DB_PASS": ""
+    }
+}
