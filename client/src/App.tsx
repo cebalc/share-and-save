@@ -10,7 +10,7 @@ class App extends React.Component<AppProps, AppState> {
   public state: AppState = {
   }
 
-  public constructor(props: any) {
+  public constructor(props: AppProps | Readonly<AppProps>) {
     super(props);
   }
 

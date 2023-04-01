@@ -4,7 +4,7 @@
   "description": "Web application to manage and analyze household accounts",
   "main": "index.js",
   "scripts": {
-    "start": "cd server/src && tsc && cd ../dist && node index.js",
+    "start": "cd server/src && npx tsc && cd ../dist && node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cd client && npm install && npm run build"
   },

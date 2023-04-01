@@ -39,7 +39,7 @@ class Model {
         this.connection.config.queryFormat = Model.customQueryFormat.bind(this.connection);
     }
 
-    private preparedQuery(sqlQuery: string, values?: Object): Promise<any> {
+    protected preparedQuery(sqlQuery: string, values?: Object): Promise<any> {
         return new Promise((resolve, reject) => {
             this.connection.query(sqlQuery, values, (error: MysqlError, results: any) => {
                 if(error) {
@@ -55,4 +55,4 @@ class Model {
     }
 }
 
-export { Model };
+export default Model;

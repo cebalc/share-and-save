@@ -1,17 +1,16 @@
 import express, { Express, Request, Response } from "express";
 import path from "path";
+import ServerRouter from "./objects/ServerRouter";
 
 const ENV: Object = require("./modules/config").getEnvVars();
 const app: Express = express();
-
 app.use(express.static(path.resolve(__dirname, "../../client/build")));
 
-app.get("/api", (req: Request, res: Response) => {
-    res.json({message: "Backend Node.js funcionando"})
-});
+const serverRouter: ServerRouter = new ServerRouter(app);
 
-app.get("*", (req: Request, res: Response) => {
-    res.sendFile(path.resolve(__dirname, "../../client/build", "index.html"))
+/* Default requests are sent to React front-end app */
+app.get("*", (request: Request, response: Response) => {
+    response.sendFile(path.resolve(__dirname, "../../client/build", "index.html"))
 });
 
 app.listen(ENV["PORT"], () => {
