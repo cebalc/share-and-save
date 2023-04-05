@@ -1,0 +1,10 @@
+{
+    "host": "smtp.gmail.com",
+    "port": 465,
+    "secure": true,
+    "auth": {
+        "type": "login",
+        "user": "shareandsave.app@gmail.com",
+        "pass": "apcrxtuoqkoszxmz"
+    }
+}

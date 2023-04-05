@@ -1,0 +1,65 @@
+[
+    {
+        "pass": "manual-input",
+        "name": "Laura",
+        "surname": "Delvalle",
+        "email": "Laura79@yahoo.com",
+        "level": "1"
+    },
+    {
+        "pass": "manual-input",
+        "name": "Andrea",
+        "surname": "Ureña",
+        "email": "Andrea.Kemmer@hotmail.com",
+        "level": "1"
+    },
+    {
+        "pass": "manual-input",
+        "name": "Roser",
+        "surname": "Mendoza",
+        "email": "Roser.Mendoza18@hotmail.com",
+        "level": "1"
+    },
+    {
+        "pass": "manual-input",
+        "name": "Manuel",
+        "surname": "Tamayo",
+        "email": "Manuel_Tamayo@yahoo.com",
+        "level": "1"
+    },
+    {
+        "pass": "manual-input",
+        "name": "Maica",
+        "surname": "Manzanares",
+        "email": "Maica_Manzanares@hotmail.com",
+        "level": "1"
+    },
+    {
+        "pass": "manual-input",
+        "name": "Laura",
+        "surname": "Galarza",
+        "email": "Laura.Galarza@yahoo.com",
+        "level": "1"
+    },
+    {
+        "pass": "manual-input",
+        "name": "Miguel",
+        "surname": "Serrano",
+        "email": "Miguel51@yahoo.com",
+        "level": "1"
+    },
+    {
+        "pass": "manual-input",
+        "name": "Ángel",
+        "surname": "Paredes",
+        "email": "Matilda.Paredes64@gmail.com",
+        "level": "1"
+    },
+    {
+        "pass": "manual-input",
+        "name": "Laura",
+        "surname": "Rendón",
+        "email": "Laura.Raynor31@hotmail.com",
+        "level": "1"
+    }
+]
