@@ -16,7 +16,7 @@ class Home extends React.Component<HomeProps, HomeState> {
 
     public render(): React.ReactNode {
         return (
-            <></>
+            <h1>Homepage Share and Save</h1>
         );
     }
 }

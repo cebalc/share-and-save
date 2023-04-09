@@ -16,7 +16,7 @@ class NavMenu extends React.Component<NavMenuProps, NavMenuState> {
 
     public render(): React.ReactNode {
         return (
-            <></>
+            <div>Nav Menu</div>
         );
     }
 }
