@@ -1,28 +1,31 @@
-import Contact from "./Contact";
+import { Address } from "nodemailer/lib/mailer";
+import Mail from "nodemailer/lib/mailer";
 
-class Email {
+class Email implements Mail.Options {
     private static DEF_SUBJECT = "(no subject)";
     private static DEF_BODY = "(no body)";
 
-    private from: Contact;
-    private to: Contact[];
-    private cc: Contact[];
-    private bcc: Contact[];
-    private subject: string;
-    private textBody: string;
-    private htmlBody: string;
+    public from: Address;
+    public to: Address[];
+    public cc?: Address[];
+    public bcc?: Address[];
+    public replyTo: Address;
+    public subject: string;
+    public text: string;
+    public html: string;
 
-    public constructor(from: Contact, ...to: Contact[]) {
+    public constructor(from: Address, ...to: Address[]) {
         this.from = from;
         this.to = to;
         this.subject = Email.DEF_SUBJECT;
-        this.textBody = Email.DEF_BODY;
-        this.htmlBody = Email.DEF_BODY;
+        this.text = Email.DEF_BODY;
+        this.html = Email.DEF_BODY;
+        this.replyTo = this.from;
     }
 
     public mayBeSent(): boolean {
         //Check required fields
-        return true;
+        return this.to != null && this.to.length > 0;
     }
 }
 

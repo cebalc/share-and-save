@@ -15,6 +15,14 @@ CREATE TABLE users (
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+INSERT INTO users (name, surname, email, pass, level) VALUES (
+    "Admin",
+    "Share and Save",
+    "shareandsave.app@gmail.com",
+    "$2a$10$mxBKBQqceNJDLnbLOHEcpu853pwqCgfzCgcaGD0YJeM/6yL6CczAa", /* shareandsave */
+    3
+);
+
 CREATE TABLE workspace (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(30) NOT NULL,
@@ -27,7 +35,7 @@ CREATE TABLE workspace_members (
     user INT NOT NULL,
     admin BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (workspace, user),
-    KEY fk_workspacemembers_user (user)
+    KEY fk_workspacemembers_user (user),
     CONSTRAINT fk_workspacemembers_workspace FOREIGN KEY (workspace) REFERENCES workspace (id),
     CONSTRAINT fk_workspacemembers_user FOREIGN KEY (user) REFERENCES users (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

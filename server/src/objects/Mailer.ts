@@ -14,8 +14,9 @@ class Mailer {
     private transporter: Transporter<SMTPTransport.SentMessageInfo>;
     private email: Email;
 
-    public constructor() {
+    public constructor(email: Email = null) {
         this.transporter = nodemailer.createTransport(Mailer.getSMTPVars());
+        this.email = email;
     }
 
     public setCurrentEmail(email: Email): void {
@@ -23,16 +24,18 @@ class Mailer {
     }
 
     private async maySendCurrentEmail(): Promise<boolean> {
-        let smtpOK = await this.transporter.verify();
+        let smtpOK: boolean = await this.transporter.verify();
         return smtpOK && this.email != null && this.email.mayBeSent();
     }
 
-    public async sendMail(): Promise<boolean> {
+    public async sendCurrentMail(): Promise<boolean> {
         try {
-            if(!this.maySendCurrentEmail()) {
+            if(!await this.maySendCurrentEmail()) {
                 throw Mailer.MSG_CANNOT_SEND;
             }
             //Code to send email
+            await this.transporter.sendMail(this.email);
+            return true;
         } catch(error) {
             console.log(`Error: ${error}`);
             return false;

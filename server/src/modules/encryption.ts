@@ -6,14 +6,13 @@ import bcryptjs from "bcryptjs";
  * @param saltRounds Number of salt rounds (default is 10)
  * @returns The desired salted hash (60 chars long)
  */
-async function makeHash(input: string, saltRounds: number = 10): Promise<string | boolean> {
+async function makeHash(input: string, saltRounds: number = 10): Promise<string> {
     try {
         let salt: string = await bcryptjs.genSalt(saltRounds);
-        let hash: string = await bcryptjs.hash(input, salt);
-        return hash;
+        return await bcryptjs.hash(input, salt);
     } catch (error) {
         console.log(error);
-        return false;
+        return "";
     }
 }
 
@@ -25,8 +24,7 @@ async function makeHash(input: string, saltRounds: number = 10): Promise<string 
  */
 async function verifyHash(inputString: string, hash: string): Promise<boolean> {
     try {
-        let verified: boolean = await bcryptjs.compare(inputString, hash);
-        return verified;
+        return await bcryptjs.compare(inputString, hash);
     } catch (error) {
         console.log(error);
         return false;
