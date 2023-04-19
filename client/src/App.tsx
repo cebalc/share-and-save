@@ -1,5 +1,6 @@
 import React from 'react';
 import SignUp from "./routes/SignUp";
+import SignIn from "./routes/SignIn";
 
 interface AppProps {
 }
@@ -17,7 +18,7 @@ class App extends React.Component<AppProps, AppState> {
 
   public render(): React.ReactNode {
     return (
-      <SignUp />
+      <SignIn />
     );
   }
 }

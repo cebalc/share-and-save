@@ -11,4 +11,8 @@ router.post("/validateEmail", (request, response) =>
     new UserController(request, response).validateEmail()
 );
 
+router.post("/login", (request, response) =>
+    new UserController(request, response).login()
+);
+
 export default router;

@@ -12,7 +12,8 @@ CREATE TABLE users (
 	surname VARCHAR(50) NOT NULL,
 	email VARCHAR(50) NOT NULL,
 	level TINYINT NOT NULL DEFAULT 1, /* 1 = normal, 2 = premium, 3 = admin */
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+	UNIQUE KEY k_users_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 INSERT INTO users (name, surname, email, pass, level) VALUES (

@@ -1,4 +1,5 @@
 import Model from "./Model";
+import User from "../objects/User";
 
 class UserModel extends Model {
     public async emailExists(email: string): Promise<boolean> {
@@ -14,6 +15,17 @@ class UserModel extends Model {
             return 0;
         } else {
             return results.insertId;
+        }
+    }
+
+    public async getUserByEmail(email: string): Promise<User> {
+        let sqlQuery: string = "SELECT * FROM users WHERE email LIKE :email";
+        let results: any = await super.preparedQuery(sqlQuery, {"email": email});
+        if(!results || !Array.isArray(results) || results.length != 1) {
+            return null;
+        } else {
+            let row = results[0];
+            return new User(row.id, row.name, row.surname, row.email, row.pass, row.level);
         }
     }
 }

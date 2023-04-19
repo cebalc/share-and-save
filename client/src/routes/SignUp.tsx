@@ -104,9 +104,9 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             },
-            body: JSON.stringify(this.state)
+            body: JSON.stringify(this.state),
+            credentials: "include"
         };
-        console.log(this.state);
         try {
             let response = await fetch("/users/create", requestInit);
             if (!response.ok) {

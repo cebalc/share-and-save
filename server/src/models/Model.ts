@@ -32,10 +32,12 @@ abstract class Model {
     }
 
     private readonly connection: mysql.Connection;
+    private connectionClosed: boolean;
     
     public constructor() {
         this.connection = mysql.createConnection(Model.CONFIG);
         this.connection.config.queryFormat = Model.customQueryFormat.bind(this.connection);
+        this.connectionClosed = false;
     }
 
     /**
@@ -65,7 +67,10 @@ abstract class Model {
     }
 
     public delete(): void {
-        this.connection.end()
+        if(!this.connectionClosed) {
+            this.connection.end(error => this.logError(error));
+            this.connectionClosed = true;
+        }
     }
 }
 

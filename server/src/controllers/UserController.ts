@@ -1,9 +1,13 @@
 import ServerController from "./ServerController";
 import { Request, Response } from "express";
 import UserModel from "../models/UserModel";
-import { makeHash } from "../modules/encryption";
+import { makeHash, verifyHash } from "../modules/encryption";
+import User from "../objects/User";
 
 class UserController extends ServerController<UserModel> {
+    private static MSG_NO_USER: string = "No existe ningún usuario asociado al email introducido."
+    private static MSG_INV_PASS: string = "La contraseña introducida no es correcta.";
+
     public constructor(request: Request, response: Response) {
         super(request, response);
     }
@@ -31,6 +35,35 @@ class UserController extends ServerController<UserModel> {
 
     public validateEmail(): void {
 
+    }
+
+    public async login(): Promise<void> {
+        let email: string = this.request.body.email;
+        let pass: string = this.request.body.pass;
+
+        this.model = new UserModel();
+        let user: User = await this.model.getUserByEmail(email);
+        this.model.delete();
+
+        if(user == null) {
+            this.response.json({
+                success: false,
+                data: UserController.MSG_NO_USER
+            });
+            return;
+        }
+        let passMatches: boolean = await verifyHash(pass, user.pass);
+        if(!passMatches) {
+            this.response.json({
+                success: false,
+                data: UserController.MSG_INV_PASS
+            });
+        } else {
+            this.response.json({
+                success: true,
+                data: user.id
+            });
+        }
     }
 }
 
