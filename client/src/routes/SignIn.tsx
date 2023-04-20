@@ -54,7 +54,7 @@ class SignIn extends React.Component<SignInProps, SignInState> {
         if(!fetcher.success()) {
             this.setState({error: responseData as string});
         } else {
-            console.log(`Autenticación correcta (id = ${responseData as number}`);
+            console.log(`Autenticación correcta (id = ${responseData as number})`);
             this.setState({error: ""});
         }
     }

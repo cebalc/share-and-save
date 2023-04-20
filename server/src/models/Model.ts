@@ -1,9 +1,9 @@
-import mysql, {MysqlError} from "mysql";
+import mysql, { OkPacket, RowDataPacket } from "mysql2";
 
 const ENV: Object = require("../modules/config").getEnvVars();
 
 abstract class Model {
-    private static CONFIG: mysql.ConnectionConfig = {
+    private static CONFIG: mysql.ConnectionOptions = {
         host: ENV["MYSQL_SERVER"],
         database: ENV["MYSQL_DB_NAME"],
         user: ENV["MYSQL_DB_USER"],
@@ -46,10 +46,10 @@ abstract class Model {
      * @param values Object that maps template params with values (e.g. use {"foo": bar} to replace :foo with bar value)
      * @returns Promise that resolves into SQL query results or false if an error occurred
      */
-    protected async preparedQuery(sqlQuery: string, values?: Object): Promise<any | false> {
+    protected async preparedQuery(sqlQuery: string, values?: Object): Promise<RowDataPacket[] | OkPacket | false> {
         try {
-            return new Promise((resolve, reject) => {
-                this.connection.query(sqlQuery, values, (error: MysqlError, results: any) => {
+            return new Promise<RowDataPacket[] | OkPacket>((resolve, reject) => {
+                this.connection.query<RowDataPacket[] | OkPacket>(sqlQuery, values, (error, results) => {
                     if (error) {
                         reject(error);
                     }
@@ -63,7 +63,7 @@ abstract class Model {
         }
     }
 
-    protected logError(error: MysqlError): void {
+    protected logError(error: mysql.QueryError): void {
         console.log(`Error en la base de datos: ${error}`);
     }
 
