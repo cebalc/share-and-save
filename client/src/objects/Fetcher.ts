@@ -1,5 +1,3 @@
-import {useEffect} from "react";
-
 type HTTPMethod = "GET" | "POST";
 
 abstract class Fetcher {
@@ -18,6 +16,7 @@ abstract class Fetcher {
             credentials: "include",
             body: requestBody
         };
+        this.jsonResponse = null;
     }
 
     public async retrieveData(): Promise<boolean> {
@@ -39,7 +38,7 @@ abstract class Fetcher {
     }
 
     public getResponseData(): any {
-        return this.success() && this.jsonResponse.data;
+        return this.jsonResponse.data;
     }
 }
 

@@ -57,18 +57,19 @@ abstract class Model {
                 });
             });
         } catch (error) {
+            console.log("Error en preparedQuery");
             this.logError(error);
             return false;
         }
     }
 
     protected logError(error: MysqlError): void {
-        console.log(error);
+        console.log(`Error en la base de datos: ${error}`);
     }
 
     public delete(): void {
         if(!this.connectionClosed) {
-            this.connection.end(error => this.logError(error));
+            this.connection.end();
             this.connectionClosed = true;
         }
     }

@@ -46,16 +46,16 @@ class SignIn extends React.Component<SignInProps, SignInState> {
     }
 
     private async checkUserData(): Promise<void> {
-        this.setState({error: ""});
         let fetcher: SignInFetcher = new SignInFetcher(this.state.email, this.state.pass);
         if(!await fetcher.retrieveData()) {
             return;
         }
         let responseData: any = fetcher.getResponseData();
         if(!fetcher.success()) {
-            this.setState({error: responseData});
+            this.setState({error: responseData as string});
         } else {
-            console.log(`Autenticación correcta (id = ${responseData}`);
+            console.log(`Autenticación correcta (id = ${responseData as number}`);
+            this.setState({error: ""});
         }
     }
 }

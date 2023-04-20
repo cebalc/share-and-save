@@ -21,7 +21,7 @@ class UserModel extends Model {
     public async getUserByEmail(email: string): Promise<User> {
         let sqlQuery: string = "SELECT * FROM users WHERE email LIKE :email";
         let results: any = await super.preparedQuery(sqlQuery, {"email": email});
-        if(!results || !Array.isArray(results) || results.length != 1) {
+        if(!results || results.length != 1) {
             return null;
         } else {
             let row = results[0];

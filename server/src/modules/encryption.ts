@@ -11,7 +11,7 @@ async function makeHash(input: string, saltRounds: number = 10): Promise<string>
         let salt: string = await bcryptjs.genSalt(saltRounds);
         return await bcryptjs.hash(input, salt);
     } catch (error) {
-        console.log(error);
+        console.log(`Error al generar hash: ${error}`);
         return "";
     }
 }
@@ -26,7 +26,7 @@ async function verifyHash(inputString: string, hash: string): Promise<boolean> {
     try {
         return await bcryptjs.compare(inputString, hash);
     } catch (error) {
-        console.log(error);
+        console.log(`Error al verificar hash: ${error}`);
         return false;
     }
 }
