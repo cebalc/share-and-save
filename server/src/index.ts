@@ -8,7 +8,7 @@ app.use(express.static(path.resolve(__dirname, "../../client/build")));
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
-const serverRouter: ServerRouter = new ServerRouter(app);
+new ServerRouter(app);
 
 /* Default requests are sent to React front-end app */
 app.get("*", (request: Request, response: Response) => {

@@ -15,4 +15,12 @@ router.post("/login", (request, response) =>
     new UserController(request, response).login()
 );
 
+router.get("*", (request, response) =>
+    new UserController(request, response).redirectToClientRouter()
+);
+
+router.post("*", (request, response) =>
+    new UserController(request, response).redirectToClientRouter()
+);
+
 export default router;
