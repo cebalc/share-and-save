@@ -7,14 +7,11 @@ import NavMenuOption from "./NavMenuOption";
 import UserDropdown from "./UserDropdown";
 
 interface NavMenuProps {
+    userlevel: number,
+    username: string
 }
 
-interface NavMenuState {
-}
-
-class NavMenu extends React.Component<NavMenuProps, NavMenuState> {
-    public state: NavMenuState = {
-    };
+class NavMenu extends React.Component<NavMenuProps> {
 
     public constructor(props: NavMenuProps | Readonly<NavMenuProps>) {
         super(props);
@@ -32,7 +29,7 @@ class NavMenu extends React.Component<NavMenuProps, NavMenuState> {
                         <Nav className="ms-auto">
                             <NavMenuOption to="/">Quiénes somos</NavMenuOption>
                             <NavMenuOption to="/">Contacto</NavMenuOption>
-                            <UserDropdown />
+                            <UserDropdown userlevel={this.props.userlevel} username={this.props.username} />
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

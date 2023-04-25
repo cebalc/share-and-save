@@ -20,7 +20,7 @@ class Layout extends React.Component<LayoutProps, LayoutState> {
     public render(): React.ReactNode {
         return (
             <>
-                <NavMenu />
+                <NavMenu userlevel={3} username="Eric" />
                 <Outlet />
                 <Footer />
             </>
