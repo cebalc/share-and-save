@@ -1,20 +1,25 @@
 import FieldValidator from "./FieldValidator";
+import strip_tags from "striptags";
 
 class NameValidator extends FieldValidator<string> {
 
     private static VALID_PATTERN: RegExp = /^[a-záéíóú\s]{1,25}$/i;
-    private static ERROR_MSG: string = "Máximo 25 caracteres, sin símbolos"
+    private static ERROR_MSG: string = "Máximo 25 caracteres, sin símbolos";
 
-    public validValue(): boolean {
-        return new RegExp(NameValidator.VALID_PATTERN).test(this.fieldValue);
+    public constructor(rawValue: any) {
+        super(rawValue);
     }
 
-    public getError(): string {
-        if(!this.validValue()) {
-            return NameValidator.ERROR_MSG;
-        } else {
-            return "";
+    protected sanitize(rawValue: any): string {
+        return FieldValidator.globalTrim(strip_tags(rawValue));
+    }
+
+    protected validate(): boolean {
+        let valid: boolean = NameValidator.VALID_PATTERN.test(super.getSanitizedValue());
+        if(!valid) {
+            super.setErrorMsg(NameValidator.ERROR_MSG);
         }
+        return valid;
     }
 }
 
