@@ -38,8 +38,6 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     }
 
     public render(): React.ReactNode {
-        console.log("estado al iniciar render");
-        console.log(this.state);
         return (
             <>
             <div>Rellena el siguiente formulario para crear una cuenta de usuario gratuita en Share and Save.</div>
@@ -96,8 +94,6 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
         if(fetcher.success()) {
             console.log("El usuario se ha creado correctamente. Redirigir a verificar email");
         }
-        console.log("estado al terminar el método");
-        console.log(this.state);
     }
 }
 
