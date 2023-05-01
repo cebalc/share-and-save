@@ -19,7 +19,7 @@ CREATE TABLE users (
 INSERT INTO users (name, surname, email, pass, level) VALUES (
     "Admin",
     "Share and Save",
-    "shareandsave.app@gmail.com",
+    "shareandsaveapp@gmail.com",
     "$2a$10$mxBKBQqceNJDLnbLOHEcpu853pwqCgfzCgcaGD0YJeM/6yL6CczAa", /* shareandsave */
     3
 );

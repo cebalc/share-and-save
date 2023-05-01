@@ -18,7 +18,7 @@ class App extends React.Component<AppProps, AppState> {
 
   public render(): React.ReactNode {
     return (
-      <SignIn />
+      <SignUp />
     );
   }
 }

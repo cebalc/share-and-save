@@ -4,14 +4,14 @@ import UserController from "../controllers/UserController";
 const router = Router();
 const userController = new UserController();
 
-router.post("/create", (request, response) =>
-    userController.createUser(request, response)
+router.post("/create", userController.createUserFilters(), async (request, response, next) =>
+    await userController.createUser(request, response, next)
 );
 
 router.post("/validateEmail", userController.validateEmail);
 
-router.post("/login", (request, response) =>
-    userController.login(request, response)
+router.post("/login", userController.loginFilters(), async (request, response, next) =>
+    await userController.login(request, response, next)
 );
 
 router.get("*", userController.redirectToClientRouter);
