@@ -53,23 +53,23 @@ class UserDropdown extends React.Component<UserDropdownProps> {
         if(UserDropdown.USER_LEVELS.has(this.props.userlevel)) {
             return ( 
                 <>
-                <Dropdown.Item>
-                    <LinkContainer to="/"><>Ajustes</></LinkContainer>
-                </Dropdown.Item>
-                <Dropdown.Item>
-                    <LinkContainer to="/"><>Cerrar sesión</></LinkContainer>
-                </Dropdown.Item>
+                <LinkContainer to="/settings">
+                    <Dropdown.Item>Ajustes</Dropdown.Item>
+                </LinkContainer>
+                <LinkContainer to="/signout">
+                    <Dropdown.Item>Cerrar sesión</Dropdown.Item>
+                </LinkContainer>
                 </>
             )
         } else {
             return (
                 <>
-                <Dropdown.Item>
-                    <LinkContainer to="/"><>Iniciar sesión</></LinkContainer>
-                </Dropdown.Item>
-                <Dropdown.Item>
-                    <LinkContainer to="/"><>Registro</></LinkContainer>
-                </Dropdown.Item>
+                <LinkContainer to="/signin">
+                    <Dropdown.Item>Iniciar sesión</Dropdown.Item>
+                </LinkContainer>
+                <LinkContainer to="/register">
+                    <Dropdown.Item>Registro</Dropdown.Item>
+                </LinkContainer>
                 </>
             );
         }

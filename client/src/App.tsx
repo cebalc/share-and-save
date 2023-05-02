@@ -22,8 +22,16 @@ class App extends React.Component<AppProps, AppState> {
     return (
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Layout />}>
+          <Route path="/" element={<Layout fluid={false} userlevel={3} username="Eric" />}>
             <Route index element={<Home />} />
+            <Route path="about" element={<Home />} />
+            <Route path="contact" element={<Home />} />
+            <Route path="signin" element={<Home />} />
+            <Route path="signout" element={<Home />} />
+            <Route path="register" element={<Home />} />
+            <Route path="settings" element={<Home />} />
+          </Route>
+          <Route path="*" element={<Layout fluid={false} userlevel={3} username="Eric" />}>
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

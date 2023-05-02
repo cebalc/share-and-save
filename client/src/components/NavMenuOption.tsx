@@ -15,9 +15,9 @@ class NavMenuOption extends React.Component<NMOProps> {
 
     public render(): React.ReactNode {
         return (
-            <Nav.Link className="d-flex flex-column justify-content-center">
-                <LinkContainer to="{this.props.to}"><>{this.props.children}</></LinkContainer>
-            </Nav.Link>
+            <LinkContainer to={this.props.to}>
+                <Nav.Link className="d-flex flex-column justify-content-center fw-bold">{this.props.children}</Nav.Link>
+            </LinkContainer>
         );
     }
 }

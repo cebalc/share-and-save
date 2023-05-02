@@ -27,8 +27,8 @@ class NavMenu extends React.Component<NavMenuProps> {
                     <Navbar.Toggle aria-controls="mainmenu" />
                     <Navbar.Collapse id="mainmenu">
                         <Nav className="ms-auto">
-                            <NavMenuOption to="/">Quiénes somos</NavMenuOption>
-                            <NavMenuOption to="/">Contacto</NavMenuOption>
+                            <NavMenuOption to="/about">Quiénes somos</NavMenuOption>
+                            <NavMenuOption to="/contact">Contacto</NavMenuOption>
                             <UserDropdown userlevel={this.props.userlevel} username={this.props.username} />
                         </Nav>
                     </Navbar.Collapse>
