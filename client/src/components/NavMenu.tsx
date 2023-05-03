@@ -22,7 +22,9 @@ class NavMenu extends React.Component<NavMenuProps> {
             <Navbar bg="primary" expand="md" variant="dark">
                 <Container fluid>
                     <LinkContainer to="/">
-                        <Navbar.Brand title="Home">S&S</Navbar.Brand>
+                        <Navbar.Brand title="Home">
+                            <img src="/img/logo.png" alt="S&S" className="brand-logo" />
+                        </Navbar.Brand>
                     </LinkContainer>
                     <Navbar.Toggle aria-controls="mainmenu" />
                     <Navbar.Collapse id="mainmenu">
