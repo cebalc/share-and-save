@@ -22,7 +22,7 @@ class App extends React.Component<AppProps, AppState> {
     return (
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Layout fluid={false} userlevel={3} username="Eric" />}>
+          <Route path="/" element={<Layout fluid="md" userlevel={3} username="Eric" />}>
             <Route index element={<Home />} />
             <Route path="about" element={<Home />} />
             <Route path="contact" element={<Home />} />
@@ -31,7 +31,7 @@ class App extends React.Component<AppProps, AppState> {
             <Route path="register" element={<Home />} />
             <Route path="settings" element={<Home />} />
           </Route>
-          <Route path="*" element={<Layout fluid={false} userlevel={3} username="Eric" />}>
+          <Route path="*" element={<Layout fluid="sm" userlevel={3} username="Eric" />}>
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

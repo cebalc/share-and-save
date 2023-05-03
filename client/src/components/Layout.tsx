@@ -7,7 +7,7 @@ import Container from "react-bootstrap/Container";
 interface LayoutProps {
     userlevel: number,
     username: string,
-    fluid: boolean
+    fluid: boolean | "sm" | "md" | "lg" | "xl" | "xxl"
 }
 
 interface LayoutState {
@@ -24,9 +24,11 @@ abstract class Layout extends React.Component<LayoutProps, LayoutState> {
     public render(): React.ReactNode {
         return (
             <>
-                <NavMenu userlevel={this.props.userlevel} username={this.props.username} />
-                <Container fluid className="m-0 py-4">
-                    <Container fluid={this.props.fluid} className="rounded-3 shadow-lg p-4 ms-auto my-4">
+                <header>
+                    <NavMenu userlevel={this.props.userlevel} username={this.props.username} />
+                </header>
+                <Container fluid className="m-0 py-4" as="main">
+                    <Container fluid={this.props.fluid} className="rounded-3 opacity-90 bg-light shadow-lg p-4 ms-auto my-4">
                         <Outlet />
                     </Container>
                 </Container>

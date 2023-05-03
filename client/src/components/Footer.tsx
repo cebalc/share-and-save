@@ -1,4 +1,7 @@
 import React from "react";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 interface FooterProps {
 }
@@ -16,7 +19,13 @@ class Footer extends React.Component<FooterProps, FooterState> {
 
     public render(): React.ReactNode {
         return (
-            <div>Footer</div>
+            <Container fluid className="small bg-primary text-light p-4" as="footer">
+                <Row>
+                    <Col className="pt-4 text-center">
+                        Share and Save &copy; 2022. Todos los derechos reservados.
+                    </Col>
+                </Row>
+            </Container>
         );
     }
 }
