@@ -14,4 +14,8 @@ main {
     opacity: 0.9;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 @import "../node_modules/bootstrap/scss/bootstrap";
