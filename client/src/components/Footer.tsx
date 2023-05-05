@@ -3,6 +3,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import SocialNetworks from "./SocialNetworks";
+import { Link } from "react-router-dom";
 
 interface FooterProps {
 }
@@ -35,7 +36,12 @@ class Footer extends React.Component<FooterProps, FooterState> {
                                 </p>
                             </Col>
                             <Col sm={6} className="px-2 py-3 text-center">
-                                Menú
+                                <p className="lead fw-bold">Menú</p>
+                                <Container fluid className="d-flex flex-column">
+                                    <Link to="/about" className="link-light text-decoration-none d-block py-1">Quiénes somos</Link>
+                                    <Link to="/privacy-policy" className="link-light text-decoration-none d-block py-1">Política de privacidad</Link>
+                                    <Link to="/contact" className="link-light text-decoration-none d-block py-1">Contacto</Link>
+                                </Container>
                             </Col>
                         </Row>
                     </Col>
@@ -45,6 +51,7 @@ class Footer extends React.Component<FooterProps, FooterState> {
                 </Row>
                 <Row>
                     <Col className="pt-4 text-center">
+                        Diseño y desarrollo: Eric Ceballos Alcantarilla<br />
                         Share and Save &copy; 2022. Todos los derechos reservados.
                     </Col>
                 </Row>
