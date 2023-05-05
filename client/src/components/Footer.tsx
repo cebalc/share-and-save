@@ -4,6 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import SocialNetworks from "./SocialNetworks";
 import { Link } from "react-router-dom";
+import ContactData from "./ContactData";
 
 interface FooterProps {
 }
@@ -26,21 +27,14 @@ class Footer extends React.Component<FooterProps, FooterState> {
                     <Col md={8}>
                         <Row>
                             <Col sm={6} className="px-2 py-3 text-center" id="contact-data">
-                                <p className="lead fw-bold">Datos de contacto</p>
-                                <p>
-                                    Share and Save SL<br />
-                                    Calle del Ahorro 1<br />
-                                    Valencia (España)<br />
-                                    shareandsave.app@gmail.com<br />
-                                    +34 961 234 567
-                                </p>
+                                <ContactData />
                             </Col>
                             <Col sm={6} className="px-2 py-3 text-center">
                                 <p className="lead fw-bold">Menú</p>
                                 <Container fluid className="d-flex flex-column">
-                                    <Link to="/about" className="link-light text-decoration-none d-block py-1">Quiénes somos</Link>
-                                    <Link to="/privacy-policy" className="link-light text-decoration-none d-block py-1">Política de privacidad</Link>
-                                    <Link to="/contact" className="link-light text-decoration-none d-block py-1">Contacto</Link>
+                                    <Link to="/about" className="link-light link-footer d-block py-1">Quiénes somos</Link>
+                                    <Link to="/privacy-policy" className="link-light link-footer d-block py-1">Política de privacidad</Link>
+                                    <Link to="/contact" className="link-light link-footer d-block py-1">Contacto</Link>
                                 </Container>
                             </Col>
                         </Row>

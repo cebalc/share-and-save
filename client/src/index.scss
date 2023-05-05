@@ -1,4 +1,5 @@
 $primary: #0864bb;
+$nav-link-font-weight: bold;
 
 .brand-logo {
     height: 3.5rem;
@@ -16,6 +17,18 @@ main {
 
 .clickable {
     cursor: pointer;
+}
+
+.link-footer {
+    text-decoration: none;
+    font-weight: normal;
+    transition-property: font-weight;
+    transition-timing-function: ease-out;
+    transition-duration: 0.15s;
+}
+
+.link-footer:hover {
+    font-weight: bold;
 }
 
 @import "../node_modules/bootstrap/scss/bootstrap";
