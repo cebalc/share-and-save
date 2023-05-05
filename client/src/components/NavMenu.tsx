@@ -23,7 +23,7 @@ class NavMenu extends React.Component<NavMenuProps> {
                 <Container fluid>
                     <LinkContainer to="/">
                         <Navbar.Brand title="Home">
-                            <img src="/img/logo.png" alt="S&S" className="brand-logo" />
+                            <img src="/img/logo_SnS.png" alt="S&S" className="brand-logo" />
                         </Navbar.Brand>
                     </LinkContainer>
                     <Navbar.Toggle aria-controls="mainmenu" />
