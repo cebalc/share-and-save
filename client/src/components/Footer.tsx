@@ -34,7 +34,6 @@ class Footer extends React.Component<FooterProps, FooterState> {
                                 <Container fluid className="d-flex flex-column">
                                     <Link to="/about" className="link-light link-footer d-block py-1">Quiénes somos</Link>
                                     <Link to="/privacy-policy" className="link-light link-footer d-block py-1">Política de privacidad</Link>
-                                    <Link to="/contact" className="link-light link-footer d-block py-1">Contacto</Link>
                                 </Container>
                             </Col>
                         </Row>

@@ -30,7 +30,7 @@ class NavMenu extends React.Component<NavMenuProps> {
                     <Navbar.Collapse id="mainmenu">
                         <Nav className="ms-auto">
                             <NavMenuOption to="/about">Quiénes somos</NavMenuOption>
-                            <NavMenuOption to="/contact">Contacto</NavMenuOption>
+                            <NavMenuOption to="#contact-data" anchor>Contacto</NavMenuOption>
                             <UserDropdown userlevel={this.props.userlevel} username={this.props.username} />
                         </Nav>
                     </Navbar.Collapse>

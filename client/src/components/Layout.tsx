@@ -28,7 +28,7 @@ abstract class Layout extends React.Component<LayoutProps, LayoutState> {
                     <NavMenu userlevel={this.props.userlevel} username={this.props.username} />
                 </header>
                 <Container fluid className="m-0 py-4" as="main">
-                    <Container fluid={this.props.fluid} className="rounded-3 opacity-90 bg-light shadow-lg p-4 ms-auto my-4">
+                    <Container fluid={this.props.fluid} className="rounded-3 opacity-95 bg-light shadow-lg p-4 ms-auto my-4">
                         <Outlet />
                     </Container>
                 </Container>

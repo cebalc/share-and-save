@@ -52,8 +52,8 @@ class SignIn extends React.Component<SignInProps, SignInState> {
         if(!fetcher.success()) {
             this.setState({errors: responseData as string[]});
         } else {
-            console.log(`Autenticación correcta (id = ${responseData as number})`);
             this.setState({errors: []});
+            window.location.assign("/dashboard");
         }
     }
 }

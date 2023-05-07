@@ -5,7 +5,7 @@ abstract class Fetcher {
     private requestInit: RequestInit;
     private jsonResponse: any;
 
-    protected constructor(url: string, method: HTTPMethod, requestBody: string) {
+    protected constructor(url: string, method: HTTPMethod, requestBody: string = "") {
         this.url = url;
         this.requestInit = {
             method: method,
@@ -13,8 +13,10 @@ abstract class Fetcher {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             },
-            credentials: "include",
-            body: requestBody
+            credentials: "include"
+        };
+        if(method === "POST") {
+            this.requestInit.body = requestBody;
         };
         this.jsonResponse = null;
     }

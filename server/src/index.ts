@@ -2,12 +2,30 @@ import express, { Express } from "express";
 import path from "path";
 import ServerRouter from "./objects/ServerRouter";
 import ServerController from "./controllers/ServerController";
+import session from "express-session";
+import cookieParser from "cookie-parser";
 
 const ENV: Object = require("./modules/config").getEnvVars();
 const app: Express = express();
+
+/* Static folder */
 app.use(express.static(path.resolve(__dirname, "../../client/build")));
+
+/* Process POST requests */
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
+
+/* Support sessions */
+app.use(cookieParser());
+app.use(session({
+    secret: ENV["SESSION_SECRET"],
+    saveUninitialized: true,
+    resave: false,
+    cookie: {
+        secure: false,
+        httpOnly: false
+    }
+}));
 
 new ServerRouter(app);
 const serverController = new ServerController();

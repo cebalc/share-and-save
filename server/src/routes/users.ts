@@ -4,6 +4,10 @@ import UserController from "../controllers/UserController";
 const router = Router();
 const userController = new UserController();
 
+router.get("/status", userController.checkStatus);
+
+router.get("/signout", userController.logout)
+
 router.post("/create", userController.createUserFilters(), async (request, response, next) =>
     await userController.createUser(request, response, next)
 );

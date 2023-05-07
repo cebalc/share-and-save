@@ -11,6 +11,23 @@ class UserController extends ServerController<UserModel> {
     private static MSG_NO_USER: string = "No existe ningún usuario asociado al email introducido."
     private static MSG_INV_PASS: string = "La contraseña introducida no es correcta.";
 
+    public checkStatus(request: Request, response: Response): void {
+        let userlevel: number = User.ANONYMOUS;
+        let username: string = "";
+        let user = request.session["user"];
+        console.log(user);
+        if(user !== undefined) {
+            userlevel = (user as User).level;
+            username = (user as User).name;
+        }
+        console.log(userlevel);
+        console.log(username);
+        response.json({
+            success: true,
+            data: { userlevel, username }
+        });
+    }
+
     public createUserFilters(): ValidationChain[] {
         return [
             body("name", "Máximo 25 caracteres, sin símbolos")
@@ -140,6 +157,7 @@ class UserController extends ServerController<UserModel> {
                     data: new Array<string>(UserController.MSG_INV_PASS)
                 });
             } else {
+                request.session["user"] = user;
                 response.json({
                     success: true,
                     data: user.id
@@ -147,6 +165,15 @@ class UserController extends ServerController<UserModel> {
             }
         } catch(error) {
             return next(error);
+        }
+    }
+
+    public logout(request: Request, response: Response, next: NextFunction): void {
+        try {
+            request.session.destroy(null);
+            response.json({success: true});
+        } catch (error) {
+            next(error);
         }
     }
 }

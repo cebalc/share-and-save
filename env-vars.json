@@ -2,6 +2,7 @@
     "development": {
         "SERVERURL": "http://localhost:3001",
         "PORT": 3001,
+        "SESSION_SECRET": "XBLTvsTme0Gq5wtpQWIC8AvkevNhPumorl035V4KoLKntulwMPsj0BbOc5IY1PK",
         "MYSQL_SERVER": "localhost",
         "MYSQL_DB_NAME": "shareandsave",
         "MYSQL_DB_USER": "root",
