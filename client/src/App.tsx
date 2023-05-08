@@ -12,40 +12,50 @@ interface AppProps {
 }
 
 interface AppState {
-  userlevel: 0 | 1 | 2 | 3,
-  username: string
+  userId: number,
+  userLevel: 0 | 1 | 2 | 3,
+  userName: string
 }
 
 class App extends React.Component<AppProps, AppState> {
   public state: AppState = {
-    userlevel: 0,
-    username: ""
+    userId: 0,
+    userLevel: 0,
+    userName: ""
   };
 
   public constructor(props: AppProps | Readonly<AppProps>) {
     super(props);
   }
 
-  public render(): React.ReactNode {
+  public async componentDidMount(): Promise<void> {
+    await this.updateUserStatus();
+  }
+
+  private async updateUserStatus(): Promise<void> {
     let statusFetcher: StatusFetcher = new StatusFetcher();
-    statusFetcher.retrieveData()
-        .then(retrieved => {
-          if (retrieved && statusFetcher.success()) {
-            this.setState({
-              userlevel: statusFetcher.getResponseData().userlevel,
-              username: statusFetcher.getResponseData().username
-            });
-          }
-        })
-        .catch(error => console.log(error));
+    if(!await statusFetcher.retrieveData()) {
+      return;
+    }
+    let responseData = statusFetcher.getResponseData();
+    if(statusFetcher.success()) {
+      this.setState({
+        userId: responseData.userId,
+        userLevel: responseData.userLevel,
+        userName: responseData.userName
+      });
+    }
+  }
+
+  public render(): React.ReactNode {
     return (
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Layout fluid="md" userlevel={this.state.userlevel} username={this.state.username} />}>
+          <Route path="/" element={<Layout fluid="md" userlevel={this.state.userLevel} username={this.state.userName} />}>
             <Route index element={<Home />} />
             <Route path="about" element={<Home />} />
-            <Route path="signin" element={<SignIn />} />
-            <Route path="signout" element={<Home signOut />} />
+            <Route path="signin" element={<SignIn onSignIn={this.updateUserStatus.bind(this)} />} />
+            <Route path="signout" element={<Home signOut onSignOut={this.updateUserStatus.bind(this)} />} />
             <Route path="register" element={<SignUp />} />
             <Route path="settings" element={<Home />} />
             <Route path="dashboard" element={<Dashboard />} />

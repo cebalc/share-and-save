@@ -3,30 +3,43 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
 import SignInFetcher from "../objects/fetchers/SignInFetcher";
+import { Navigate } from "react-router-dom";
 
 interface SignInProps {
+    onSignIn: () => Promise<void>
 }
 
 interface SignInState {
     email: string,
     pass: string,
-    errors: string[]
+    errors: string[],
+    signedIn: boolean
 }
 
 class SignIn extends React.Component<SignInProps, SignInState> {
     public state: SignInState = {
         email: "",
         pass: "",
-        errors: []
+        errors: [],
+        signedIn: false
     }
 
     public constructor(props: SignInProps | Readonly<SignInProps>) {
         super(props);
     }
 
+    private redirectIfSignedIn(): React.ReactNode {
+        if(this.state.signedIn) {
+            return (<Navigate to="/dashboard" />);
+        } else {
+            return (<></>);
+        }
+    }
+
     public render(): React.ReactNode {
         return (
             <Form>
+                {this.redirectIfSignedIn()}
                 {this.state.errors.map((error: string, index: number) =>
                     <Alert key={index} variant="danger">{error}</Alert>
                 )}
@@ -52,8 +65,8 @@ class SignIn extends React.Component<SignInProps, SignInState> {
         if(!fetcher.success()) {
             this.setState({errors: responseData as string[]});
         } else {
-            this.setState({errors: []});
-            window.location.assign("/dashboard");
+            await this.props.onSignIn();
+            this.setState({errors: [], signedIn: true});
         }
     }
 }

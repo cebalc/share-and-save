@@ -4,6 +4,7 @@ import SignOutFetcher from "../objects/fetchers/SignOutFetcher";
 
 interface HomeProps {
     signOut?: boolean
+    onSignOut?: () => Promise<void>
 }
 
 interface HomeState {
@@ -12,7 +13,8 @@ interface HomeState {
 class Home extends React.Component<HomeProps, HomeState> {
 
     private static defaultProps = {
-        signOut: false
+        signOut: false,
+        onSignOut: () => true
     }
 
     public state: HomeState = {
@@ -21,7 +23,11 @@ class Home extends React.Component<HomeProps, HomeState> {
     public constructor(props: HomeProps | Readonly<HomeProps>) {
         super(props);
         if(this.props.signOut) {
-            new SignOutFetcher().retrieveData();
+            new SignOutFetcher().retrieveData().then(() => {
+                if(this.props.onSignOut !== undefined) {
+                    this.props.onSignOut();
+                }
+            });
         }
     }
 
@@ -30,7 +36,7 @@ class Home extends React.Component<HomeProps, HomeState> {
             <>
                 {
                     this.props.signOut ?
-                        <Alert variant="success" dismissible>Sesión cerrada correctamente</Alert>
+                        <Alert variant="success">Sesión cerrada correctamente</Alert>
                         :
                         <></>
                 }
