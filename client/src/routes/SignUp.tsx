@@ -3,8 +3,10 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert"
 import SignUpFetcher from "../objects/fetchers/SignUpFetcher";
+import { Navigate } from "react-router-dom";
 
 interface SignUpProps {
+    onSignUp: () => Promise<void>
 }
 
 interface SignUpState {
@@ -16,7 +18,8 @@ interface SignUpState {
     emailError: string
     pass: string,
     passError: string,
-    formError: string
+    formError: string,
+    signedUp: boolean
 }
 
 class SignUp extends React.Component<SignUpProps, SignUpState> {
@@ -30,16 +33,27 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
         emailError: "",
         pass: "",
         passError: "",
-        formError: ""
+        formError: "",
+        signedUp: false
     }
 
     public constructor(props: SignUpProps | Readonly<SignUpProps>) {
         super(props);
     }
 
+    private redirectIfSignedUp(): React.ReactNode {
+        if(this.state.signedUp) {
+            return (<Navigate to="/dashboard" />);
+        } else {
+            return (<></>);
+        }
+    }
+
     public render(): React.ReactNode {
         return (
             <>
+            {this.redirectIfSignedUp()}
+            <h1>Registro de nuevo usuario</h1>
             <div>Rellena el siguiente formulario para crear una cuenta de usuario gratuita en Share and Save.</div>
             {this.state.formError.length > 0 ?
                 <Alert variant="danger">{this.state.formError}</Alert>
@@ -84,16 +98,17 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             return;
         }
         let responseData: any = fetcher.getResponseData();
+        if(fetcher.success()) {
+            await this.props.onSignUp();
+        }
         this.setState({
             nameError: responseData.name !== undefined ? responseData.name : "",
             surnameError: responseData.surname !== undefined ? responseData.surname : "",
             emailError: responseData.email !== undefined ? responseData.email : "",
             passError: responseData.pass !== undefined ? responseData.pass : "",
-            formError: responseData.global !== undefined ? responseData.global : ""
+            formError: responseData.global !== undefined ? responseData.global : "",
+            signedUp: fetcher.success()
         });
-        if(fetcher.success()) {
-            console.log("El usuario se ha creado correctamente. Redirigir a verificar email");
-        }
     }
 }
 

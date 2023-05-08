@@ -12,16 +12,18 @@ class UserController extends ServerController<UserModel> {
     private static MSG_INV_PASS: string = "La contraseña introducida no es correcta.";
 
     public checkStatus(request: Request, response: Response): void {
+        let userId: number = 0;
         let userLevel: number = User.ANONYMOUS;
         let userName: string = "";
         let user = request.session["user"];
         if(user !== undefined) {
+            userId = (user as User).id;
             userLevel = (user as User).level;
             userName = (user as User).name;
         }
         response.json({
             success: true,
-            data: { userLevel, userName }
+            data: { userId, userLevel, userName }
         });
     }
 

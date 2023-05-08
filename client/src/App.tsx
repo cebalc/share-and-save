@@ -56,9 +56,9 @@ class App extends React.Component<AppProps, AppState> {
             <Route path="about" element={<Home />} />
             <Route path="signin" element={<SignIn onSignIn={this.updateUserStatus.bind(this)} />} />
             <Route path="signout" element={<Home signOut onSignOut={this.updateUserStatus.bind(this)} />} />
-            <Route path="register" element={<SignUp />} />
+            <Route path="register" element={<SignUp onSignUp={this.updateUserStatus.bind(this)} />} />
             <Route path="settings" element={<Home />} />
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard userId={this.state.userId} />} />
           </Route>
           <Route path="*" element={<Layout fluid="sm" userlevel={3} username="Eric" />}>
             <Route path="*" element={<NotFound />} />
