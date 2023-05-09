@@ -1,5 +1,7 @@
 import React from "react";
 import Alert from "react-bootstrap/Alert";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import SignOutFetcher from "../objects/fetchers/SignOutFetcher";
 
 interface HomeProps {
@@ -31,16 +33,30 @@ class Home extends React.Component<HomeProps, HomeState> {
         }
     }
 
+    private renderSignOutAlert(): React.ReactNode {
+        if(this.props.signOut) {
+            return (<Alert variant="success">Sesión cerrada correctamente</Alert>);
+        }
+    }
+
     public render(): React.ReactNode {
         return (
             <>
-                {
-                    this.props.signOut ?
-                        <Alert variant="success">Sesión cerrada correctamente</Alert>
-                        :
-                        <></>
-                }
-                <h1>Homepage Share and Save</h1>
+            <Row>
+                <Col className="text-center">
+                    {this.renderSignOutAlert()}
+                    <p className="h1">Share and Save</p>
+                    <p className="h5">Compartir experiencias nunca fue tan divertido</p>
+                </Col>
+            </Row>
+            <Row>
+                <Col md={6}>
+
+                </Col>
+                <Col md={6}>
+                    
+                </Col>
+            </Row>
             </>
         );
     }
