@@ -31,8 +31,6 @@ class SignIn extends React.Component<SignInProps, SignInState> {
     private redirectIfSignedIn(): React.ReactNode {
         if(this.state.signedIn) {
             return (<Navigate to="/dashboard" />);
-        } else {
-            return (<></>);
         }
     }
 
@@ -49,7 +47,14 @@ class SignIn extends React.Component<SignInProps, SignInState> {
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="pass">
                     <Form.Label>Contraseña</Form.Label>
-                    <Form.Control type="password" onChange={event => this.setState({pass: event.target.value})} />
+                    <Form.Control type="password" 
+                        onChange={event => this.setState({pass: event.target.value})} 
+                        onKeyDown={event => {
+                            if(event.key == "Enter") {
+                                event.preventDefault();
+                                this.checkUserData();
+                            }
+                        }} />
                 </Form.Group>
                 <Button variant="success" onClick={() => this.checkUserData()}>Enviar</Button>
             </Form>
@@ -61,9 +66,9 @@ class SignIn extends React.Component<SignInProps, SignInState> {
         if(!await fetcher.retrieveData()) {
             return;
         }
-        let responseData: any = fetcher.getResponseData();
+        let responseData: string[] = fetcher.getResponseData();
         if(!fetcher.success()) {
-            this.setState({errors: responseData as string[]});
+            this.setState({errors: responseData});
         } else {
             await this.props.onSignIn();
             this.setState({errors: [], signedIn: true});

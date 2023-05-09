@@ -115,7 +115,6 @@ class UserController extends ServerController<UserModel> {
         return [
             body("email", "Debes introducir un email")
                 .exists()
-                .notEmpty()
                 .isEmail()
                 .normalizeEmail({
                     all_lowercase: true,
