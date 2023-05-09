@@ -15,11 +15,11 @@ class UserController extends ServerController<UserModel> {
         let userId: number = 0;
         let userLevel: number = User.ANONYMOUS;
         let userName: string = "";
-        let user = request.session["user"];
+        let user: User = <User>request.session["user"];
         if(user !== undefined) {
-            userId = (user as User).id;
-            userLevel = (user as User).level;
-            userName = (user as User).name;
+            userId = user.id;
+            userLevel = user.level;
+            userName = user.name;
         }
         response.json({
             success: true,
@@ -66,7 +66,7 @@ class UserController extends ServerController<UserModel> {
                         email: (errorsObject.email !== undefined ? errorsObject.email.msg : ""),
                         pass: (errorsObject.pass !== undefined ? errorsObject.pass.msg : "")
                     }
-                })
+                });
                 return;
             }
 
@@ -90,8 +90,11 @@ class UserController extends ServerController<UserModel> {
             }
 
             let encryptedPass: string = await makeHash(pass);
-            let newUserId: number = await this.model.createUser(name, surname, email, encryptedPass);
-            let success: boolean = (newUserId != 0);
+            let newUser: User = await this.model.createUser(name, surname, email, encryptedPass);
+            let success: boolean = (newUser != null);
+            if(success) {
+                request.session["user"] = newUser;
+            }
             this.model.delete();
             response.json({
                 success: success,

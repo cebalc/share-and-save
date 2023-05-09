@@ -44,8 +44,12 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     private redirectIfSignedUp(): React.ReactNode {
         if(this.state.signedUp) {
             return (<Navigate to="/dashboard" />);
-        } else {
-            return (<></>);
+        }
+    }
+
+    private showFormError(): React.ReactNode {
+        if(this.state.formError.length > 0) {
+            return (<Alert variant="danger">{this.state.formError}</Alert>);
         }
     }
 
@@ -55,11 +59,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             {this.redirectIfSignedUp()}
             <h1>Registro de nuevo usuario</h1>
             <div>Rellena el siguiente formulario para crear una cuenta de usuario gratuita en Share and Save.</div>
-            {this.state.formError.length > 0 ?
-                <Alert variant="danger">{this.state.formError}</Alert>
-                :
-                <></>
-            }
+            {this.showFormError()}
             <Form>
                 <Form.Group className="mb-3" controlId="name">
                     <Form.Label>Nombre</Form.Label>
@@ -89,10 +89,10 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
 
     private async sendUserData(): Promise<void> {
         let fetcher: SignUpFetcher = new SignUpFetcher(
-            this.state.name as string,
-            this.state.surname as string,
-            this.state.email as string,
-            this.state.pass as string
+            this.state.name,
+            this.state.surname,
+            this.state.email,
+            this.state.pass
         );
         if(!await fetcher.retrieveData()) {
             return;

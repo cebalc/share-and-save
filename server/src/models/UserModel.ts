@@ -9,14 +9,13 @@ class UserModel extends Model {
         return !(results as boolean) || (results as RowDataPacket[])[0].emailcount === 1;
     }
 
-    public async createUser(name: string, surname: string, email: string, pass: string): Promise<number> {
+    public async createUser(name: string, surname: string, email: string, pass: string): Promise<User> {
         let sqlQuery: string = "INSERT INTO users (name, surname, email, pass) VALUES (:name, :surname, :email, :pass)";
         let results: any = await super.preparedQuery(sqlQuery, {"name": name, "surname": surname, "email": email, "pass": pass});
         if(!(results as boolean)) {
-            return 0;
-        } else {
-            return (results as OkPacket).insertId;
+            return null;
         }
+        return await this.getUserByEmail(email);
     }
 
     public async getUserByEmail(email: string): Promise<User> {
