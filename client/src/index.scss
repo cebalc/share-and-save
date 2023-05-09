@@ -6,7 +6,7 @@ $nav-link-font-weight: bold;
 }
 
 main {
-    background-image: url("../public/img/background.jpg");
+    background-image: url("images/background.jpg");
     background-size: cover;
     background-position: center;
 }
@@ -29,6 +29,11 @@ main {
 
 .link-footer:hover {
     font-weight: bold;
+}
+
+.text-justify {
+    text-align: justify !important;
+    text-justify: inter-word;
 }
 
 @import "../node_modules/bootstrap/scss/bootstrap";

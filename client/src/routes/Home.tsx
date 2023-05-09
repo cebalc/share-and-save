@@ -3,6 +3,9 @@ import Alert from "react-bootstrap/Alert";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import SignOutFetcher from "../objects/fetchers/SignOutFetcher";
+import CoupleAccounts from "../images/home-couple-accounts.jpg";
+import SaveMoney from "../images/save-money.jpg";
+import LogoSnS from "../images/logo_SnS.png";
 
 interface HomeProps {
     signOut?: boolean
@@ -35,26 +38,33 @@ class Home extends React.Component<HomeProps, HomeState> {
 
     private renderSignOutAlert(): React.ReactNode {
         if(this.props.signOut) {
-            return (<Alert variant="success">Sesión cerrada correctamente</Alert>);
+            return (
+                <Row>
+                    <Col className="text-center">
+                        <Alert variant="success">Sesión cerrada correctamente</Alert>
+                    </Col>
+                </Row>
+            );
         }
     }
 
     public render(): React.ReactNode {
         return (
             <>
-            <Row>
+            {this.renderSignOutAlert()}
+            <Row className="my-4">
                 <Col className="text-center">
-                    {this.renderSignOutAlert()}
                     <p className="h1">Share and Save</p>
+                    <img src={LogoSnS} alt="S&S" className="d-block mx-auto" />
                     <p className="h5">Compartir experiencias nunca fue tan divertido</p>
                 </Col>
             </Row>
             <Row>
-                <Col md={6}>
-
+                <Col sm={6} className="my-3">
+                    <img src={CoupleAccounts} alt="Save money" className="img-fluid mx-auto rounded-4" />
                 </Col>
-                <Col md={6}>
-                    
+                <Col sm={6} className="my-3 text-justify">
+                    Un lugar donde tú, tus amigos y tu familia podéis guardar vuestros gastos diarios y realizar las cuentas como queráis.
                 </Col>
             </Row>
             </>

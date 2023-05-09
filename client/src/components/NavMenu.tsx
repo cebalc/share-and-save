@@ -5,6 +5,7 @@ import Nav from "react-bootstrap/Nav";
 import { LinkContainer } from "react-router-bootstrap";
 import NavMenuOption from "./NavMenuOption";
 import UserDropdown from "./UserDropdown";
+import LogoSnS from "../images/logo_SnS.png";
 
 interface NavMenuProps {
     userlevel: number,
@@ -23,7 +24,7 @@ class NavMenu extends React.Component<NavMenuProps> {
                 <Container fluid>
                     <LinkContainer to="/">
                         <Navbar.Brand title="Home">
-                            <img src="/img/logo_SnS.png" alt="S&S" className="brand-logo" />
+                            <img src={LogoSnS} alt="S&S" className="brand-logo" />
                         </Navbar.Brand>
                     </LinkContainer>
                     <Navbar.Toggle aria-controls="mainmenu" />
