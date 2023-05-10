@@ -36,4 +36,20 @@ main {
     text-justify: inter-word;
 }
 
+.max-width-75nbp-md {
+    max-width: 432px; /* 75% of 576px */
+}
+
+@media only screen and (min-width: 576px) { /* sm breakpoint */
+    .max-width-75nbp-md {
+        max-width: 576px; /* 75% of 768px */
+    }
+}
+
+@media only screen and (min-width: 768px) { /* md breakpoint */
+    .max-width-75nbp-md {
+        max-width: 768px; /* Max witdh allowed */
+    }
+}
+
 @import "../node_modules/bootstrap/scss/bootstrap";

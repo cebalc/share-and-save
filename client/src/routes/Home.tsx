@@ -2,6 +2,7 @@ import React from "react";
 import Alert from "react-bootstrap/Alert";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
 import SignOutFetcher from "../objects/fetchers/SignOutFetcher";
 import CoupleAccounts from "../images/home-couple-accounts.jpg";
 import SaveMoney from "../images/save-money.jpg";
@@ -39,11 +40,9 @@ class Home extends React.Component<HomeProps, HomeState> {
     private renderSignOutAlert(): React.ReactNode {
         if(this.props.signOut) {
             return (
-                <Row>
-                    <Col className="text-center">
-                        <Alert variant="success">Sesión cerrada correctamente</Alert>
-                    </Col>
-                </Row>
+                <Container fluid>
+                    <Alert variant="success">Sesión cerrada correctamente</Alert>
+                </Container>
             );
         }
     }
@@ -52,21 +51,31 @@ class Home extends React.Component<HomeProps, HomeState> {
         return (
             <>
             {this.renderSignOutAlert()}
-            <Row className="my-4">
-                <Col className="text-center">
+            <Container className="my-3">
+                <Col className="text-center d-flex flex-column align-items-middle">
                     <p className="h1">Share and Save</p>
                     <img src={LogoSnS} alt="S&S" className="d-block mx-auto" />
                     <p className="h5">Compartir experiencias nunca fue tan divertido</p>
                 </Col>
-            </Row>
-            <Row>
-                <Col sm={6} className="my-3">
-                    <img src={CoupleAccounts} alt="Save money" className="img-fluid mx-auto rounded-4" />
-                </Col>
-                <Col sm={6} className="my-3 text-justify">
-                    Un lugar donde tú, tus amigos y tu familia podéis guardar vuestros gastos diarios y realizar las cuentas como queráis.
-                </Col>
-            </Row>
+            </Container>
+            <div className="mx-auto max-width-75nbp-md">
+                <Row>
+                    <Col sm={5} className="my-4">
+                        <img src={CoupleAccounts} alt="Familia y amigos compartiendo gastos" className="img-fluid mx-auto rounded-4" />
+                    </Col>
+                    <Col sm={7} className="my-4 lead text-justify">
+                        Un lugar donde amigos y familia podéis guardar vuestros gastos diarios y realizar vuestras cuentas de forma cómoda, rápida y sencilla.
+                    </Col>
+                </Row>
+                <Row className="flex-sm-row-reverse">
+                    <Col sm={5} className="my-4">
+                        <img src={SaveMoney} alt="Ahorra dinero" className="img-fluid mx-auto rounded-4" />
+                    </Col>
+                    <Col sm={7} className="my-4 lead text-justify">
+                        Texto
+                    </Col>
+                </Row>
+            </div>
             </>
         );
     }
