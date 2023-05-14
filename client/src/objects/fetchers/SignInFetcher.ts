@@ -1,6 +1,6 @@
 import Fetcher from "./Fetcher";
 
-class SignInFetcher extends Fetcher {
+class SignInFetcher extends Fetcher<string[]> {
     private static URL: string = "/users/login";
 
     public constructor(email: string, pass: string) {

@@ -1,9 +1,9 @@
 type HTTPMethod = "GET" | "POST";
 
-abstract class Fetcher {
+abstract class Fetcher<T> {
     private url: string;
     private requestInit: RequestInit;
-    private jsonResponse: any;
+    private jsonResponse: {success: boolean, data: T} | null;
 
     protected constructor(url: string, method: HTTPMethod, requestBody: string = "") {
         this.url = url;
@@ -13,7 +13,7 @@ abstract class Fetcher {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             },
-            credentials: "include"
+            credentials: "include" //required for express sessions
         };
         if(method === "POST") {
             this.requestInit.body = requestBody;
@@ -27,7 +27,7 @@ abstract class Fetcher {
             if(!fetchResponse.ok) {
                 throw new Error(`Error HTTP ${fetchResponse.status}: ${fetchResponse.statusText}`);
             }
-            this.jsonResponse = await fetchResponse.json();
+            this.jsonResponse = <{success: boolean, data: T}>await fetchResponse.json();
             return true;
         } catch (error) {
             console.log(error);
@@ -36,11 +36,11 @@ abstract class Fetcher {
     }
 
     public success(): boolean {
-        return this.jsonResponse && this.jsonResponse.success;
+        return this.jsonResponse != null && this.jsonResponse.success;
     }
 
-    public getResponseData(): any {
-        return this.jsonResponse.data;
+    public getResponseData(): T {
+        return (this.jsonResponse as {success: boolean, data: T}).data;
     }
 }
 

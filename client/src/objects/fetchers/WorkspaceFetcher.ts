@@ -1,6 +1,7 @@
+import WorkspaceData from "../WorkspaceData";
 import Fetcher from "./Fetcher";
 
-class WorkspaceFetcher extends Fetcher {
+class WorkspaceFetcher extends Fetcher<WorkspaceData[]> {
 
     private static readonly URL_ALL: string = "/users/workspaces";
     private static readonly URL_ONE: string = "/workspace";
