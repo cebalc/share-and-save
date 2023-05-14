@@ -6,7 +6,11 @@ const userController = new UserController();
 
 router.get("/status", userController.checkStatus);
 
-router.get("/signout", userController.logout)
+router.get("/signout", userController.logout);
+
+router.get("/workspaces", userController.requireAuth, async (request, response, next) => 
+    await userController.getUserWorkspaces(request, response, next)
+);
 
 router.post("/create", userController.createUserFilters(), async (request, response, next) =>
     await userController.createUser(request, response, next)

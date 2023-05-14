@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import UserModel from "../models/UserModel";
 import { makeHash, verifyHash } from "../modules/encryption";
 import User from "../objects/User";
+import Workspace from "../objects/entities/Workspace";
 import { ValidationChain, body, validationResult } from "express-validator";
 import { globalTrim } from "../modules/sanitizers";
 import strip_tags from "striptags";
@@ -175,6 +176,25 @@ class UserController extends ServerController<UserModel> {
             response.json({success: true});
         } catch (error) {
             next(error);
+        }
+    }
+
+    public async getUserWorkspaces(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
+            let userId: number = (<User>request.session["user"]).id;
+            this.model = new UserModel();
+            let workspaces: Workspace[] = await this.model.getWorkspacesByUser(userId);
+            this.model.delete();
+            if(workspaces == null) {
+                response.json({success: false, data: []});
+                return;
+            }
+            response.json({
+                success: true,
+                data: workspaces
+            });
+        } catch (error) {
+            return next(error);
         }
     }
 }

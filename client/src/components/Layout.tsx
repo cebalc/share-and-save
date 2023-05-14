@@ -5,8 +5,8 @@ import Footer from "./Footer";
 import Container from "react-bootstrap/Container";
 
 interface LayoutProps {
-    userlevel: number,
-    username: string,
+    userLevel: number,
+    userName: string,
     fluid: boolean | "sm" | "md" | "lg" | "xl" | "xxl"
 }
 
@@ -25,7 +25,7 @@ abstract class Layout extends React.Component<LayoutProps, LayoutState> {
         return (
             <>
                 <header>
-                    <NavMenu userlevel={this.props.userlevel} username={this.props.username} />
+                    <NavMenu userLevel={this.props.userLevel} userName={this.props.userName} />
                 </header>
                 <Container fluid className="m-0 py-4" as="main">
                     <Container fluid={this.props.fluid} className="rounded-3 opacity-95 bg-light shadow-lg p-4 ms-auto my-4">

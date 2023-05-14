@@ -3,11 +3,10 @@ import Dropdown from "react-bootstrap/Dropdown";
 import DropdownToggle from "react-bootstrap/DropdownToggle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LinkContainer } from "react-router-bootstrap";
-import {Link} from "react-router-dom";
 
 interface UserDropdownProps {
-    userlevel: number,
-    username: string
+    userLevel: number,
+    userName: string
 }
 
 class UserDropdown extends React.Component<UserDropdownProps> {
@@ -43,15 +42,15 @@ class UserDropdown extends React.Component<UserDropdownProps> {
     }
 
     private getDropdownHeader(): string {
-        if(!UserDropdown.USER_LEVELS.has(this.props.userlevel)) {
+        if(!UserDropdown.USER_LEVELS.has(this.props.userLevel)) {
             return UserDropdown.MSG_USER_UNKNOWN;
         } else {
-            return `${this.props.username}: ${UserDropdown.USER_LEVELS.get(this.props.userlevel)}`;
+            return `${this.props.userName}: ${UserDropdown.USER_LEVELS.get(this.props.userLevel)}`;
         }
     }
 
     private getDropdownItems(): React.ReactNode {
-        if(UserDropdown.USER_LEVELS.has(this.props.userlevel)) {
+        if(UserDropdown.USER_LEVELS.has(this.props.userLevel)) {
             return ( 
                 <>
                 <LinkContainer to="/settings">
@@ -76,7 +75,5 @@ class UserDropdown extends React.Component<UserDropdownProps> {
         }
     }
 }
-
-
 
 export default UserDropdown;

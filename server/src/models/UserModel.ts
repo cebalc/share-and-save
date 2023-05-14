@@ -1,5 +1,6 @@
 import Model from "./Model";
 import User from "../objects/User";
+import Workspace from "../objects/entities/Workspace";
 import { OkPacket, RowDataPacket } from "mysql2";
 
 class UserModel extends Model {
@@ -23,10 +24,25 @@ class UserModel extends Model {
         let results: any = await super.preparedQuery(sqlQuery, {"email": email});
         if(!(results as boolean) || (results as RowDataPacket[]).length != 1) {
             return null;
-        } else {
-            let row = (results as RowDataPacket[])[0];
-            return new User(row.id, row.name, row.surname, row.email, row.pass, row.level);
         }
+        let row = (results as RowDataPacket[])[0];
+        return new User(row.id, row.name, row.surname, row.email, row.pass, row.level);
+    }
+
+    public async getWorkspacesByUser(userId: number): Promise<Workspace[]> {
+        let sqlQuery: string = `
+            SELECT
+                W.id AS id, W.name AS name, W.description AS description, WM.admin AS admin
+                FROM workspace W INNER JOIN workspace_members WM ON W.id = WM.workspace
+                WHERE WM.user = :userId
+                ORDER BY W.name`;
+        let results: any = await super.preparedQuery(sqlQuery, {"userId": userId});
+        if(!(results as boolean)) { //Error en la consulta
+            return null;
+        }
+        return (results as RowDataPacket[]).map(row => 
+            new Workspace(row.id, row.name, row.description, row.admin)
+        );
     }
 }
 

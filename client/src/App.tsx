@@ -51,16 +51,16 @@ class App extends React.Component<AppProps, AppState> {
     return (
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Layout fluid="md" userlevel={this.state.userLevel} username={this.state.userName} />}>
+          <Route path="/" element={<Layout fluid="md" userLevel={this.state.userLevel} userName={this.state.userName} />}>
             <Route index element={<Home />} />
             <Route path="about" element={<Home />} />
             <Route path="signin" element={<SignIn onSignIn={this.updateUserStatus.bind(this)} />} />
             <Route path="signout" element={<Home signOut onSignOut={this.updateUserStatus.bind(this)} />} />
             <Route path="register" element={<SignUp onSignUp={this.updateUserStatus.bind(this)} />} />
             <Route path="settings" element={<Home />} />
-            <Route path="dashboard" element={<Dashboard userId={this.state.userId} />} />
+            <Route path="dashboard" element={<Dashboard userId={this.state.userId} userName={this.state.userName} />} />
           </Route>
-          <Route path="*" element={<Layout fluid="sm" userlevel={3} username="Eric" />}>
+          <Route path="*" element={<Layout fluid="sm" userLevel={3} userName="Eric" />}>
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

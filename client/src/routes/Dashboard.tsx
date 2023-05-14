@@ -1,8 +1,12 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
+import WorkspaceList from "../components/WorkspaceList";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 interface DashboardProps {
-    userId: number
+    userId: number,
+    userName: string
 }
 
 interface DashboardState {
@@ -20,7 +24,6 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
 
     public constructor(props: DashboardProps | Readonly<DashboardProps>) {
         super(props);
-        console.log(props);
     }
 
     private preventAnonymousUsers(): React.ReactNode {
@@ -33,7 +36,12 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
         return (
           <>
               {this.preventAnonymousUsers()}
-              <h1>Bienvenido al área privada</h1>
+              <p className="h1">Tablero de {this.props.userName}</p>
+              <WorkspaceList userId={this.props.userId} />
+              <Row>
+                <Col sm={6}>Ajustes de usuario</Col>
+                <Col sm={6}>Cerrar sesión</Col>
+              </Row>
           </>
         );
     }

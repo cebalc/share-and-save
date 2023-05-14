@@ -25,7 +25,7 @@ abstract class Fetcher {
         try {
             let fetchResponse: Response = await fetch(this.url, this.requestInit);
             if(!fetchResponse.ok) {
-                throw new Error("Error en la petición HTTP");
+                throw new Error(`Error HTTP ${fetchResponse.status}: ${fetchResponse.statusText}`);
             }
             this.jsonResponse = await fetchResponse.json();
             return true;

@@ -8,8 +8,8 @@ import UserDropdown from "./UserDropdown";
 import LogoSnS from "../images/logo_SnS.png";
 
 interface NavMenuProps {
-    userlevel: number,
-    username: string
+    userLevel: number,
+    userName: string
 }
 
 class NavMenu extends React.Component<NavMenuProps> {
@@ -32,7 +32,7 @@ class NavMenu extends React.Component<NavMenuProps> {
                         <Nav className="ms-auto">
                             <NavMenuOption to="/about">Quiénes somos</NavMenuOption>
                             <NavMenuOption to="#contact-data" anchor>Contacto</NavMenuOption>
-                            <UserDropdown userlevel={this.props.userlevel} username={this.props.username} />
+                            <UserDropdown userLevel={this.props.userLevel} userName={this.props.userName} />
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
