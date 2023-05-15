@@ -14,25 +14,38 @@ interface HomeProps {
 }
 
 interface HomeState {
+    signedOut: boolean,
+    previousUserName: string
 }
 
 class Home extends React.Component<HomeProps, HomeState> {
 
-    private static defaultProps = {
+    static defaultProps = {
         signOut: false,
         onSignOut: () => true
     }
 
     public state: HomeState = {
+        signedOut: false,
+        previousUserName: ""
     }
 
     public constructor(props: HomeProps | Readonly<HomeProps>) {
         super(props);
+    }
+
+    public async componentDidMount(): Promise<void> {
         if(this.props.signOut) {
-            new SignOutFetcher().retrieveData().then(() => {
-                if(this.props.onSignOut !== undefined) {
-                    this.props.onSignOut();
-                }
+            let signOutFetcher: SignOutFetcher = new SignOutFetcher();
+            if(!await signOutFetcher.retrieveData()) {
+                return;
+            }
+            if(signOutFetcher.success() && this.props.onSignOut !== undefined) {
+                this.props.onSignOut();
+            }
+            this.setState({
+                signedOut: signOutFetcher.success(),
+                previousUserName: signOutFetcher.getResponseData()
             });
         }
     }
@@ -41,7 +54,13 @@ class Home extends React.Component<HomeProps, HomeState> {
         if(this.props.signOut) {
             return (
                 <Container fluid>
-                    <Alert variant="success">Sesión cerrada correctamente</Alert>
+                    <Alert variant={this.state.signedOut ? "success" : "warning"}>
+                        {this.state.previousUserName.length > 0 ? 
+                            `Tu sesión se ha cerrada correctamente, ${this.state.previousUserName}.`
+                            :
+                            "No había ninguna sesión iniciada."
+                        }
+                    </Alert>
                 </Container>
             );
         }

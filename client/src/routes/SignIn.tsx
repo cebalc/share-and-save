@@ -67,12 +67,10 @@ class SignIn extends React.Component<SignInProps, SignInState> {
             return;
         }
         let responseData: string[] = fetcher.getResponseData();
-        if(!fetcher.success()) {
-            this.setState({errors: responseData});
-        } else {
+        if(fetcher.success()) {
             await this.props.onSignIn();
-            this.setState({errors: [], signedIn: true});
         }
+        this.setState({errors: responseData, signedIn: fetcher.success()});
     }
 }
 

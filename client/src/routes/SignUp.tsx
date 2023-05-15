@@ -2,7 +2,7 @@ import React from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert"
-import SignUpFetcher from "../objects/fetchers/SignUpFetcher";
+import SignUpFetcher, { SignUpResponse } from "../objects/fetchers/SignUpFetcher";
 import { Navigate } from "react-router-dom";
 
 interface SignUpProps {
@@ -97,16 +97,16 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
         if(!await fetcher.retrieveData()) {
             return;
         }
-        let responseData: any = fetcher.getResponseData();
+        let responseData: SignUpResponse = fetcher.getResponseData();
         if(fetcher.success()) {
             await this.props.onSignUp();
         }
         this.setState({
-            nameError: responseData.name !== undefined ? responseData.name : "",
-            surnameError: responseData.surname !== undefined ? responseData.surname : "",
-            emailError: responseData.email !== undefined ? responseData.email : "",
-            passError: responseData.pass !== undefined ? responseData.pass : "",
-            formError: responseData.global !== undefined ? responseData.global : "",
+            nameError: responseData.name,
+            surnameError: responseData.surname,
+            emailError: responseData.email,
+            passError: responseData.pass,
+            formError: responseData.global,
             signedUp: fetcher.success()
         });
     }

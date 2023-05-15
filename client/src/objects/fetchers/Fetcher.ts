@@ -1,9 +1,14 @@
 type HTTPMethod = "GET" | "POST";
 
+interface JSONResponse<T> {
+    success: boolean,
+    data: T
+}
+
 abstract class Fetcher<T> {
     private url: string;
     private requestInit: RequestInit;
-    private jsonResponse: {success: boolean, data: T} | null;
+    private jsonResponse: JSONResponse<T> | null;
 
     protected constructor(url: string, method: HTTPMethod, requestBody: string = "") {
         this.url = url;
@@ -27,7 +32,7 @@ abstract class Fetcher<T> {
             if(!fetchResponse.ok) {
                 throw new Error(`Error HTTP ${fetchResponse.status}: ${fetchResponse.statusText}`);
             }
-            this.jsonResponse = <{success: boolean, data: T}>await fetchResponse.json();
+            this.jsonResponse = <JSONResponse<T>>await fetchResponse.json();
             return true;
         } catch (error) {
             console.log(error);
@@ -40,7 +45,7 @@ abstract class Fetcher<T> {
     }
 
     public getResponseData(): T {
-        return (this.jsonResponse as {success: boolean, data: T}).data;
+        return (this.jsonResponse as JSONResponse<T>).data;
     }
 }
 

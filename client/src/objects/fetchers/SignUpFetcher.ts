@@ -1,6 +1,14 @@
 import Fetcher from "./Fetcher";
 
-class SignUpFetcher extends Fetcher {
+interface SignUpResponse {
+    name: string,
+    surname: string,
+    email: string,
+    pass: string,
+    global: string
+}
+
+class SignUpFetcher extends Fetcher<SignUpResponse> {
     private static URL = "/users/create";
     public constructor(name: string, surname: string, email: string, pass: string) {
         super(SignUpFetcher.URL, "POST", JSON.stringify({
@@ -13,3 +21,4 @@ class SignUpFetcher extends Fetcher {
 }
 
 export default SignUpFetcher;
+export type { SignUpResponse };

@@ -7,6 +7,9 @@ import Workspace from "../objects/entities/Workspace";
 import { ValidationChain, body, validationResult } from "express-validator";
 import { globalTrim } from "../modules/sanitizers";
 import strip_tags from "striptags";
+import SignInResponse from "../objects/responses/SignInResponse";
+import SignUpResponse from "../objects/responses/SignUpResponse";
+import SignOutResponse from "../objects/responses/SignOutResponse";
 
 class UserController extends ServerController<UserModel> {
     private static MSG_NO_USER: string = "No existe ningún usuario asociado al email introducido."
@@ -59,15 +62,12 @@ class UserController extends ServerController<UserModel> {
             let errors = validationResult(request);
             if(!errors.isEmpty()) {
                 let errorsObject = errors.mapped();
-                response.json({
-                    success: false,
-                    data: {
-                        name: (errorsObject.name !== undefined ? errorsObject.name.msg : ""),
-                        surname: (errorsObject.surname !== undefined ? errorsObject.surname.msg : ""),
-                        email: (errorsObject.email !== undefined ? errorsObject.email.msg : ""),
-                        pass: (errorsObject.pass !== undefined ? errorsObject.pass.msg : "")
-                    }
-                });
+                response.json(new SignUpResponse(false, 
+                    errorsObject.name !== undefined ? errorsObject.name.msg : "",
+                    errorsObject.surname !== undefined ? errorsObject.surname.msg : "",
+                    errorsObject.email !== undefined ? errorsObject.email.msg : "",
+                    errorsObject.pass !== undefined ? errorsObject.pass.msg : ""
+                ));
                 return;
             }
 
@@ -81,12 +81,7 @@ class UserController extends ServerController<UserModel> {
             let emailExists: boolean = await this.model.emailExists(email);
             if (emailExists) {
                 this.model.delete();
-                response.json({
-                    success: false,
-                    data: {
-                        email: "El email introducido ya existe. Escoge otro."
-                    }
-                });
+                response.json(new SignUpResponse(false, "", "", "El email introducido ya existe. Escoge otro."));
                 return;
             }
 
@@ -97,12 +92,7 @@ class UserController extends ServerController<UserModel> {
                 request.session["user"] = newUser;
             }
             this.model.delete();
-            response.json({
-                success: success,
-                data: {
-                    global: success ? "" : "El usuario no ha podido crearse"
-                }
-            });
+            response.json(new SignUpResponse(success, "", "", "", "", success ? "" : "El usuario no ha podido crearse"));
         } catch (error) {
             return next(error);
         }
@@ -131,10 +121,7 @@ class UserController extends ServerController<UserModel> {
         try {
             let errors = validationResult(request);
             if(!errors.isEmpty()) {
-                response.json({
-                    success: false,
-                    data: errors.array().map(error => error.msg)
-                });
+                response.json(new SignInResponse(false, errors.array().map(error => error.msg)));
                 return;
             }
 
@@ -146,24 +133,15 @@ class UserController extends ServerController<UserModel> {
             this.model.delete();
 
             if (user == null) {
-                response.json({
-                    success: false,
-                    data: new Array<string>(UserController.MSG_NO_USER)
-                });
+                response.json(new SignInResponse(false, new Array<string>(UserController.MSG_NO_USER)));
                 return;
             }
             let passMatches: boolean = await verifyHash(pass, user.pass);
             if (!passMatches) {
-                response.json({
-                    success: false,
-                    data: new Array<string>(UserController.MSG_INV_PASS)
-                });
+                response.json(new SignInResponse(false, new Array<string>(UserController.MSG_INV_PASS)));
             } else {
                 request.session["user"] = user;
-                response.json({
-                    success: true,
-                    data: user.id
-                });
+                response.json(new SignInResponse(true));
             }
         } catch(error) {
             return next(error);
@@ -172,8 +150,12 @@ class UserController extends ServerController<UserModel> {
 
     public logout(request: Request, response: Response, next: NextFunction): void {
         try {
+            let userName: string = "";
+            if(request.session["user"] !== undefined) {
+                userName = (<User>request.session["user"]).name;
+            }
             request.session.destroy(null);
-            response.json({success: true});
+            response.json(new SignOutResponse(userName.length > 0, userName));
         } catch (error) {
             next(error);
         }

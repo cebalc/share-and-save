@@ -1,6 +1,6 @@
 import Fetcher from "./Fetcher";
 
-class SignOutFetcher extends Fetcher {
+class SignOutFetcher extends Fetcher<string> {
     private static URL: string = "/users/signout";
 
     public constructor() {
