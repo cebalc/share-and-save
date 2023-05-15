@@ -19,7 +19,7 @@ class UserController extends ServerController<UserModel> {
     public checkStatus(request: Request, response: Response): void {
         let userPublicInfo: UserPublicInfo = User.getDefaultUserPublicInfo();
         if(request.session["user"] !== undefined) {
-            userPublicInfo = (<User>request.session["user"]).getPublicInfo();
+            userPublicInfo = User.extractUserPublicInfo(request.session["user"]);
         }
         response.json(new StatusResponse(true, userPublicInfo));
     }

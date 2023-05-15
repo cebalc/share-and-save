@@ -3,6 +3,8 @@ import { Navigate } from "react-router-dom";
 import WorkspaceList from "../components/WorkspaceList";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
+import {LinkContainer} from "react-router-bootstrap";
 
 interface DashboardProps {
     userId: number,
@@ -36,11 +38,19 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
         return (
           <>
               {this.preventAnonymousUsers()}
-              <p className="h1">Tablero de {this.props.userName}</p>
+              <p className="h1 text-center">Tablero de {this.props.userName}</p>
               <WorkspaceList userId={this.props.userId} />
               <Row>
-                <Col sm={6}>Ajustes de usuario</Col>
-                <Col sm={6}>Cerrar sesión</Col>
+                <Col sm={6} className="d-flex justify-content-center">
+                    <LinkContainer to="/settings">
+                        <Button variant="outline-primary">Ajustes de usuario</Button>
+                    </LinkContainer>
+                </Col>
+                <Col sm={6} className="d-flex justify-content-center">
+                    <LinkContainer to="/signout">
+                        <Button variant="outline-primary">Cerrar sesión</Button>
+                    </LinkContainer>
+                </Col>
               </Row>
           </>
         );

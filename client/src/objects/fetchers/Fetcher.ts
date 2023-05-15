@@ -32,7 +32,7 @@ abstract class Fetcher<T> {
             if(!fetchResponse.ok) {
                 throw new Error(`Error HTTP ${fetchResponse.status}: ${fetchResponse.statusText}`);
             }
-            this.jsonResponse = <JSONResponse<T>>await fetchResponse.json();
+            this.jsonResponse = await fetchResponse.json() as JSONResponse<T>;
             return true;
         } catch (error) {
             console.log(error);

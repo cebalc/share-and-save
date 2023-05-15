@@ -44,7 +44,7 @@ class Home extends React.Component<HomeProps, HomeState> {
                 await this.props.onSignOut();
             }
             this.setState({
-                signedOut: signOutFetcher.success(),
+                signedOut: true,
                 previousUserName: signOutFetcher.getResponseData()
             });
         }
@@ -52,15 +52,16 @@ class Home extends React.Component<HomeProps, HomeState> {
 
     private renderSignOutAlert(): React.ReactNode {
         if(this.props.signOut) {
+            let userExisted: boolean = (this.state.previousUserName.length > 0);
             return (
                 <Container fluid>
-                    <Alert variant={this.state.signedOut ? "success" : "warning"}>
-                        {this.state.previousUserName.length > 0 ? 
-                            `Tu sesión se ha cerrada correctamente, ${this.state.previousUserName}.`
+                    {this.state.signedOut &&
+                        (userExisted ?
+                            <Alert variant="success">Tu sesión se ha cerrado correctamente, {this.state.previousUserName}</Alert>
                             :
-                            "No había ninguna sesión iniciada."
-                        }
-                    </Alert>
+                            <Alert variant="info">No había ninguna sesión iniciada</Alert>
+                        )
+                    }
                 </Container>
             );
         }

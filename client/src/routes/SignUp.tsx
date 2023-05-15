@@ -81,7 +81,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
                     <Form.Control type="password" onChange={event => this.setState({pass: event.target.value})} />
                     <Form.Text className="text-danger">{this.state.passError}</Form.Text>
                 </Form.Group>
-                <Button variant="success" onClick={() => this.sendUserData()}>Enviar</Button>
+                <Button variant="outline-primary" onClick={() => this.sendUserData()}>Enviar</Button>
             </Form>
             </>
         );

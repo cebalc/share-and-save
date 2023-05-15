@@ -50,13 +50,13 @@ class SignIn extends React.Component<SignInProps, SignInState> {
                     <Form.Control type="password" 
                         onChange={event => this.setState({pass: event.target.value})} 
                         onKeyDown={event => {
-                            if(event.key == "Enter") {
+                            if(event.key === "Enter") {
                                 event.preventDefault();
                                 this.checkUserData();
                             }
                         }} />
                 </Form.Group>
-                <Button variant="success" onClick={() => this.checkUserData()}>Enviar</Button>
+                <Button variant="outline-primary" onClick={() => this.checkUserData()}>Enviar</Button>
             </Form>
         );
     }

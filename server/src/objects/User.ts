@@ -20,6 +20,14 @@ class User {
         };
     }
 
+    public static extractUserPublicInfo(user: any): UserPublicInfo {
+        return <UserPublicInfo>{
+            userId: (user.id === undefined ? 0 : user.id),
+            userName: (user.name === undefined ? "" : user.name),
+            userLevel: (user.level === undefined ? this.ANONYMOUS : user.level)
+        };
+    }
+
     public id: number;
     public name: string;
     public surname: string;

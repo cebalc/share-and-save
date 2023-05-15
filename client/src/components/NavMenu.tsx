@@ -22,7 +22,7 @@ class NavMenu extends React.Component<NavMenuProps> {
         return (
             <Navbar bg="primary" expand="md" variant="dark">
                 <Container fluid>
-                    <LinkContainer to="/">
+                    <LinkContainer to={this.props.userLevel > 0 ? "/dashboard" : "/"}>
                         <Navbar.Brand title="Home">
                             <img src={LogoSnS} alt="S&S" className="brand-logo" />
                         </Navbar.Brand>
