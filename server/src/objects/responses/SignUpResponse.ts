@@ -1,6 +1,6 @@
 import JSONResponse from "./JSONResponse";
 
-interface SignUpResponse {
+interface ISignUpResponse {
     name: string,
     surname: string,
     email: string,
@@ -8,10 +8,10 @@ interface SignUpResponse {
     global: string
 }
 
-class SignUpResponse extends JSONResponse<SignUpResponse> {
+class SignUpResponse extends JSONResponse<ISignUpResponse> {
     
     public constructor(success: boolean, name: string = "", surname: string = "", email: string = "", pass: string = "", global: string = "") {
-        super(success, <SignUpResponse>{name, surname, email, pass, global});
+        super(success, <ISignUpResponse>{name, surname, email, pass, global});
     }
 }
 

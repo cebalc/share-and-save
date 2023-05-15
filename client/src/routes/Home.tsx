@@ -41,7 +41,7 @@ class Home extends React.Component<HomeProps, HomeState> {
                 return;
             }
             if(signOutFetcher.success() && this.props.onSignOut !== undefined) {
-                this.props.onSignOut();
+                await this.props.onSignOut();
             }
             this.setState({
                 signedOut: signOutFetcher.success(),

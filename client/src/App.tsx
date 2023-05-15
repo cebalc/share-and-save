@@ -37,13 +37,9 @@ class App extends React.Component<AppProps, AppState> {
     if(!await statusFetcher.retrieveData()) {
       return;
     }
-    let responseData = statusFetcher.getResponseData();
+    let responseData: AppState = statusFetcher.getResponseData();
     if(statusFetcher.success()) {
-      this.setState({
-        userId: responseData.userId,
-        userLevel: responseData.userLevel,
-        userName: responseData.userName
-      });
+      this.setState(responseData);
     }
   }
 
@@ -70,3 +66,4 @@ class App extends React.Component<AppProps, AppState> {
 }
 
 export default App;
+export type { AppState };

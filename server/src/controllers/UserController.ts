@@ -2,7 +2,7 @@ import ServerController from "./ServerController";
 import { NextFunction, Request, Response } from "express";
 import UserModel from "../models/UserModel";
 import { makeHash, verifyHash } from "../modules/encryption";
-import User from "../objects/User";
+import User, {UserPublicInfo} from "../objects/User";
 import Workspace from "../objects/entities/Workspace";
 import { ValidationChain, body, validationResult } from "express-validator";
 import { globalTrim } from "../modules/sanitizers";
@@ -10,25 +10,18 @@ import strip_tags from "striptags";
 import SignInResponse from "../objects/responses/SignInResponse";
 import SignUpResponse from "../objects/responses/SignUpResponse";
 import SignOutResponse from "../objects/responses/SignOutResponse";
+import StatusResponse from "../objects/responses/StatusResponse";
 
 class UserController extends ServerController<UserModel> {
     private static MSG_NO_USER: string = "No existe ningún usuario asociado al email introducido."
     private static MSG_INV_PASS: string = "La contraseña introducida no es correcta.";
 
     public checkStatus(request: Request, response: Response): void {
-        let userId: number = 0;
-        let userLevel: number = User.ANONYMOUS;
-        let userName: string = "";
-        let user: User = <User>request.session["user"];
-        if(user !== undefined) {
-            userId = user.id;
-            userLevel = user.level;
-            userName = user.name;
+        let userPublicInfo: UserPublicInfo = User.getDefaultUserPublicInfo();
+        if(request.session["user"] !== undefined) {
+            userPublicInfo = (<User>request.session["user"]).getPublicInfo();
         }
-        response.json({
-            success: true,
-            data: { userId, userLevel, userName }
-        });
+        response.json(new StatusResponse(true, userPublicInfo));
     }
 
     public createUserFilters(): ValidationChain[] {

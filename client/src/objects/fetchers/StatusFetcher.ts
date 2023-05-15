@@ -1,6 +1,7 @@
 import Fetcher from "./Fetcher";
+import { AppState } from "../../App";
 
-class StatusFetcher extends Fetcher {
+class StatusFetcher extends Fetcher<AppState> {
 
     private static URL: string = "/users/status"
 
