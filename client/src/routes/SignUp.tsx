@@ -57,7 +57,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
         return (
             <>
             {this.redirectIfSignedUp()}
-            <h1>Registro de nuevo usuario</h1>
+            <p className="h1 text-center">Registro de nuevo usuario</p>
             <div>Rellena el siguiente formulario para crear una cuenta de usuario gratuita en Share and Save.</div>
             {this.showFormError()}
             <Form>

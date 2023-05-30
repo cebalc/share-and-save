@@ -2,7 +2,7 @@ import { Router } from "express";
 import UserController from "../controllers/UserController";
 
 const router = Router();
-const userController = new UserController();
+const userController: UserController = new UserController();
 
 router.get("/status", userController.checkStatus);
 

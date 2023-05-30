@@ -7,6 +7,7 @@ import NotFound from './routes/NotFound';
 import SignIn from "./routes/SignIn";
 import SignUp from "./routes/SignUp";
 import Dashboard from "./routes/Dashboard";
+import CreateWorkspace from "./routes/CreateWorkspace";
 
 interface AppProps {
 }
@@ -55,6 +56,7 @@ class App extends React.Component<AppProps, AppState> {
             <Route path="register" element={<SignUp onSignUp={this.updateUserStatus.bind(this)} />} />
             <Route path="settings" element={<Home />} />
             <Route path="dashboard" element={<Dashboard userId={this.state.userId} userName={this.state.userName} />} />
+            <Route path="createworkspace" element={<CreateWorkspace />} />
           </Route>
           <Route path="*" element={<Layout fluid="sm" userLevel={3} userName="Eric" />}>
             <Route path="*" element={<NotFound />} />

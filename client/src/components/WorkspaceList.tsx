@@ -1,6 +1,6 @@
 import React from "react";
 import WorkspaceData from "../objects/WorkspaceData";
-import WorkspaceFetcher from "../objects/fetchers/WorkspaceFetcher";
+import ReadWorkspaceFetcher from "../objects/fetchers/ReadWorkspaceFetcher";
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import Alert from "react-bootstrap/Alert";
@@ -17,7 +17,7 @@ interface WorkspaceListState {
 
 class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListState> {
 
-    private static readonly MSG_ERR_WORKSPACES = "Ha ocurrido un problema al cargar los espacios de trabajo";
+    private static readonly MSG_ERR_WORKSPACES: string = "Ha ocurrido un problema al cargar los espacios de trabajo";
 
     public state: WorkspaceListState = {
         workspaceListError: false,
@@ -33,7 +33,7 @@ class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListSta
     }
 
     private async getUserWorkspaceList(): Promise<void> {
-        let fetcher: WorkspaceFetcher = new WorkspaceFetcher();
+        let fetcher: ReadWorkspaceFetcher = new ReadWorkspaceFetcher();
         if(!await fetcher.retrieveData()) {
             return;
         }

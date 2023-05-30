@@ -1,4 +1,4 @@
-type HTTPMethod = "GET" | "POST";
+type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 interface JSONResponse<T> {
     success: boolean,
@@ -20,7 +20,7 @@ abstract class Fetcher<T> {
             },
             credentials: "include" //required for express sessions
         };
-        if(method === "POST") {
+        if(method === "POST" || method === "PUT") {
             this.requestInit.body = requestBody;
         };
         this.jsonResponse = null;
