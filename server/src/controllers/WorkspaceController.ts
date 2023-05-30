@@ -18,7 +18,6 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
             this.model = new WorkspaceModel();
 
             let workspaceNameExists: boolean = await this.model.workspaceNameExists(userId, name);
-            console.table(workspaceNameExists);
             if(workspaceNameExists) {
                 this.model.delete();
                 response.json(new CreateWorkspaceResponse(false, WorkspaceController.MSG_NAME_EXISTS));

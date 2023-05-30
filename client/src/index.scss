@@ -5,6 +5,11 @@ $nav-link-font-weight: bold;
     height: 3.5rem;
 }
 
+.main-logo {
+    max-height: 50vw;
+    width: auto;
+}
+
 main {
     background-image: url("images/background.jpg");
     background-size: cover;

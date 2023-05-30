@@ -41,12 +41,12 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
               <p className="h1 text-center">Tablero de {this.props.userName}</p>
               <WorkspaceList userId={this.props.userId} />
               <Row>
-                <Col sm={6} className="d-flex justify-content-center">
+                <Col sm={6} className="d-flex justify-content-center my-2">
                     <LinkContainer to="/settings">
                         <Button variant="outline-primary">Ajustes de usuario</Button>
                     </LinkContainer>
                 </Col>
-                <Col sm={6} className="d-flex justify-content-center">
+                <Col sm={6} className="d-flex justify-content-center my-2">
                     <LinkContainer to="/signout">
                         <Button variant="outline-primary">Cerrar sesión</Button>
                     </LinkContainer>

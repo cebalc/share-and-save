@@ -11,8 +11,6 @@ class WorkspaceModel extends Model {
         let sqlQuery: string = `SELECT Count(W.id) AS wscount FROM workspace W INNER JOIN workspace_members WM
                 ON W.id = WM.workspace WHERE WM.user = :userId AND W.name = :name`;
         let results: any = await this.preparedQuery(sqlQuery, {"userId": userId, "name": name});
-        console.log(results);
-        console.log(typeof results);
         return !(<boolean>results) || (<RowDataPacket[]>results)[0].wscount === 1;
     }
 

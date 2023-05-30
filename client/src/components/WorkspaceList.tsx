@@ -5,6 +5,8 @@ import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import Alert from "react-bootstrap/Alert";
 import { LinkContainer } from "react-router-bootstrap";
+import Button from "react-bootstrap/Button";
+import {Link} from "react-router-dom";
 
 interface WorkspaceListProps {
     userId: number
@@ -67,20 +69,18 @@ class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListSta
 
     private renderTable(): React.ReactNode {
         return (
-            <Table striped hover bordered responsive="sm">
+            <Table striped hover bordered responsive>
                 <thead>
                 <tr>
                     <th>Nombre</th>
                     <th>Descripción</th>
-                    <th>Opciones</th>
                 </tr>
                 </thead>
                 <tbody>
                 {this.state.workspaces.map(workspace =>
-                    <tr>
-                        <td>{workspace.name}</td>
+                    <tr key={workspace.id}>
+                        <td><Link to={`/workspace?id=${workspace.id}`}>{workspace.name}</Link></td>
                         <td>{workspace.description}</td>
-                        <td>(Opciones)</td>
                     </tr>
                 )}
                 </tbody>
@@ -88,16 +88,27 @@ class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListSta
         );
     }
 
+    private renderButton(): React.ReactNode {
+        return (
+            <Container fluid className="d-flex justify-content-center my-2">
+                <LinkContainer to="/createworkspace">
+                    <Button variant="outline-primary" className="d-block">Crear nuevo espacio</Button>
+                </LinkContainer>
+            </Container>
+        );
+    }
+
     public render(): React.ReactNode {
         return (
             <Container fluid className="my-5">
-                <p className="h2">Espacios de trabajo</p>
+                <p className="h2 my-3">Espacios de trabajo</p>
                 {this.state.workspaceListError && this.renderError()}
                 {this.state.workspaces.length === 0 ?
                     this.renderEmptyList()
                     :
                     this.renderTable()
                 }
+                {this.renderButton()}
             </Container>
         );
     }

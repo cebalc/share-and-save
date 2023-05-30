@@ -74,7 +74,7 @@ class Home extends React.Component<HomeProps, HomeState> {
             <Container className="my-3">
                 <Col className="text-center d-flex flex-column align-items-middle">
                     <p className="h1">Share and Save</p>
-                    <img src={LogoSnS} alt="S&S" className="d-block mx-auto" />
+                    <img src={LogoSnS} alt="S&S" className="d-block mx-auto main-logo" />
                     <p className="h5">Compartir experiencias nunca fue tan divertido</p>
                 </Col>
             </Container>
