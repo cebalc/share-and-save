@@ -2,11 +2,11 @@ import React from "react";
 import WorkspaceData from "../objects/WorkspaceData";
 import ReadWorkspaceFetcher from "../objects/fetchers/ReadWorkspaceFetcher";
 import Container from "react-bootstrap/Container";
-import Table from "react-bootstrap/Table";
 import Alert from "react-bootstrap/Alert";
 import { LinkContainer } from "react-router-bootstrap";
 import Button from "react-bootstrap/Button";
-import {Link} from "react-router-dom";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 interface WorkspaceListProps {
     userId: number
@@ -58,39 +58,38 @@ class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListSta
 
     private renderEmptyList(): React.ReactNode {
         return (
-            <Alert variant="info">
-                Todavía no existen espacios de trabajo.&nbsp;
-                <LinkContainer to="/createworkspace">
-                    <Alert.Link>Crea uno nuevo.</Alert.Link>
-                </LinkContainer>
-            </Alert>
+            <Alert variant="info">Todavía no existen espacios de trabajo.</Alert>
         );
     }
 
     private renderTable(): React.ReactNode {
         return (
-            <Table striped hover bordered responsive>
-                <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                </tr>
-                </thead>
-                <tbody>
+            <div className="mx-auto max-width-75nbp-md opacity-100 bg-light rounded-4">
+                <Row className="d-none d-md-flex bg-primary text-light p-2">
+                    <Col md={4} className="fw-bold p-1">Nombre</Col>
+                    <Col md={8} className="fw-bold p-1">Descripción</Col>
+                </Row>
                 {this.state.workspaces.map(workspace =>
-                    <tr key={workspace.id}>
-                        <td><Link to={`/workspace?id=${workspace.id}`}>{workspace.name}</Link></td>
-                        <td>{workspace.description}</td>
-                    </tr>
+                    <LinkContainer to={{pathname: "/workspace", search: `id=${workspace.id}`}} key={workspace.id} className="clickable">
+                        <Row key={workspace.id} className="table-row p-3">
+                            <Col md={4} className="p-1">
+                                <div className="d-block d-md-none mb-2 fw-bold">Nombre</div>
+                                <div>{workspace.name}</div>
+                            </Col>
+                            <Col md={8} className="p-1">
+                                <div className="d-block d-md-none mb-2 fw-bold">Descripción</div>
+                                <div>{workspace.description}</div>
+                            </Col>
+                        </Row>
+                    </LinkContainer>
                 )}
-                </tbody>
-            </Table>
-        );
+            </div>
+        )
     }
 
     private renderButton(): React.ReactNode {
         return (
-            <Container fluid className="d-flex justify-content-center my-2">
+            <Container fluid className="d-flex justify-content-center my-3">
                 <LinkContainer to="/createworkspace">
                     <Button variant="outline-primary" className="d-block">Crear nuevo espacio</Button>
                 </LinkContainer>
@@ -101,7 +100,7 @@ class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListSta
     public render(): React.ReactNode {
         return (
             <Container fluid className="my-5">
-                <p className="h2 my-3">Espacios de trabajo</p>
+                <p className="h2 my-3 text-center">Espacios de trabajo</p>
                 {this.state.workspaceListError && this.renderError()}
                 {this.state.workspaces.length === 0 ?
                     this.renderEmptyList()

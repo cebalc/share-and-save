@@ -36,28 +36,32 @@ class SignIn extends React.Component<SignInProps, SignInState> {
 
     public render(): React.ReactNode {
         return (
-            <Form>
-                {this.redirectIfSignedIn()}
-                {this.state.errors.map((error: string, index: number) =>
-                    <Alert key={index} variant="danger">{error}</Alert>
-                )}
-                <Form.Group className="mb-3" controlId="email">
-                    <Form.Label>E-mail</Form.Label>
-                    <Form.Control type="email" placeholder="tucorreo@servidor.com" onChange={event => this.setState({email: event.target.value})} />
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="pass">
-                    <Form.Label>Contraseña</Form.Label>
-                    <Form.Control type="password" 
-                        onChange={event => this.setState({pass: event.target.value})} 
-                        onKeyDown={event => {
-                            if(event.key === "Enter") {
-                                event.preventDefault();
-                                this.checkUserData();
-                            }
-                        }} />
-                </Form.Group>
-                <Button variant="outline-primary" onClick={() => this.checkUserData()}>Enviar</Button>
-            </Form>
+            <div className="max-width-50nbp-sm mx-auto">
+                <p className="h1 text-center mb-4">Iniciar sesión</p>
+                <Form>
+                    {this.redirectIfSignedIn()}
+                    {this.state.errors.map((error: string, index: number) =>
+                        <Alert key={index} variant="danger">{error}</Alert>
+                    )}
+                    <Form.Group className="mb-3" controlId="email">
+                        <Form.Label>E-mail</Form.Label>
+                        <Form.Control type="email" placeholder="tucorreo@servidor.com" onChange={event => this.setState({email: event.target.value})} />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="pass">
+                        <Form.Label>Contraseña</Form.Label>
+                        <Form.Control type="password"
+                                      onChange={event => this.setState({pass: event.target.value})}
+                                      onKeyDown={event => {
+                                          if(event.key === "Enter") {
+                                              event.preventDefault();
+                                              this.checkUserData();
+                                          }
+                                      }} />
+                    </Form.Group>
+                    <Button variant="outline-primary" onClick={() => this.checkUserData()}>Enviar</Button>
+                </Form>
+            </div>
+
         );
     }
 
