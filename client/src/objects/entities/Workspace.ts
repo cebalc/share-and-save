@@ -1,4 +1,4 @@
-class WorkspaceData {
+class Workspace {
     public id: number;
     public name: string;
     public description: string;
@@ -12,4 +12,4 @@ class WorkspaceData {
     }
 }
 
-export default WorkspaceData;
+export default Workspace;

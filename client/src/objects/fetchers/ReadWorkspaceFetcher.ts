@@ -1,19 +1,21 @@
-import WorkspaceData from "../WorkspaceData";
+import Workspace from "../entities/Workspace";
 import Fetcher from "./Fetcher";
 
-class ReadWorkspaceFetcher extends Fetcher<WorkspaceData[]> {
+class ReadWorkspaceFetcher extends Fetcher<Workspace[]> {
 
-    private static readonly URL_ALL: string = "/users/workspaces";
-    private static readonly URL_ONE: string = "/workspaces";
     private static readonly NO_ID: number = 0;
+    private static readonly URL_BASE: string = "/workspaces";
+
+    private static buildURL(workspaceId: number): string {
+        let fetchURL: string = this.URL_BASE;
+        if(workspaceId > ReadWorkspaceFetcher.NO_ID) {
+            fetchURL += `/${workspaceId}`;
+        }
+        return fetchURL;
+    }
 
     public constructor(workspaceId: number = ReadWorkspaceFetcher.NO_ID) {
-        super(
-            workspaceId > ReadWorkspaceFetcher.NO_ID ?
-                `${ReadWorkspaceFetcher.URL_ONE}/${workspaceId}`
-                :
-                ReadWorkspaceFetcher.URL_ALL,
-            "GET");
+        super(ReadWorkspaceFetcher.buildURL(workspaceId), "GET");
     }
 }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import WorkspaceData from "../objects/WorkspaceData";
+import Workspace from "../objects/entities/Workspace";
 import ReadWorkspaceFetcher from "../objects/fetchers/ReadWorkspaceFetcher";
 import Container from "react-bootstrap/Container";
 import Alert from "react-bootstrap/Alert";
@@ -14,7 +14,7 @@ interface WorkspaceListProps {
 
 interface WorkspaceListState {
     workspaceListError: boolean,
-    workspaces: WorkspaceData[]
+    workspaces: Workspace[]
 }
 
 class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListState> {
@@ -39,7 +39,7 @@ class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListSta
         if(!await fetcher.retrieveData()) {
             return;
         }
-        let responseData: WorkspaceData[] = fetcher.getResponseData();
+        let responseData: Workspace[] = fetcher.getResponseData();
         if(!fetcher.success()) {
             this.setState({workspaceListError: true});
             return;

@@ -1,9 +1,6 @@
 import Model from "./Model";
 import Workspace from "../objects/entities/Workspace";
-import {OkPacket, RowDataPacket} from "mysql2";
-import workspace from "../objects/entities/Workspace";
-import user from "../objects/User";
-import {create} from "domain";
+import { OkPacket, RowDataPacket } from "mysql2";
 
 class WorkspaceModel extends Model {
 
@@ -32,6 +29,22 @@ class WorkspaceModel extends Model {
         }
         let row: RowDataPacket = (<RowDataPacket[]>mainResult)[0];
         return new Workspace(workspaceId, row.name, row.description, row.admin);
+    }
+
+    public async getWorkspacesByUser(userId: number): Promise<Workspace[]> {
+        let sqlQuery: string = `
+            SELECT
+                W.id AS id, W.name AS name, W.description AS description, WM.admin AS admin
+                FROM workspace W INNER JOIN workspace_members WM ON W.id = WM.workspace
+                WHERE WM.user = :userId
+                ORDER BY W.name`;
+        let results: any = await super.preparedQuery(sqlQuery, {"userId": userId});
+        if(!<boolean>results) { //Error en la consulta
+            return null;
+        }
+        return (<RowDataPacket[]>results).map(row =>
+            new Workspace(row.id, row.name, row.description, row.admin)
+        );
     }
 
     public async createWorkspace(userId: number, name: string, description: string): Promise<Workspace> {

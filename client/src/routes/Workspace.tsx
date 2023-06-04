@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import WorkspaceData from "../objects/WorkspaceData";
+import WorkspaceEntity from "../objects/entities/Workspace";
 import WorkspaceUsersForm from "../components/WorkspaceUsersForm";
 import WorkspaceDetailsForm from "../components/WorkspaceDetailsForm";
 import { useParams } from "react-router-dom";
@@ -34,7 +34,7 @@ const Workspace = (props: WorkspaceProps) : JSX.Element => {
                 if (!retrieved) {
                     return Promise.reject(retrieved);
                 }
-                let responseData: WorkspaceData = fetcher.getResponseData()[0];
+                let responseData: WorkspaceEntity = fetcher.getResponseData()[0];
                 if(fetcher.success()) {
                     setName(responseData.name);
                     setDescription(responseData.description);
