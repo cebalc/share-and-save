@@ -4,11 +4,25 @@ import WorkspaceModel from "../models/WorkspaceModel";
 import Workspace from "../objects/entities/Workspace";
 import User from "../objects/User";
 import CreateWorkspaceResponse from "../objects/responses/CreateWorkspaceResponse";
+import ReadWorkspaceResponse from "../objects/responses/ReadWorkspaceResponse";
 
 class WorkspaceController extends ServerController<WorkspaceModel> {
 
     private static readonly MSG_NAME_EXISTS: string = "Ya tienes un espacio de trabajo con ese nombre. Usa otro.";
     private static readonly MSG_NOT_CREATED: string = "El espacio de trabajo no ha podido crearse.";
+
+    public async getWorkspaceDetails(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
+            let workspaceId: number = parseInt(request.params.id);
+            let userId: number = (<User>request.session["user"]).id;
+            this.model = new WorkspaceModel();
+            let workspace: Workspace = await this.model.getWorkspaceProperties(workspaceId, userId);
+            this.model.delete();
+            response.json(new ReadWorkspaceResponse(workspace != null, [workspace]));
+        } catch (error) {
+            next(error);
+        }
+    }
 
     public async createWorkspace(request: Request, response: Response, next: NextFunction): Promise<void> {
         try {

@@ -22,6 +22,18 @@ class WorkspaceModel extends Model {
         return true;
     }
 
+    public async getWorkspaceProperties(workspaceId: number, userId: number): Promise<Workspace> {
+        let mainSqlQuery: string = `SELECT W.name, W.description, WM.admin FROM workspace W
+                                        INNER JOIN workspace_members WM on W.id = WM.workspace
+                                        WHERE W.id = :workspaceId AND WM.user = :userId`;
+        let mainResult: any = await this.preparedQuery(mainSqlQuery, {"workspaceId": workspaceId, "userId": userId});
+        if(!<boolean>mainResult || (<RowDataPacket[]>mainResult).length != 1) {
+            return null;
+        }
+        let row: RowDataPacket = (<RowDataPacket[]>mainResult)[0];
+        return new Workspace(workspaceId, row.name, row.description, row.admin);
+    }
+
     public async createWorkspace(userId: number, name: string, description: string): Promise<Workspace> {
         let createSqlQuery: string = "INSERT INTO workspace (name, description) VALUES (:name, :description)";
         let createResult: any = await this.preparedQuery(createSqlQuery, {"name": name, "description": description});

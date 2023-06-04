@@ -39,7 +39,7 @@ class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListSta
         if(!await fetcher.retrieveData()) {
             return;
         }
-        let responseData = fetcher.getResponseData();
+        let responseData: WorkspaceData[] = fetcher.getResponseData();
         if(!fetcher.success()) {
             this.setState({workspaceListError: true});
             return;
@@ -70,7 +70,7 @@ class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListSta
                     <Col md={8} className="fw-bold p-1">Descripción</Col>
                 </Row>
                 {this.state.workspaces.map(workspace =>
-                    <LinkContainer to={{pathname: "/workspace", search: `id=${workspace.id}`}} key={workspace.id} className="clickable">
+                    <LinkContainer to={`/workspace/${workspace.id}`} key={workspace.id} className="clickable">
                         <Row key={workspace.id} className="table-row p-3">
                             <Col md={4} className="p-1">
                                 <div className="d-block d-md-none mb-2 fw-bold">Nombre</div>
