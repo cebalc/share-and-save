@@ -8,6 +8,8 @@ import WorkspaceEntity from "../objects/entities/Workspace";
 import WorkspaceUsersForm from "../components/WorkspaceUsersForm";
 import WorkspaceDetailsForm from "../components/WorkspaceDetailsForm";
 import { useParams } from "react-router-dom";
+import Button from "react-bootstrap/Button";
+import {LinkContainer} from "react-router-bootstrap";
 
 interface WorkspaceProps {
     userId: number
@@ -58,7 +60,13 @@ const Workspace = (props: WorkspaceProps) : JSX.Element => {
                         <Col md={6}><WorkspaceUsersForm /></Col>
                     </Row>
                 </Col>
-                <Col xxl={4}>Botones</Col>
+                <Col xxl={4}>
+                    <div className="mx-auto max-width-50nbp-sm d-flex flex-column">
+                        <LinkContainer to="/dashboard">
+                            <Button variant="outline-primary" className="m-2">Volver a tablero</Button>
+                        </LinkContainer>
+                    </div>
+                </Col>
             </Row>
         </Container>
     );
