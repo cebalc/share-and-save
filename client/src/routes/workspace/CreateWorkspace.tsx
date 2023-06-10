@@ -3,7 +3,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/Stack";
 import { Navigate } from "react-router-dom";
-import CreateWorkspaceFetcher, {CreateWorkspaceResponse} from "../objects/fetchers/CreateWorkspaceFetcher";
+import CreateWorkspaceFetcher, {CreateWorkspaceResponse} from "../../objects/fetchers/CreateWorkspaceFetcher";
 import {LinkContainer} from "react-router-bootstrap";
 
 interface CreateWorkspaceProps {
@@ -72,7 +72,7 @@ class CreateWorkspace extends React.Component<CreateWorkspaceProps, CreateWorksp
                     <Form.Text className="text-danger">{this.state.descriptionError}</Form.Text>
                 </Form.Group>
                 <Stack direction="horizontal" gap={3}>
-                    <Button variant="outline-primary" onClick={() => this.sendWorkspaceData()}>Enviar</Button>
+                    <Button variant="outline-primary" onClick={async () => await this.sendWorkspaceData()}>Enviar</Button>
                     <LinkContainer to="/dashboard">
                         <Button variant="outline-primary">Volver al tablero</Button>
                     </LinkContainer>

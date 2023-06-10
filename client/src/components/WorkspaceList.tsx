@@ -90,7 +90,7 @@ class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListSta
     private renderButton(): React.ReactNode {
         return (
             <Container fluid className="d-flex justify-content-center my-3">
-                <LinkContainer to="/createworkspace">
+                <LinkContainer to="/workspace/create">
                     <Button variant="outline-primary" className="d-block">Crear nuevo espacio</Button>
                 </LinkContainer>
             </Container>
