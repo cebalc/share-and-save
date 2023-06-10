@@ -2,8 +2,7 @@ import ServerController from "./ServerController";
 import { NextFunction, Request, Response } from "express";
 import UserModel from "../models/UserModel";
 import { makeHash, verifyHash } from "../modules/encryption";
-import User, {UserPublicInfo} from "../objects/User";
-import Workspace from "../objects/entities/Workspace";
+import User, {UserPublicInfo} from "../objects/entities/User";
 import { ValidationChain, body, validationResult } from "express-validator";
 import { globalTrim } from "../modules/sanitizers";
 import strip_tags from "striptags";
@@ -17,7 +16,7 @@ class UserController extends ServerController<UserModel> {
     private static MSG_INV_PASS: string = "La contraseña introducida no es correcta.";
 
     public checkStatus(request: Request, response: Response): void {
-        let userPublicInfo: UserPublicInfo = User.getDefaultUserPublicInfo();
+        let userPublicInfo: UserPublicInfo = User.GUEST.getPublicInfo();
         if(request.session["user"] !== undefined) {
             userPublicInfo = User.extractUserPublicInfo(request.session["user"]);
         }

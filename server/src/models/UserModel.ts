@@ -1,5 +1,5 @@
 import Model from "./Model";
-import User from "../objects/User";
+import User from "../objects/entities/User";
 import { RowDataPacket } from "mysql2";
 
 class UserModel extends Model {

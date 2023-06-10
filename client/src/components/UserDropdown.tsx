@@ -1,26 +1,16 @@
 import React from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownToggle from "react-bootstrap/DropdownToggle";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { LinkContainer } from "react-router-bootstrap";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {LinkContainer} from "react-router-bootstrap";
+import User, {UserLevel} from "../objects/entities/User";
 
 interface UserDropdownProps {
-    userLevel: number,
+    userLevel: UserLevel,
     userName: string
 }
 
 class UserDropdown extends React.Component<UserDropdownProps> {
-
-    private static MSG_USER_UNKNOWN: string = "Usuario no identificado";
-    private static LEVEL_USER: number = 1;
-    private static LEVEL_PREMIUM: number = 2;
-    private static LEVEL_ADMIN: number = 3;
-
-    private static USER_LEVELS: Map<number, string> = new Map([
-        [this.LEVEL_USER, "Usuario"],
-        [this.LEVEL_PREMIUM, "Premium"],
-        [this.LEVEL_ADMIN, "Administrador"]
-    ]);
 
     public constructor(props: UserDropdownProps | Readonly<UserDropdownProps>) {
         super(props);
@@ -42,15 +32,16 @@ class UserDropdown extends React.Component<UserDropdownProps> {
     }
 
     private getDropdownHeader(): string {
-        if(!UserDropdown.USER_LEVELS.has(this.props.userLevel)) {
-            return UserDropdown.MSG_USER_UNKNOWN;
-        } else {
-            return `${this.props.userName}: ${UserDropdown.USER_LEVELS.get(this.props.userLevel)}`;
+        let header: string = "";
+        if(this.props.userLevel !== UserLevel.ANONYMOUS) {
+            header += `${this.props.userName}: `;
         }
+        header += User.getLabel(this.props.userLevel);
+        return header;
     }
 
     private getDropdownItems(): React.ReactNode {
-        if(UserDropdown.USER_LEVELS.has(this.props.userLevel)) {
+        if(this.props.userLevel !== UserLevel.ANONYMOUS) {
             return ( 
                 <>
                 <LinkContainer to="/settings">

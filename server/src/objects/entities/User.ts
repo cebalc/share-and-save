@@ -1,9 +1,11 @@
 type UserLevel = 0 | 1 | 2 | 3;
 
 interface UserPublicInfo {
-    userId: number,
-    userName: string,
-    userLevel: UserLevel
+    id: number,
+    name: string,
+    surname: string,
+    email: string,
+    level: UserLevel
 }
 
 class User {
@@ -12,19 +14,15 @@ class User {
     public static PREMIUM: UserLevel = 2;
     public static ADMIN: UserLevel = 3;
 
-    public static getDefaultUserPublicInfo(): UserPublicInfo {
-        return <UserPublicInfo>{
-            userId: 0,
-            userName: "",
-            userLevel: this.ANONYMOUS
-        };
-    }
+    public static readonly GUEST: User = new User(0, "", "", "", "", this.ANONYMOUS);
 
     public static extractUserPublicInfo(user: any): UserPublicInfo {
         return <UserPublicInfo>{
-            userId: (user.id === undefined ? 0 : user.id),
-            userName: (user.name === undefined ? "" : user.name),
-            userLevel: (user.level === undefined ? this.ANONYMOUS : user.level)
+            id: (user.id === undefined ? 0 : user.id),
+            name: (user.name === undefined ? "" : user.name),
+            surname: (user.surname === undefined ? "" : user.surname),
+            email: (user.email === undefined ? "" : undefined),
+            level: (user.level === undefined ? this.ANONYMOUS : user.level)
         };
     }
 
@@ -45,11 +43,7 @@ class User {
     }
 
     public getPublicInfo(): UserPublicInfo {
-        return <UserPublicInfo>{
-            userId: this.id,
-            userName: this.name,
-            userLevel: this.level
-        };
+        return User.extractUserPublicInfo(this);
     }
 }
 

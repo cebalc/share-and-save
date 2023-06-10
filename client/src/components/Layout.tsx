@@ -3,9 +3,10 @@ import { Outlet } from "react-router-dom";
 import NavMenu from "./NavMenu";
 import Footer from "./Footer";
 import Container from "react-bootstrap/Container";
+import { UserLevel } from "../objects/entities/User";
 
 interface LayoutProps {
-    userLevel: number,
+    userLevel: UserLevel,
     userName: string,
     fluid: boolean | "sm" | "md" | "lg" | "xl" | "xxl"
 }
@@ -13,7 +14,7 @@ interface LayoutProps {
 interface LayoutState {
 }
 
-abstract class Layout extends React.Component<LayoutProps, LayoutState> {
+class Layout extends React.Component<LayoutProps, LayoutState> {
     public state: LayoutState = {
     };
 

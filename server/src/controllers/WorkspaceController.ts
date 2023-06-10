@@ -2,10 +2,9 @@ import ServerController from "./ServerController";
 import { Request, Response, NextFunction } from "express";
 import WorkspaceModel from "../models/WorkspaceModel";
 import Workspace from "../objects/entities/Workspace";
-import User from "../objects/User";
+import User from "../objects/entities/User";
 import CreateWorkspaceResponse from "../objects/responses/CreateWorkspaceResponse";
 import ReadWorkspaceResponse from "../objects/responses/ReadWorkspaceResponse";
-import UserModel from "../models/UserModel";
 
 class WorkspaceController extends ServerController<WorkspaceModel> {
 

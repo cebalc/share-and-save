@@ -1,7 +1,7 @@
 import Fetcher from "./Fetcher";
-import { AppState } from "../../App";
+import User from "../entities/User";
 
-class StatusFetcher extends Fetcher<AppState> {
+class StatusFetcher extends Fetcher<User> {
 
     private static URL: string = "/users/status"
 
