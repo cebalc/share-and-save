@@ -1,4 +1,4 @@
-type UserLevel = 0 | 1 | 2 | 3;
+import UserLevel from "../enums/UserLevel";
 
 interface UserPublicInfo {
     id: number,
@@ -9,12 +9,8 @@ interface UserPublicInfo {
 }
 
 class User {
-    public static ANONYMOUS: UserLevel = 0;
-    public static REGISTERED: UserLevel = 1;
-    public static PREMIUM: UserLevel = 2;
-    public static ADMIN: UserLevel = 3;
 
-    public static readonly GUEST: User = new User(0, "", "", "", "", this.ANONYMOUS);
+    public static readonly GUEST: User = new User(0, "", "", "", "", UserLevel.ANONYMOUS);
 
     public static extractUserPublicInfo(user: any): UserPublicInfo {
         return <UserPublicInfo>{
@@ -22,7 +18,7 @@ class User {
             name: (user.name === undefined ? "" : user.name),
             surname: (user.surname === undefined ? "" : user.surname),
             email: (user.email === undefined ? "" : undefined),
-            level: (user.level === undefined ? this.ANONYMOUS : user.level)
+            level: (user.level === undefined ? UserLevel.ANONYMOUS : user.level)
         };
     }
 

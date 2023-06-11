@@ -6,6 +6,8 @@ import Workspace from "../routes/workspace/Workspace";
 import CRUDAction from "../objects/enums/CRUDAction";
 import Container from "react-bootstrap/Container";
 import SaveWorkspace from "../routes/workspace/SaveWorkspace";
+import StatusFetcher from "../objects/fetchers/StatusFetcher";
+import User from "../objects/entities/User";
 
 interface WorkspaceRouterProps {
     crudAction: CRUDAction
@@ -37,7 +39,31 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
             });
     }, [workspaceId]);
 
-    React.useEffect(() => {retrieveWorkspaceData()}, [retrieveWorkspaceData]);
+    const checkUserAuth = React.useCallback((): void => {
+        let fetcher: StatusFetcher = new StatusFetcher();
+        fetcher.retrieveData()
+            .then(retrieved => {
+                if(!retrieved) {
+                    setRestricted(true);
+                    return Promise.reject(retrieved);
+                }
+                let currentUser: User = fetcher.getResponseData();
+                if(currentUser.id === User.GUEST.id) {
+                    setRestricted(true);
+                } else {
+                    setWorkspace(WorkspaceEntity.NULL)
+                }
+                setRetrieved(true);
+            });
+    }, []);
+
+    React.useEffect(() => {
+        if(props.crudAction === CRUDAction.CREATE) {
+            checkUserAuth();
+        } else {
+            retrieveWorkspaceData();
+        }
+    }, [retrieveWorkspaceData, checkUserAuth, props.crudAction]);
 
     let fetchPending: boolean = !restricted && !retrieved;
     let userNotAuthenticated: boolean = restricted && !retrieved;
@@ -58,6 +84,7 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
     }
 
     let crudRoutes: Map<CRUDAction, JSX.Element> = new Map([
+        [CRUDAction.CREATE, <SaveWorkspace workspace={workspace} onSave={() => null} />],
         [CRUDAction.READ, <Workspace workspace={workspace} />],
         [CRUDAction.UPDATE, <SaveWorkspace workspace={workspace} onSave={retrieveWorkspaceData} />]
     ]);

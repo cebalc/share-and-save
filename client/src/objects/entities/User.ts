@@ -1,21 +1,16 @@
-enum UserLevel {
-    ANONYMOUS = 0,
-    REGISTERED,
-    PREMIUM,
-    ADMIN
-}
+import UserLevel from "../enums/UserLevel";
 
-const USER_LABELS: Map<UserLevel, string> = new Map([
-    [UserLevel.ANONYMOUS, "Usuario no identificado"],
-    [UserLevel.REGISTERED, "Usuario"],
-    [UserLevel.PREMIUM, "Premium"],
-    [UserLevel.ADMIN, "Administrador"]
-]);
 
 class User {
+    private static readonly USER_LABELS: Map<UserLevel, string> = new Map([
+        [UserLevel.ANONYMOUS, "Usuario no identificado"],
+        [UserLevel.REGISTERED, "Usuario"],
+        [UserLevel.PREMIUM, "Premium"],
+        [UserLevel.ADMIN, "Administrador"]
+    ]);
 
     public static getLabel(userLevel: UserLevel): string {
-        return USER_LABELS.get(userLevel) as string;
+        return this.USER_LABELS.get(userLevel) as string;
     }
 
     public id: number;
@@ -36,4 +31,3 @@ class User {
 }
 
 export default User;
-export { UserLevel };

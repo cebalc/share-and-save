@@ -6,7 +6,7 @@ import {LinkContainer} from "react-router-bootstrap";
 import NavMenuOption from "./NavMenuOption";
 import UserDropdown from "./UserDropdown";
 import LogoSnS from "../images/logo_SnS.png";
-import {UserLevel} from "../objects/entities/User";
+import UserLevel from "../objects/enums/UserLevel";
 
 interface NavMenuProps {
     userLevel: UserLevel,
