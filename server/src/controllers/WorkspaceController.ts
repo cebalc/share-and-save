@@ -3,13 +3,14 @@ import { Request, Response, NextFunction } from "express";
 import WorkspaceModel from "../models/WorkspaceModel";
 import Workspace from "../objects/entities/Workspace";
 import User from "../objects/entities/User";
-import CreateWorkspaceResponse from "../objects/responses/CreateWorkspaceResponse";
+import PersistWorkspaceResponse from "../objects/responses/PersistWorkspaceResponse";
 import ReadWorkspaceResponse from "../objects/responses/ReadWorkspaceResponse";
 
 class WorkspaceController extends ServerController<WorkspaceModel> {
 
     private static readonly MSG_NAME_EXISTS: string = "Ya tienes un espacio de trabajo con ese nombre. Usa otro.";
     private static readonly MSG_NOT_CREATED: string = "El espacio de trabajo no ha podido crearse.";
+    private static readonly MSG_NOT_UPDATED: string = "El espacio de trabajo no existe o no ha podido actualizarse.";
 
     public async getWorkspaces(request: Request, response: Response, next: NextFunction): Promise<void> {
         try {
@@ -43,31 +44,63 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
         }
     }
 
-    public async createWorkspace(request: Request, response: Response, next: NextFunction): Promise<void> {
+    public async persistWorkspace(request: Request, response: Response, next: NextFunction): Promise<void> {
+        let requestWorkspace: Workspace = new Workspace(
+            <number>request.body.id,
+            <string>request.body.name,
+            <string>request.body.description,
+            false
+        );
+        let userId: number = (<User>request.session["user"]).id;
+        if(requestWorkspace.id == Workspace.NULL.id) {
+            await this.createWorkspace(requestWorkspace, userId, response, next);
+        } else {
+            await this.updateWorkspace(requestWorkspace, userId, response, next);
+        }
+    }
+
+    private async createWorkspace(requestWorkspace: Workspace, userId: number, response: Response, next: NextFunction): Promise<void> {
         try {
-            let name: string = request.body.name;
-            let description: string = request.body.description;
-            let userId: number = (<User>request.session["user"]).id;
             this.model = new WorkspaceModel();
 
-            let workspaceNameExists: boolean = await this.model.workspaceNameExists(userId, name);
+            let workspaceNameExists: boolean = await this.model.workspaceNameExists(userId, requestWorkspace.name);
             if(workspaceNameExists) {
                 this.model.delete();
-                response.json(new CreateWorkspaceResponse(false, WorkspaceController.MSG_NAME_EXISTS));
+                response.json(new PersistWorkspaceResponse(false, WorkspaceController.MSG_NAME_EXISTS));
                 return;
             }
 
-            let newWorkspace: Workspace = await this.model.createWorkspace(userId, name, description);
+            let newWorkspace: Workspace = await this.model.createWorkspace(userId, requestWorkspace);
+            let success: boolean = (newWorkspace != null);
+
             this.model.delete();
 
-            let success: boolean = (newWorkspace != null);
-            let globalError: string = WorkspaceController.MSG_NOT_CREATED;
-            let wsId: number = 0;
-            if(success) {
-                globalError = "";
-                wsId = newWorkspace.id;
+            response.json(new PersistWorkspaceResponse(
+                success,
+                "",
+                "",
+                success ? "" : WorkspaceController.MSG_NOT_CREATED,
+                success ? newWorkspace.id : Workspace.NULL.id
+            ));
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    private async updateWorkspace(requestWorkspace: Workspace, userId: number, response: Response, next: NextFunction): Promise<void> {
+        try {
+            this.model = new WorkspaceModel();
+            let updated: boolean = false;
+            let updatable: boolean = (await this.model.getWorkspaceProperties(requestWorkspace.id, userId) != null);
+            if(updatable) {
+                updated = await this.model.updateWorkspaceProperties(requestWorkspace);
             }
-            response.json(new CreateWorkspaceResponse(success, "", "", globalError, wsId));
+            this.model.delete();
+            if(!updatable || !updated) {
+                response.json(new PersistWorkspaceResponse(false, "", "", WorkspaceController.MSG_NOT_UPDATED));
+                return;
+            }
+            response.json(new PersistWorkspaceResponse(true, "", "", "", requestWorkspace.id));
         } catch (error) {
             next(error);
         }

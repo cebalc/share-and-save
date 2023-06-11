@@ -4,8 +4,8 @@ import {Navigate, useParams} from "react-router-dom";
 import ReadWorkspaceFetcher from "../objects/fetchers/ReadWorkspaceFetcher";
 import Workspace from "../routes/workspace/Workspace";
 import CRUDAction from "../objects/enums/CRUDAction";
-import EditWorkspace from "../routes/workspace/EditWorkspace";
 import Container from "react-bootstrap/Container";
+import SaveWorkspace from "../routes/workspace/SaveWorkspace";
 
 interface WorkspaceRouterProps {
     crudAction: CRUDAction
@@ -57,12 +57,12 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
         );
     }
 
-    let crudReactNodes: Map<CRUDAction, JSX.Element> = new Map([
+    let crudRoutes: Map<CRUDAction, JSX.Element> = new Map([
         [CRUDAction.READ, <Workspace workspace={workspace} />],
-        [CRUDAction.UPDATE, <EditWorkspace workspace={workspace} />]
+        [CRUDAction.UPDATE, <SaveWorkspace workspace={workspace} onSave={retrieveWorkspaceData} />]
     ]);
 
-    return crudReactNodes.get(props.crudAction) as JSX.Element;
+    return crudRoutes.get(props.crudAction) as JSX.Element;
 }
 
 export default WorkspaceRouter;

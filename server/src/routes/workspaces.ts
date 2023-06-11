@@ -13,7 +13,7 @@ router.get("/:id(\\d+)", workspaceController.requireAuth, async (request, respon
 );
 
 router.post("/", workspaceController.requireAuth, async (request, response, next) =>
-    await workspaceController.createWorkspace(request, response, next)
+    await workspaceController.persistWorkspace(request, response, next)
 );
 
 export default router;

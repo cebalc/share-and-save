@@ -7,7 +7,7 @@ class WorkspaceModel extends Model {
     public async workspaceNameExists(userId: number, name: string): Promise<boolean> {
         let sqlQuery: string = `SELECT Count(W.id) AS wscount FROM workspace W INNER JOIN workspace_members WM
                 ON W.id = WM.workspace WHERE WM.user = :userId AND W.name = :name`;
-        let results: any = await this.preparedQuery(sqlQuery, {"userId": userId, "name": name});
+        let results: any = await super.preparedQuery(sqlQuery, {"userId": userId, "name": name});
         return !(<boolean>results) || (<RowDataPacket[]>results)[0].wscount === 1;
     }
 
@@ -20,15 +20,28 @@ class WorkspaceModel extends Model {
     }
 
     public async getWorkspaceProperties(workspaceId: number, userId: number): Promise<Workspace> {
-        let mainSqlQuery: string = `SELECT W.name, W.description, WM.admin FROM workspace W
+        let sqlQuery: string = `SELECT W.name, W.description, WM.admin FROM workspace W
                                         INNER JOIN workspace_members WM on W.id = WM.workspace
                                         WHERE W.id = :workspaceId AND WM.user = :userId`;
-        let mainResult: any = await this.preparedQuery(mainSqlQuery, {"workspaceId": workspaceId, "userId": userId});
-        if(!<boolean>mainResult || (<RowDataPacket[]>mainResult).length != 1) {
+        let result: any = await super.preparedQuery(sqlQuery, {"workspaceId": workspaceId, "userId": userId});
+        if(!<boolean>result || (<RowDataPacket[]>result).length != 1) {
             return null;
         }
-        let row: RowDataPacket = (<RowDataPacket[]>mainResult)[0];
+        let row: RowDataPacket = (<RowDataPacket[]>result)[0];
         return new Workspace(workspaceId, row.name, row.description, row.admin);
+    }
+
+    public async updateWorkspaceProperties(workspace: Workspace): Promise<boolean> {
+        let sqlQuery: string = "UPDATE workspace SET name = :name, description = :description WHERE id = :id";
+        let result: any = await super.preparedQuery(sqlQuery, {
+            "name": workspace.name,
+            "description": workspace.description,
+            "id": workspace.id
+        });
+        if(!<boolean>result || (<OkPacket>result).affectedRows != 1) {
+            return false;
+        }
+        return true;
     }
 
     public async getWorkspacesByUser(userId: number): Promise<Workspace[]> {
@@ -47,20 +60,25 @@ class WorkspaceModel extends Model {
         );
     }
 
-    public async createWorkspace(userId: number, name: string, description: string): Promise<Workspace> {
+    public async createWorkspace(userId: number, workspace: Workspace): Promise<Workspace> {
         let createSqlQuery: string = "INSERT INTO workspace (name, description) VALUES (:name, :description)";
-        let createResult: any = await this.preparedQuery(createSqlQuery, {"name": name, "description": description});
+        let createResult: any = await super.preparedQuery(createSqlQuery, {
+            "name": workspace.name,
+            "description": workspace.description}
+        );
         if(!(<boolean>createResult)) {
             return null;
         }
         let workspaceId: number = (<OkPacket>createResult).insertId;
         let addUserSqlQuery: string = "INSERT INTO workspace_members (workspace, user, admin) VALUES (:workspaceId, :userId, 1)";
-        let addUserResult: any = await this.preparedQuery(addUserSqlQuery, {"workspaceId": workspaceId, "userId": userId});
+        let addUserResult: any = await super.preparedQuery(addUserSqlQuery, {"workspaceId": workspaceId, "userId": userId});
         if(!(<boolean>addUserResult)) {
             await this.deleteWorkspace(workspaceId);
             return null;
         }
-        return new Workspace(workspaceId, name, description, true);
+        workspace.id = workspaceId;
+        workspace.userIsAdmin = true;
+        return workspace;
     }
 }
 

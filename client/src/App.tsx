@@ -8,10 +8,11 @@ import NotFound from './routes/NotFound';
 import SignIn from "./routes/SignIn";
 import SignUp from "./routes/SignUp";
 import Dashboard from "./routes/Dashboard";
-import CreateWorkspace from "./routes/workspace/CreateWorkspace";
+import SaveWorkspace from "./routes/workspace/SaveWorkspace";
 import RecordList from "./routes/workspace/RecordList";
 import WorkspaceRouter from "./components/WorkspaceRouter";
 import CRUDAction from "./objects/enums/CRUDAction";
+import Workspace from "./objects/entities/Workspace";
 
 interface AppProps {
 }
@@ -58,7 +59,7 @@ class App extends React.Component<AppProps, AppState> {
             <Route path="dashboard" element={<Dashboard userId={this.state.currentUser.id} userName={this.state.currentUser.name} />} />
           </Route>
           <Route path="/workspace" element={<Layout fluid="md" userLevel={this.state.currentUser.level} userName={this.state.currentUser.name} /> }>
-            <Route path="create" element={<CreateWorkspace />} />
+            <Route path="create" element={<SaveWorkspace workspace={Workspace.NULL} onSave={() => null} /> } />
             <Route path=":id">
               <Route index element={<WorkspaceRouter crudAction={CRUDAction.READ} />} />
               <Route path="edit" element={<WorkspaceRouter crudAction={CRUDAction.UPDATE} />} />

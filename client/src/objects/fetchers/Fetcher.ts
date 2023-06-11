@@ -1,4 +1,4 @@
-type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE";
+import HTTPMethod from "../enums/HTTPMethod";
 
 interface JSONResponse<T> {
     success: boolean,
@@ -20,7 +20,7 @@ abstract class Fetcher<T> {
             },
             credentials: "include" //required for express sessions
         };
-        if(method === "POST" || method === "PUT") {
+        if(method === HTTPMethod.POST || method === HTTPMethod.PUT) {
             this.requestInit.body = requestBody;
         };
         this.jsonResponse = null;

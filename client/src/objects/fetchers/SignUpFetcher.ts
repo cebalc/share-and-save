@@ -1,4 +1,5 @@
 import Fetcher from "./Fetcher";
+import HTTPMethod from "../enums/HTTPMethod";
 
 interface SignUpResponse {
     name: string,
@@ -11,7 +12,7 @@ interface SignUpResponse {
 class SignUpFetcher extends Fetcher<SignUpResponse> {
     private static URL = "/users/create";
     public constructor(name: string, surname: string, email: string, pass: string) {
-        super(SignUpFetcher.URL, "POST", JSON.stringify({
+        super(SignUpFetcher.URL, HTTPMethod.POST, JSON.stringify({
             name: name,
             surname: surname,
             email: email,

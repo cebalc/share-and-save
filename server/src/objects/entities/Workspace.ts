@@ -1,4 +1,7 @@
 class Workspace {
+
+    public static readonly NULL: Workspace = new Workspace(0, "", "", false);
+
     public id: number;
     public name: string;
     public description: string;
