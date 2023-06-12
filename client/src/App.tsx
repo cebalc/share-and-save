@@ -9,7 +9,7 @@ import SignIn from "./routes/SignIn";
 import SignUp from "./routes/SignUp";
 import Dashboard from "./routes/Dashboard";
 import RecordList from "./routes/workspace/RecordList";
-import WorkspaceRouter from "./components/WorkspaceRouter";
+import WorkspaceRouter from "./components/workspaces/WorkspaceRouter";
 import CRUDAction from "./objects/enums/CRUDAction";
 
 interface AppProps {

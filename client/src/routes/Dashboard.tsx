@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import WorkspaceList from "../components/WorkspaceList";
+import WorkspaceList from "../components/workspaces/WorkspaceList";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";

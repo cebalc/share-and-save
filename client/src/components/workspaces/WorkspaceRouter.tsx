@@ -1,14 +1,14 @@
 import React from "react";
-import WorkspaceEntity from "../objects/entities/Workspace";
+import WorkspaceEntity from "../../objects/entities/Workspace";
 import {Navigate, useParams} from "react-router-dom";
-import ReadWorkspaceFetcher from "../objects/fetchers/ReadWorkspaceFetcher";
-import Workspace from "../routes/workspace/Workspace";
-import CRUDAction from "../objects/enums/CRUDAction";
+import ReadWorkspaceFetcher from "../../objects/fetchers/ReadWorkspaceFetcher";
+import Workspace from "../../routes/workspace/Workspace";
+import CRUDAction from "../../objects/enums/CRUDAction";
 import Container from "react-bootstrap/Container";
-import SaveWorkspace from "../routes/workspace/SaveWorkspace";
-import StatusFetcher from "../objects/fetchers/StatusFetcher";
-import User from "../objects/entities/User";
-import DeleteWorkspace from "../routes/workspace/DeleteWorkspace";
+import SaveWorkspace from "../../routes/workspace/SaveWorkspace";
+import StatusFetcher from "../../objects/fetchers/StatusFetcher";
+import User from "../../objects/entities/User";
+import DeleteWorkspace from "../../routes/workspace/DeleteWorkspace";
 
 interface WorkspaceRouterProps {
     crudAction: CRUDAction

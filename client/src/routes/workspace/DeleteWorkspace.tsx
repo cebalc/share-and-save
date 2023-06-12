@@ -7,7 +7,7 @@ import {LinkContainer} from "react-router-bootstrap";
 import DeleteWorkspaceFetcher from "../../objects/fetchers/DeleteWorkspaceFetcher";
 import {Navigate} from "react-router-dom";
 import Alert from "react-bootstrap/Alert";
-import WorkspaceCard, {WorkspaceCardSize} from "../../components/WorkspaceCard";
+import WorkspaceCard, {WorkspaceCardSize} from "../../components/workspaces/WorkspaceCard";
 
 interface DeleteWorkspaceProps {
     workspace: Workspace

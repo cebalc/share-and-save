@@ -1,6 +1,6 @@
 import React from "react";
 import Workspace from "../../objects/entities/Workspace";
-import WorkspaceDetailsForm from "../../components/WorkspaceDetailsForm";
+import WorkspaceDetailsForm from "../../components/workspaces/WorkspaceDetailsForm";
 import {Navigate} from "react-router-dom";
 
 interface SaveWorkspaceProps {

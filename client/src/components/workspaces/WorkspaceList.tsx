@@ -1,6 +1,6 @@
 import React from "react";
-import Workspace from "../objects/entities/Workspace";
-import ReadWorkspaceFetcher from "../objects/fetchers/ReadWorkspaceFetcher";
+import Workspace from "../../objects/entities/Workspace";
+import ReadWorkspaceFetcher from "../../objects/fetchers/ReadWorkspaceFetcher";
 import Container from "react-bootstrap/Container";
 import Alert from "react-bootstrap/Alert";
 import { LinkContainer } from "react-router-bootstrap";
