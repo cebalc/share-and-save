@@ -5,6 +5,7 @@ import Col from "react-bootstrap/Col";
 import WorkspaceEntity from "../../objects/entities/Workspace";
 import WorkspaceUsersForm from "../../components/WorkspaceUsersForm";
 import WorkspaceMenu from "../../components/WorkspaceMenu";
+import WorkspaceCard, {WorkspaceCardSize} from "../../components/WorkspaceCard";
 
 interface WorkspaceProps {
     workspace: WorkspaceEntity
@@ -12,17 +13,10 @@ interface WorkspaceProps {
 
 const Workspace = (props: WorkspaceProps) : JSX.Element => {
 
-    const renderDescription = (): React.ReactNode => {
-        if(props.workspace.description.length > 0) {
-            return (<p className="h4 text-center">{props.workspace.description}</p>);
-        }
-    }
-
     return (
         <Container fluid>
-            <p className="h1 text-center">{props.workspace.name}</p>
-            {renderDescription()}
-            <Row>
+            <WorkspaceCard name={props.workspace.name} description={props.workspace.description} size={WorkspaceCardSize.CAPTION} />
+            <Row className="mt-4">
                 <Col md={4} lg={6}>
                     <WorkspaceMenu workspaceId={props.workspace.id} userIsAdmin={props.workspace.userIsAdmin} />
                 </Col>

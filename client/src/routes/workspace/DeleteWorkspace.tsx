@@ -7,6 +7,7 @@ import {LinkContainer} from "react-router-bootstrap";
 import DeleteWorkspaceFetcher from "../../objects/fetchers/DeleteWorkspaceFetcher";
 import {Navigate} from "react-router-dom";
 import Alert from "react-bootstrap/Alert";
+import WorkspaceCard, {WorkspaceCardSize} from "../../components/WorkspaceCard";
 
 interface DeleteWorkspaceProps {
     workspace: Workspace
@@ -37,14 +38,6 @@ class DeleteWorkspace extends React.Component<DeleteWorkspaceProps, DeleteWorksp
         return `/workspace/${this.props.workspace.id}`;
     }
 
-    private buildWorkspaceDescription(): string {
-        if(this.props.workspace.description.length > 0) {
-            return this.props.workspace.description;
-        } else {
-            return "Sin descripción";
-        }
-    }
-
     private renderError(): React.ReactNode {
         if(this.state.deleteError.length > 0) {
             return (<Alert variant="danger" className="mx-auto text-center">{this.state.deleteError}</Alert>);
@@ -67,16 +60,7 @@ class DeleteWorkspace extends React.Component<DeleteWorkspaceProps, DeleteWorksp
         return (<>
             {this.redirectIfDeleted()}
             <p className="h1 text-center">Borrar espacio de trabajo</p>
-            <Card border="primary" className="mx-auto my-4 text-center max-width-75nbp-sm">
-                <Card.Header as="h5">
-                    <span className="text-dark">{this.props.workspace.name}</span>
-                </Card.Header>
-                <Card.Body>
-                    <Card.Subtitle className="text-muted">
-                        {this.buildWorkspaceDescription()}
-                    </Card.Subtitle>
-                </Card.Body>
-            </Card>
+            <WorkspaceCard name={this.props.workspace.name} description={this.props.workspace.description} size={WorkspaceCardSize.NORMAL} />
             {this.renderError()}
             <p className="h5 text-center">Se borrará el espacio de trabajo seleccionado y todos los datos asociados. ¿Continuar?</p>
             <Container fluid className="mx-auto mt-4 d-flex flex-row justify-content-center">
