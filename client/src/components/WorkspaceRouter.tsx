@@ -31,13 +31,17 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
                     return Promise.reject(retrieved);
                 }
                 if(fetcher.success()) {
-                    setWorkspace(fetcher.getResponseData()[0]);
+                    let workspace: WorkspaceEntity = fetcher.getResponseData()[0];
+                    setWorkspace(workspace);
+                    if((props.crudAction === CRUDAction.UPDATE || props.crudAction === CRUDAction.DELETE) && !workspace.userIsAdmin) {
+                        setRestricted(true);
+                    }
                 } else {
                     setRestricted(true);
                 }
                 setRetrieved(true);
             });
-    }, [workspaceId]);
+    }, [workspaceId, props.crudAction]);
 
     const checkUserAuth = React.useCallback((): void => {
         let fetcher: StatusFetcher = new StatusFetcher();

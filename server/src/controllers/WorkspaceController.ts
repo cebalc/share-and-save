@@ -120,9 +120,12 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
     private async updateWorkspace(requestWorkspace: Workspace, userId: number, response: Response, next: NextFunction): Promise<void> {
         try {
             this.model = new WorkspaceModel();
+            let storedWorkspace: Workspace = await this.model.getWorkspaceProperties(requestWorkspace.id, userId);
+
             let updated: boolean = false;
-            let updatable: boolean = (await this.model.getWorkspaceProperties(requestWorkspace.id, userId) != null);
+            let updatable: boolean = (storedWorkspace != null && storedWorkspace.userIsAdmin);
             if(updatable) {
+                requestWorkspace.userIsAdmin = true;
                 updated = await this.model.updateWorkspaceProperties(requestWorkspace);
             }
             this.model.delete();

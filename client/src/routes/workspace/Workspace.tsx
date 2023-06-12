@@ -24,7 +24,7 @@ const Workspace = (props: WorkspaceProps) : JSX.Element => {
             {renderDescription()}
             <Row>
                 <Col md={4} lg={6}>
-                    <WorkspaceMenu workspaceId={props.workspace.id} />
+                    <WorkspaceMenu workspaceId={props.workspace.id} userIsAdmin={props.workspace.userIsAdmin} />
                 </Col>
                 <Col md={8} lg={6}>
                     <WorkspaceUsersForm />
