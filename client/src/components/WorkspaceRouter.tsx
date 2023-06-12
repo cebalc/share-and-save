@@ -8,6 +8,7 @@ import Container from "react-bootstrap/Container";
 import SaveWorkspace from "../routes/workspace/SaveWorkspace";
 import StatusFetcher from "../objects/fetchers/StatusFetcher";
 import User from "../objects/entities/User";
+import DeleteWorkspace from "../routes/workspace/DeleteWorkspace";
 
 interface WorkspaceRouterProps {
     crudAction: CRUDAction
@@ -90,7 +91,8 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
     let crudRoutes: Map<CRUDAction, JSX.Element> = new Map([
         [CRUDAction.CREATE, <SaveWorkspace workspace={workspace} onSave={() => null} />],
         [CRUDAction.READ, <Workspace workspace={workspace} />],
-        [CRUDAction.UPDATE, <SaveWorkspace workspace={workspace} onSave={retrieveWorkspaceData} />]
+        [CRUDAction.UPDATE, <SaveWorkspace workspace={workspace} onSave={retrieveWorkspaceData} />],
+        [CRUDAction.DELETE, <DeleteWorkspace workspace={workspace} />]
     ]);
 
     return crudRoutes.get(props.crudAction) as JSX.Element;

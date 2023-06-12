@@ -61,6 +61,7 @@ class App extends React.Component<AppProps, AppState> {
             <Route path=":id">
               <Route index element={<WorkspaceRouter crudAction={CRUDAction.READ} />} />
               <Route path="edit" element={<WorkspaceRouter crudAction={CRUDAction.UPDATE} />} />
+              <Route path="delete" element={<WorkspaceRouter crudAction={CRUDAction.DELETE} />} />
             </Route>
           </Route>
           <Route path="/workspace/:id/records" element={<Layout fluid={true} userLevel={this.state.currentUser.level} userName={this.state.currentUser.name} />}>

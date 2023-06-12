@@ -3,9 +3,9 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Workspace from "../objects/entities/Workspace";
 import {LinkContainer} from "react-router-bootstrap";
-import Stack from "react-bootstrap/Stack";
 import PersistWorkspaceFetcher, {PersistWorkspaceResponse} from "../objects/fetchers/PersistWorkspaceFetcher";
 import Alert from "react-bootstrap/Alert";
+import Container from "react-bootstrap/Container";
 
 interface WorkspaceDetailsFormProps {
     workspace: Workspace
@@ -87,12 +87,12 @@ class WorkspaceDetailsForm extends React.Component<WorkspaceDetailsFormProps, Wo
                                   onChange={event => this.setState({description: event.target.value})} />
                     <Form.Text className="text-danger">{this.state.descriptionError}</Form.Text>
                 </Form.Group>
-                <Stack direction="horizontal" gap={3}>
-                    <Button variant="outline-primary" onClick={() => this.sendWorkspaceData()}>Enviar</Button>
+                <Container fluid className="mx-auto mt-4 d-flex flex-row justify-content-center">
+                    <Button variant="outline-primary" className="me-3" onClick={() => this.sendWorkspaceData()}>Enviar</Button>
                     <LinkContainer to={this.buildReturnURL()}>
                         <Button variant="outline-primary">Volver</Button>
                     </LinkContainer>
-                </Stack>
+                </Container>
             </Form>
         );
     }

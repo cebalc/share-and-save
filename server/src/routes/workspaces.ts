@@ -8,14 +8,14 @@ const workspaceController: WorkspaceController = new WorkspaceController();
 router.get("/",
     workspaceController.requireAuth,
     async (request, response, next) => {
-        await workspaceController.getWorkspaces(request, response, next)
+        await workspaceController.getWorkspaces(request, response, next);
     }
 );
 
 router.get("/:id(\\d+)",
     workspaceController.requireAuth,
     async (request, response, next) => {
-        await workspaceController.getWorkspaceDetails(request, response, next)
+        await workspaceController.getWorkspaceDetails(request, response, next);
     }
 );
 
@@ -23,7 +23,14 @@ router.post("/",
     workspaceController.requireAuth,
     workspaceController.persistWorkspaceFilters(),
     async (request, response, next) => {
-        await workspaceController.persistWorkspace(request, response, next)
+        await workspaceController.persistWorkspace(request, response, next);
+    }
+);
+
+router.delete("/:id(\\d+)",
+    workspaceController.requireAuth,
+    async(request, response, next) => {
+        await workspaceController.deleteWorkspace(request, response, next);
     }
 );
 

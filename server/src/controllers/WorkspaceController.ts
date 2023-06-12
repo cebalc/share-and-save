@@ -1,19 +1,23 @@
 import ServerController from "./ServerController";
-import { Request, Response, NextFunction } from "express";
+import {NextFunction, Request, Response} from "express";
 import WorkspaceModel from "../models/WorkspaceModel";
 import Workspace from "../objects/entities/Workspace";
 import User from "../objects/entities/User";
+import WorkspaceResponse from "../objects/responses/WorkspaceResponse";
 import PersistWorkspaceResponse from "../objects/responses/PersistWorkspaceResponse";
 import ReadWorkspaceResponse from "../objects/responses/ReadWorkspaceResponse";
-import {body, validationResult, Result, ValidationChain, ValidationError} from "express-validator";
+import {body, Result, ValidationChain, ValidationError, validationResult} from "express-validator";
 import strip_tags from "striptags";
 import {globalTrim} from "../modules/sanitizers";
+import CRUDAction from "../objects/enums/CRUDAction";
+import DeleteWorkspaceResponse from "../objects/responses/DeleteWorkspaceResponse";
 
 class WorkspaceController extends ServerController<WorkspaceModel> {
 
     private static readonly MSG_NAME_EXISTS: string = "Ya tienes un espacio de trabajo con ese nombre. Usa otro.";
     private static readonly MSG_NOT_CREATED: string = "El espacio de trabajo no ha podido crearse.";
     private static readonly MSG_NOT_UPDATED: string = "El espacio de trabajo no existe o no ha podido actualizarse.";
+    private static readonly MSG_NOT_DELETED: string = "El espacio de trabajo no existe o no ha podido borrarse.";
 
     public async getWorkspaces(request: Request, response: Response, next: NextFunction): Promise<void> {
         try {
@@ -119,21 +123,60 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
 
     private async updateWorkspace(requestWorkspace: Workspace, userId: number, response: Response, next: NextFunction): Promise<void> {
         try {
-            this.model = new WorkspaceModel();
-            let storedWorkspace: Workspace = await this.model.getWorkspaceProperties(requestWorkspace.id, userId);
+            let updateResponse: PersistWorkspaceResponse = await this.alterWorkspace<PersistWorkspaceResponse>(
+                requestWorkspace,
+                CRUDAction.UPDATE,
+                userId,
+                new PersistWorkspaceResponse(false, "", "", WorkspaceController.MSG_NOT_UPDATED),
+                new PersistWorkspaceResponse(true, "", "", "", requestWorkspace.id)
+            );
+            response.json(updateResponse);
+        } catch (error) {
+            next(error);
+        }
+    }
 
-            let updated: boolean = false;
-            let updatable: boolean = (storedWorkspace != null && storedWorkspace.userIsAdmin);
-            if(updatable) {
-                requestWorkspace.userIsAdmin = true;
-                updated = await this.model.updateWorkspaceProperties(requestWorkspace);
+    private async alterWorkspace<T extends WorkspaceResponse<any>>(
+        requestWorkspace: Workspace,
+        action: CRUDAction.UPDATE | CRUDAction.DELETE,
+        userId: number,
+        responseOnNoAlter: T,
+        responseOnAlter: T
+    ): Promise<T> {
+        this.model = new WorkspaceModel();
+        let storedWorkspace: Workspace = await this.model.getWorkspaceProperties(requestWorkspace.id, userId);
+        let altered: boolean = false;
+        let alterable: boolean = (storedWorkspace != null && storedWorkspace.userIsAdmin);
+        if(alterable) {
+            switch (action) {
+                case CRUDAction.UPDATE:
+                    requestWorkspace.userIsAdmin = true;
+                    altered = await this.model.updateWorkspaceProperties(requestWorkspace);
+                    break;
+                case CRUDAction.DELETE:
+                    altered = await this.model.deleteWorkspace(requestWorkspace.id);
+                    break;
             }
-            this.model.delete();
-            if(!updatable || !updated) {
-                response.json(new PersistWorkspaceResponse(false, "", "", WorkspaceController.MSG_NOT_UPDATED));
-                return;
-            }
-            response.json(new PersistWorkspaceResponse(true, "", "", "", requestWorkspace.id));
+        }
+        this.model.delete();
+        if(!alterable || !altered) {
+            return responseOnNoAlter;
+        }
+        return responseOnAlter;
+    }
+
+    public async deleteWorkspace(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
+            let workspaceId: number = parseInt(request.params.id);
+            let userId: number = (<User>request.session["user"]).id;
+            let deleteResponse: DeleteWorkspaceResponse = await this.alterWorkspace<DeleteWorkspaceResponse>(
+                new Workspace(workspaceId, "", "", false),
+                CRUDAction.DELETE,
+                userId,
+                new DeleteWorkspaceResponse(false, WorkspaceController.MSG_NOT_DELETED),
+                new DeleteWorkspaceResponse(true)
+            );
+            response.json(deleteResponse);
         } catch (error) {
             next(error);
         }

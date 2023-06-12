@@ -27,6 +27,11 @@ const WorkspaceMenu = (props: WorkspaceMenuProps): JSX.Element => {
             onlyForAdmins: true
         },
         {
+            mapping: `/workspace/${props.workspaceId}/delete`,
+            label: "Eliminar espacio",
+            onlyForAdmins: true
+        },
+        {
             mapping: "/dashboard",
             label: "Volver a tablero",
             onlyForAdmins: false
@@ -34,7 +39,7 @@ const WorkspaceMenu = (props: WorkspaceMenuProps): JSX.Element => {
     ];
 
     return (
-        <div className="mx-auto max-width-50nbp-sm d-flex flex-column">
+        <div className="mx-auto max-width-50nbp-sm d-flex flex-column justify-content-start">
         {menuItems.map((menuItem: MenuItem, index: number) =>
             <LinkContainer key={index} to={menuItem.mapping}>
                 <Button variant="outline-primary" className="m-2"
