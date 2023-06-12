@@ -1,5 +1,6 @@
 import { Router } from "express";
 import UserController from "../controllers/UserController";
+import {createDefaultRoutes} from "../modules/routing";
 
 const router = Router();
 const userController: UserController = new UserController();
@@ -18,8 +19,10 @@ router.post("/login", userController.loginFilters(), async (request, response, n
     await userController.login(request, response, next)
 );
 
-router.get("*", userController.redirectToClientRouter);
+createDefaultRoutes(router, userController);
 
-router.post("*", userController.redirectToClientRouter);
+// router.get("*", userController.redirectToClientRouter);
+//
+// router.post("*", userController.redirectToClientRouter);
 
 export default router;

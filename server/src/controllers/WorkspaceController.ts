@@ -5,6 +5,9 @@ import Workspace from "../objects/entities/Workspace";
 import User from "../objects/entities/User";
 import PersistWorkspaceResponse from "../objects/responses/PersistWorkspaceResponse";
 import ReadWorkspaceResponse from "../objects/responses/ReadWorkspaceResponse";
+import {body, validationResult, Result, ValidationChain, ValidationError} from "express-validator";
+import strip_tags from "striptags";
+import {globalTrim} from "../modules/sanitizers";
 
 class WorkspaceController extends ServerController<WorkspaceModel> {
 
@@ -44,7 +47,34 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
         }
     }
 
+    public persistWorkspaceFilters(): ValidationChain[] {
+        return [
+            body("id")
+                .exists()
+                .isInt({min: 0}),
+            body("name", "Máximo 30 caracteres")
+                .exists()
+                .customSanitizer(value => strip_tags(value))
+                .customSanitizer(value => globalTrim(value))
+                .isLength({min: 1, max: 30}),
+            body("description", "Opcional, máximo 100 caracteres")
+                .customSanitizer(value => strip_tags(value))
+                .customSanitizer(value => globalTrim(value))
+                .isLength({max: 100})
+        ];
+    }
+
     public async persistWorkspace(request: Request, response: Response, next: NextFunction): Promise<void> {
+        let errors: Result<ValidationError> = validationResult(request);
+        if(!errors.isEmpty()) {
+            let errorsObject: Record<string, ValidationError> = errors.mapped();
+            response.json(new PersistWorkspaceResponse(false,
+                errorsObject.name !== undefined ? errorsObject.name.msg : "",
+                errorsObject.description !== undefined ? errorsObject.description.msg : ""
+            ));
+            return;
+        }
+
         let requestWorkspace: Workspace = new Workspace(
             <number>request.body.id,
             <string>request.body.name,

@@ -11,10 +11,17 @@ interface WorkspaceProps {
 }
 
 const Workspace = (props: WorkspaceProps) : JSX.Element => {
+
+    const renderDescription = (): React.ReactNode => {
+        if(props.workspace.description.length > 0) {
+            return (<p className="h4 text-center">{props.workspace.description}</p>);
+        }
+    }
+
     return (
         <Container fluid>
             <p className="h1 text-center">{props.workspace.name}</p>
-            <p className="h4 text-center">{props.workspace.description}</p>
+            {renderDescription()}
             <Row>
                 <Col md={4} lg={6}>
                     <WorkspaceMenu workspaceId={props.workspace.id} />
