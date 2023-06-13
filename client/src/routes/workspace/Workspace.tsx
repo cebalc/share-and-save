@@ -9,6 +9,7 @@ import WorkspaceCard, {WorkspaceCardSize} from "../../components/workspaces/Work
 
 interface WorkspaceProps {
     workspace: WorkspaceEntity
+    userId: number
 }
 
 const Workspace = (props: WorkspaceProps) : JSX.Element => {
@@ -21,7 +22,7 @@ const Workspace = (props: WorkspaceProps) : JSX.Element => {
                     <WorkspaceMenu workspaceId={props.workspace.id} userIsAdmin={props.workspace.userIsAdmin} />
                 </Col>
                 <Col md={8} lg={6}>
-                    <WorkspaceUserManager workspaceId={props.workspace.id} userIsAdmin={props.workspace.userIsAdmin} />
+                    <WorkspaceUserManager workspaceId={props.workspace.id} userId={props.userId} userIsAdmin={props.workspace.userIsAdmin} />
                 </Col>
             </Row>
         </Container>

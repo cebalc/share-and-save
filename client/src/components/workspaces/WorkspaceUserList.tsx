@@ -7,6 +7,7 @@ import BouncingIcon from "../BouncingIcon";
 import ReadWorkspaceUsersFetcher from "../../objects/fetchers/workspaces/ReadWorkspaceUsersFetcher";
 
 interface WorkspaceUserListProps {
+    userId: number,
     workspaceId: number,
     userIsAdmin: boolean
 }
@@ -63,9 +64,9 @@ class WorkspaceUserList extends React.Component<WorkspaceUserListProps, Workspac
                         <div className="fw-bold">{`${user.name} ${user.surname}`}</div>
                         <div>{user.email}</div>
                     </div>
-
+                    {this.props.userIsAdmin && this.props.userId !== user.id &&
                         <BouncingIcon family="far" name="trash-can" size="1x" />
-
+                    }
                 </ListGroup.Item>
             )}
         </ListGroup>);

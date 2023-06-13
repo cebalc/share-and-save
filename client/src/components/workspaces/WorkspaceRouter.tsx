@@ -12,6 +12,7 @@ import DeleteWorkspace from "../../routes/workspace/DeleteWorkspace";
 
 interface WorkspaceRouterProps {
     crudAction: CRUDAction
+    userId?: number
 }
 
 const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
@@ -90,12 +91,17 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
 
     let crudRoutes: Map<CRUDAction, JSX.Element> = new Map([
         [CRUDAction.CREATE, <SaveWorkspace workspace={workspace} onSave={() => null} />],
-        [CRUDAction.READ, <Workspace workspace={workspace} />],
+        [CRUDAction.READ, <Workspace workspace={workspace} userId={props.userId as number} />],
         [CRUDAction.UPDATE, <SaveWorkspace workspace={workspace} onSave={retrieveWorkspaceData} />],
         [CRUDAction.DELETE, <DeleteWorkspace workspace={workspace} />]
     ]);
 
     return crudRoutes.get(props.crudAction) as JSX.Element;
 }
+
+WorkspaceRouter.defaultProps = ({
+    crudAction: CRUDAction.READ,
+    userId: 0
+} as WorkspaceRouterProps);
 
 export default WorkspaceRouter;

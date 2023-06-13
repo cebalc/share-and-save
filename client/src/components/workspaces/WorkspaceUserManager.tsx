@@ -4,7 +4,8 @@ import WorkspaceAddUserForm from "./WorkspaceAddUserForm";
 import WorkspaceUserList from "./WorkspaceUserList";
 
 interface WorkspaceUserManagerProps {
-    workspaceId: number
+    workspaceId: number,
+    userId: number,
     userIsAdmin: boolean
 }
 
@@ -35,7 +36,7 @@ class WorkspaceUserManager extends React.Component<WorkspaceUserManagerProps, Wo
             <Container fluid className="my-2">
                 <p className="h5 text-center">Usuarios del espacio</p>
                 <WorkspaceAddUserForm onAdd={this.refreshList.bind(this)} />
-                <WorkspaceUserList ref={this.userList} workspaceId={this.props.workspaceId} userIsAdmin={this.props.userIsAdmin} />
+                <WorkspaceUserList ref={this.userList} workspaceId={this.props.workspaceId} userId={this.props.userId} userIsAdmin={this.props.userIsAdmin} />
             </Container>
         );
     }
