@@ -29,15 +29,23 @@ router.post("/",
 
 router.delete("/:id(\\d+)",
     workspaceController.requireAuth,
-    async(request, response, next) => {
+    async (request, response, next) => {
         await workspaceController.deleteWorkspace(request, response, next);
     }
 );
 
 router.get("/:id(\\d+)/users",
     workspaceController.requireAuth,
-    async(request, response, next) => {
+    async (request, response, next) => {
         await workspaceController.getWorkspaceUsers(request, response, next);
+    }
+);
+
+router.post("/:id(\\d+)/users",
+    workspaceController.requireAuth,
+    workspaceController.addWorkspaceUserFilters(),
+    async (request, response, next) => {
+        await workspaceController.addWorkspaceUser(request, response, next);
     }
 );
 

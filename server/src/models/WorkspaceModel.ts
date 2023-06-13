@@ -28,8 +28,15 @@ class WorkspaceModel extends Model {
         );
     }
 
-    public async addUserToWorkspace(workspaceId: number, userId: number, userIsAdmin: boolean = false) {
-
+    public async addUserToWorkspace(workspaceId: number, userId: number, userIsAdmin: boolean = false): Promise<boolean> {
+        let sqlQuery: string = `INSERT INTO workspace_members (workspace, user, admin)
+                                    VALUES (:workspaceId, :userId, :userIsAdmin)`;
+        let result: any = await super.preparedQuery(sqlQuery, {
+            "workspaceId": workspaceId,
+            "userId": userId,
+            "userIsAdmin": userIsAdmin
+        });
+        return !(!<boolean>result || (<OkPacket>result).affectedRows != 1);
     }
 
     public async removeAllUsersFromWorkspace(workspaceId: number): Promise<boolean> {
@@ -104,13 +111,20 @@ class WorkspaceModel extends Model {
         if(!(<boolean>createResult)) {
             return null;
         }
+
         let workspaceId: number = (<OkPacket>createResult).insertId;
-        let addUserSqlQuery: string = "INSERT INTO workspace_members (workspace, user, admin) VALUES (:workspaceId, :userId, 1)";
-        let addUserResult: any = await super.preparedQuery(addUserSqlQuery, {"workspaceId": workspaceId, "userId": userId});
-        if(!(<boolean>addUserResult)) {
+        let userAddedToWorkspace: boolean = await this.addUserToWorkspace(workspaceId, userId, true);
+        if(!userAddedToWorkspace) {
             await this.deleteWorkspace(workspaceId);
             return null;
         }
+
+        // let addUserSqlQuery: string = "INSERT INTO workspace_members (workspace, user, admin) VALUES (:workspaceId, :userId, 1)";
+        // let addUserResult: any = await super.preparedQuery(addUserSqlQuery, {"workspaceId": workspaceId, "userId": userId});
+        // if(!(<boolean>addUserResult)) {
+        //     await this.deleteWorkspace(workspaceId);
+        //     return null;
+        // }
         workspace.id = workspaceId;
         workspace.userIsAdmin = true;
         return workspace;

@@ -8,11 +8,13 @@ import PersistWorkspaceResponse from "../objects/responses/workspaces/PersistWor
 import ReadWorkspaceResponse from "../objects/responses/workspaces/ReadWorkspaceResponse";
 import ReadWorkspaceUsersResponse from "../objects/responses/workspaces/ReadWorkspaceUsersResponse";
 import DeleteWorkspaceResponse from "../objects/responses/workspaces/DeleteWorkspaceResponse";
+import AddWorkspaceUserResponse from "../objects/responses/workspaces/AddWorkspaceUserResponse";
 import UnlinkWorkspaceUserResponse from "../objects/responses/workspaces/UnlinkWorkspaceUserResponse";
 import {body, Result, ValidationChain, ValidationError, validationResult} from "express-validator";
 import strip_tags from "striptags";
 import {globalTrim} from "../modules/sanitizers";
 import CRUDAction from "../objects/enums/CRUDAction";
+import UserModel from "../models/UserModel";
 
 class WorkspaceController extends ServerController<WorkspaceModel> {
 
@@ -158,7 +160,7 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
                         requestWorkspace.userIsAdmin = true;
                         altered = await this.model.updateWorkspaceProperties(requestWorkspace);
                     } else {
-                        altered = false; //pendiente
+                        altered = await this.model.addUserToWorkspace(requestWorkspace.id, workspaceUserId);
                     }
                     break;
                 case CRUDAction.DELETE:
@@ -210,6 +212,62 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
                 workspaceUsersPublicInfo = workspaceUsers.map(user => user.getPublicInfo());
             }
             response.json(new ReadWorkspaceUsersResponse(success, workspaceUsersPublicInfo));
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    public addWorkspaceUserFilters(): ValidationChain {
+        return body("email", "Dirección válida de hasta 50 caracteres")
+            .exists()
+            .notEmpty()
+            .isEmail()
+            .normalizeEmail({
+                all_lowercase: true,
+                gmail_remove_dots: true}
+            );
+    }
+
+    public async addWorkspaceUser(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
+            let errors: Result<ValidationError> = validationResult(request);
+            if(!errors.isEmpty()) {
+                let errorsObject: Record<string, ValidationError> = errors.mapped();
+                response.json(new AddWorkspaceUserResponse(false,
+                    errorsObject.email !== undefined ? errorsObject.email.msg : ""
+                ));
+                return;
+            }
+
+            let workspaceId: number = parseInt(request.params.id);
+            let workspaceUserEmail: string = request.body.email;
+            let agentUserId: number = (<User>request.session["user"]).id;
+
+            let userModel: UserModel = new UserModel();
+            let workspaceUser: User = await userModel.getUserByEmail(workspaceUserEmail);
+            userModel.delete();
+            if(workspaceUser == null) {
+                response.json(new AddWorkspaceUserResponse(false, "", "No hay usuarios con ese email"));
+                return;
+            }
+
+            this.model = new WorkspaceModel();
+            let workspaceUsers: User[] = await this.model.getUsersByWorkspace(workspaceId);
+            this.model.delete();
+            if(workspaceUsers.some(user => user.id == workspaceUser.id)) {
+                response.json(new AddWorkspaceUserResponse(false, "", "El usuario ya está vinculado"));
+                return;
+            }
+
+            let addResponse: AddWorkspaceUserResponse = await this.alterWorkspace<AddWorkspaceUserResponse>(
+                new Workspace(workspaceId, "", "", false),
+                CRUDAction.UPDATE,
+                agentUserId,
+                new AddWorkspaceUserResponse(false, "", "No se ha podido añadir el usuario"),
+                new AddWorkspaceUserResponse(true),
+                workspaceUser.id
+            );
+            response.json(addResponse);
         } catch (error) {
             next(error);
         }
