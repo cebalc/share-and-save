@@ -7,11 +7,12 @@ import AlterWorkspaceResponse from "../objects/responses/workspaces/AlterWorkspa
 import PersistWorkspaceResponse from "../objects/responses/workspaces/PersistWorkspaceResponse";
 import ReadWorkspaceResponse from "../objects/responses/workspaces/ReadWorkspaceResponse";
 import ReadWorkspaceUsersResponse from "../objects/responses/workspaces/ReadWorkspaceUsersResponse";
+import DeleteWorkspaceResponse from "../objects/responses/workspaces/DeleteWorkspaceResponse";
+import UnlinkWorkspaceUserResponse from "../objects/responses/workspaces/UnlinkWorkspaceUserResponse";
 import {body, Result, ValidationChain, ValidationError, validationResult} from "express-validator";
 import strip_tags from "striptags";
 import {globalTrim} from "../modules/sanitizers";
 import CRUDAction from "../objects/enums/CRUDAction";
-import DeleteWorkspaceResponse from "../objects/responses/workspaces/DeleteWorkspaceResponse";
 
 class WorkspaceController extends ServerController<WorkspaceModel> {
 
@@ -19,6 +20,7 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
     private static readonly MSG_NOT_CREATED: string = "El espacio de trabajo no ha podido crearse.";
     private static readonly MSG_NOT_UPDATED: string = "El espacio de trabajo no existe o no ha podido actualizarse.";
     private static readonly MSG_NOT_DELETED: string = "El espacio de trabajo no existe o no ha podido borrarse.";
+    private static readonly MSG_USER_NOT_UNLINKED: string = "El espacio o el usuario no existen o no se ha podido desvincular.";
 
     public async getWorkspaces(request: Request, response: Response, next: NextFunction): Promise<void> {
         try {
@@ -140,22 +142,31 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
     private async alterWorkspace<T extends AlterWorkspaceResponse<any>>(
         requestWorkspace: Workspace,
         action: CRUDAction.UPDATE | CRUDAction.DELETE,
-        userId: number,
+        agentUserId: number,
         responseOnNoAlter: T,
-        responseOnAlter: T
+        responseOnAlter: T,
+        workspaceUserId: number = User.GUEST.id
     ): Promise<T> {
         this.model = new WorkspaceModel();
-        let storedWorkspace: Workspace = await this.model.getWorkspaceProperties(requestWorkspace.id, userId);
+        let storedWorkspace: Workspace = await this.model.getWorkspaceProperties(requestWorkspace.id, agentUserId);
         let altered: boolean = false;
         let alterable: boolean = (storedWorkspace != null && storedWorkspace.userIsAdmin);
         if(alterable) {
             switch (action) {
                 case CRUDAction.UPDATE:
-                    requestWorkspace.userIsAdmin = true;
-                    altered = await this.model.updateWorkspaceProperties(requestWorkspace);
+                    if(workspaceUserId == User.GUEST.id) {
+                        requestWorkspace.userIsAdmin = true;
+                        altered = await this.model.updateWorkspaceProperties(requestWorkspace);
+                    } else {
+                        altered = false; //pendiente
+                    }
                     break;
                 case CRUDAction.DELETE:
-                    altered = await this.model.deleteWorkspace(requestWorkspace.id);
+                    if(workspaceUserId == User.GUEST.id) {
+                        altered = await this.model.deleteWorkspace(requestWorkspace.id);
+                    } else {
+                        altered = await this.model.removeUserFromWorkspace(requestWorkspace.id, workspaceUserId);
+                    }
                     break;
             }
         }
@@ -183,7 +194,7 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
         }
     }
 
-    public async getWorkspaceUsers(request: Request, response: Response, next: NextFunction) {
+    public async getWorkspaceUsers(request: Request, response: Response, next: NextFunction): Promise<void> {
         try {
             this.model = new WorkspaceModel();
             let userId: number = (<User>request.session["user"]).id;
@@ -199,6 +210,26 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
                 workspaceUsersPublicInfo = workspaceUsers.map(user => user.getPublicInfo());
             }
             response.json(new ReadWorkspaceUsersResponse(success, workspaceUsersPublicInfo));
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    public async unlinkWorkspaceUser(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
+            let workspaceId: number = parseInt(request.params.workspace);
+            let unlinkUserId: number = parseInt(request.params.user);
+            let agentUserId: number = (<User>request.session["user"]).id;
+
+            let unlinkResponse: UnlinkWorkspaceUserResponse = await this.alterWorkspace<UnlinkWorkspaceUserResponse>(
+                new Workspace(workspaceId, "", "", false),
+                CRUDAction.DELETE,
+                agentUserId,
+                new UnlinkWorkspaceUserResponse(false, WorkspaceController.MSG_USER_NOT_UNLINKED),
+                new UnlinkWorkspaceUserResponse(true),
+                unlinkUserId
+            );
+            response.json(unlinkResponse);
         } catch (error) {
             next(error);
         }

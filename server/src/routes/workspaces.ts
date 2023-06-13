@@ -41,6 +41,13 @@ router.get("/:id(\\d+)/users",
     }
 );
 
+router.delete("/:workspace(\\d+)/users/:user(\\d+)",
+    workspaceController.requireAuth,
+    async(request, response, next) => {
+        await workspaceController.unlinkWorkspaceUser(request, response, next);
+    }
+);
+
 createDefaultRoutes(router, workspaceController);
 
 export default router;

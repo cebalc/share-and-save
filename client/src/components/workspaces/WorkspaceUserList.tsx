@@ -3,8 +3,8 @@ import Container from "react-bootstrap/Container";
 import User from "../../objects/entities/User";
 import Placeholder from "react-bootstrap/Placeholder";
 import ListGroup from "react-bootstrap/ListGroup";
-import BouncingIcon from "../BouncingIcon";
 import ReadWorkspaceUsersFetcher from "../../objects/fetchers/workspaces/ReadWorkspaceUsersFetcher";
+import UnlinkWorkspaceUserIcon from "./UnlinkWorkspaceUserIcon";
 
 interface WorkspaceUserListProps {
     userId: number,
@@ -65,7 +65,7 @@ class WorkspaceUserList extends React.Component<WorkspaceUserListProps, Workspac
                         <div>{user.email}</div>
                     </div>
                     {this.props.userIsAdmin && this.props.userId !== user.id &&
-                        <BouncingIcon family="far" name="trash-can" size="1x" />
+                        <UnlinkWorkspaceUserIcon workspaceId={this.props.workspaceId} removeUser={user} onRemoveUser={this.refresh.bind(this)} />
                     }
                 </ListGroup.Item>
             )}

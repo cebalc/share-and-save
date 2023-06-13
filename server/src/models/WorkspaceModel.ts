@@ -38,6 +38,18 @@ class WorkspaceModel extends Model {
         return <boolean>result;
     }
 
+    public async removeUserFromWorkspace(workspaceId: number, workspaceUserId: number): Promise<boolean> {
+        let sqlQuery: string = `DELETE FROM workspace_members WHERE
+                                    workspace = :workspaceId AND
+                                    user = :workspaceUserId`;
+        let result: any = await super.preparedQuery(sqlQuery, {
+            "workspaceId": workspaceId,
+            "workspaceUserId": workspaceUserId
+        });
+        return !(!<boolean>result || (<OkPacket>result).affectedRows != 1);
+
+    }
+
     public async deleteWorkspace(workspaceId: number): Promise<boolean> {
         await this.removeAllUsersFromWorkspace(workspaceId);
         let sqlQuery: string = "DELETE FROM workspace WHERE id = :workspaceId";
