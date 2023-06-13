@@ -1,5 +1,5 @@
-import Fetcher from "./Fetcher";
-import HTTPMethod from "../enums/HTTPMethod";
+import Fetcher from "../Fetcher";
+import HTTPMethod from "../../enums/HTTPMethod";
 
 class DeleteWorkspaceFetcher extends Fetcher<string> {
 

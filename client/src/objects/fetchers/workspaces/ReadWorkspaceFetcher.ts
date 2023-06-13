@@ -1,6 +1,6 @@
-import Workspace from "../entities/Workspace";
-import Fetcher from "./Fetcher";
-import HTTPMethod from "../enums/HTTPMethod";
+import Workspace from "../../entities/Workspace";
+import Fetcher from "../Fetcher";
+import HTTPMethod from "../../enums/HTTPMethod";
 
 class ReadWorkspaceFetcher extends Fetcher<Workspace[]> {
 

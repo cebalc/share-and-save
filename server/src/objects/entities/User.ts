@@ -17,7 +17,7 @@ class User {
             id: (user.id === undefined ? 0 : user.id),
             name: (user.name === undefined ? "" : user.name),
             surname: (user.surname === undefined ? "" : user.surname),
-            email: (user.email === undefined ? "" : undefined),
+            email: (user.email === undefined ? "" : user.email),
             level: (user.level === undefined ? UserLevel.ANONYMOUS : user.level)
         };
     }

@@ -1,7 +1,7 @@
 import React from "react";
 import WorkspaceEntity from "../../objects/entities/Workspace";
 import {Navigate, useParams} from "react-router-dom";
-import ReadWorkspaceFetcher from "../../objects/fetchers/ReadWorkspaceFetcher";
+import ReadWorkspaceFetcher from "../../objects/fetchers/workspaces/ReadWorkspaceFetcher";
 import Workspace from "../../routes/workspace/Workspace";
 import CRUDAction from "../../objects/enums/CRUDAction";
 import Container from "react-bootstrap/Container";

@@ -39,7 +39,7 @@ const WorkspaceMenu = (props: WorkspaceMenuProps): JSX.Element => {
     ];
 
     return (
-        <div className="mx-auto max-width-50nbp-sm d-flex flex-column justify-content-start">
+        <div className="mx-auto my-2 max-width-50nbp-sm d-flex flex-column justify-content-start">
         {menuItems.map((menuItem: MenuItem, index: number) =>
             <LinkContainer key={index} to={menuItem.mapping}>
                 <Button variant="outline-primary" className="m-2"

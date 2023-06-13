@@ -17,11 +17,11 @@ const Workspace = (props: WorkspaceProps) : JSX.Element => {
         <Container fluid>
             <WorkspaceCard name={props.workspace.name} description={props.workspace.description} size={WorkspaceCardSize.CAPTION} />
             <Row className="mt-4">
-                <Col md={4}>
+                <Col md={4} lg={6}>
                     <WorkspaceMenu workspaceId={props.workspace.id} userIsAdmin={props.workspace.userIsAdmin} />
                 </Col>
-                <Col md={8}>
-                    <WorkspaceUserManager />
+                <Col md={8} lg={6}>
+                    <WorkspaceUserManager workspaceId={props.workspace.id} userIsAdmin={props.workspace.userIsAdmin} />
                 </Col>
             </Row>
         </Container>

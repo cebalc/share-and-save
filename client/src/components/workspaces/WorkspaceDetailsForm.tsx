@@ -3,7 +3,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Workspace from "../../objects/entities/Workspace";
 import {LinkContainer} from "react-router-bootstrap";
-import PersistWorkspaceFetcher, {PersistWorkspaceResponse} from "../../objects/fetchers/PersistWorkspaceFetcher";
+import PersistWorkspaceFetcher, {PersistWorkspaceResponse} from "../../objects/fetchers/workspaces/PersistWorkspaceFetcher";
 import Alert from "react-bootstrap/Alert";
 import Container from "react-bootstrap/Container";
 

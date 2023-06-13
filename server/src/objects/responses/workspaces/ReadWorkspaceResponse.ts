@@ -1,5 +1,5 @@
-import JSONResponse from "./JSONResponse";
-import Workspace from "../entities/Workspace";
+import JSONResponse from "../JSONResponse";
+import Workspace from "../../entities/Workspace";
 
 class ReadWorkspaceResponse extends JSONResponse<Workspace[]> {}
 

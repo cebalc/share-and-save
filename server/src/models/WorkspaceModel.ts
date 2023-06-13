@@ -1,4 +1,5 @@
 import Model from "./Model";
+import User from "../objects/entities/User";
 import Workspace from "../objects/entities/Workspace";
 import { OkPacket, RowDataPacket } from "mysql2";
 
@@ -9,6 +10,22 @@ class WorkspaceModel extends Model {
                 ON W.id = WM.workspace WHERE WM.user = :userId AND W.name = :name`;
         let results: any = await super.preparedQuery(sqlQuery, {"userId": userId, "name": name});
         return !(<boolean>results) || (<RowDataPacket[]>results)[0].wscount === 1;
+    }
+
+    public async getUsersByWorkspace(workspaceId: number): Promise<User[]> {
+        let sqlQuery: string = `
+            SELECT
+                U.id AS id, U.name AS name, U.surname AS surname, U.email AS email, U.pass AS pass, U.level AS level
+                FROM users U INNER JOIN workspace_members WM ON U.id = WM.user
+                WHERE WM.workspace = :workspaceId
+                ORDER BY WM.admin DESC, U.name ASC`;
+        let results: any = await super.preparedQuery(sqlQuery, {"workspaceId": workspaceId});
+        if(!<boolean>results) {
+            return null;
+        }
+        return (<RowDataPacket[]>results).map(row =>
+            new User(row.id, row.name, row.surname, row.email, row.pass, row.level)
+        );
     }
 
     public async addUserToWorkspace(workspaceId: number, userId: number, userIsAdmin: boolean = false) {

@@ -1,5 +1,5 @@
-import Workspace from "../entities/Workspace";
-import WorkspaceResponse from "./WorkspaceResponse";
+import Workspace from "../../entities/Workspace";
+import AlterWorkspaceResponse from "./AlterWorkspaceResponse";
 
 interface IPersistWorkspaceResponse {
     name: string,
@@ -8,7 +8,7 @@ interface IPersistWorkspaceResponse {
     id: number
 }
 
-class PersistWorkspaceResponse extends WorkspaceResponse<IPersistWorkspaceResponse> {
+class PersistWorkspaceResponse extends AlterWorkspaceResponse<IPersistWorkspaceResponse> {
     public constructor(success: boolean, name: string = "", description: string = "", global: string = "", id: number = Workspace.NULL.id) {
         super(success, <IPersistWorkspaceResponse>{name, description, global, id});
     }

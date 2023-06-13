@@ -2,15 +2,16 @@ import ServerController from "./ServerController";
 import {NextFunction, Request, Response} from "express";
 import WorkspaceModel from "../models/WorkspaceModel";
 import Workspace from "../objects/entities/Workspace";
-import User from "../objects/entities/User";
-import WorkspaceResponse from "../objects/responses/WorkspaceResponse";
-import PersistWorkspaceResponse from "../objects/responses/PersistWorkspaceResponse";
-import ReadWorkspaceResponse from "../objects/responses/ReadWorkspaceResponse";
+import User, {UserPublicInfo} from "../objects/entities/User";
+import AlterWorkspaceResponse from "../objects/responses/workspaces/AlterWorkspaceResponse";
+import PersistWorkspaceResponse from "../objects/responses/workspaces/PersistWorkspaceResponse";
+import ReadWorkspaceResponse from "../objects/responses/workspaces/ReadWorkspaceResponse";
+import ReadWorkspaceUsersResponse from "../objects/responses/workspaces/ReadWorkspaceUsersResponse";
 import {body, Result, ValidationChain, ValidationError, validationResult} from "express-validator";
 import strip_tags from "striptags";
 import {globalTrim} from "../modules/sanitizers";
 import CRUDAction from "../objects/enums/CRUDAction";
-import DeleteWorkspaceResponse from "../objects/responses/DeleteWorkspaceResponse";
+import DeleteWorkspaceResponse from "../objects/responses/workspaces/DeleteWorkspaceResponse";
 
 class WorkspaceController extends ServerController<WorkspaceModel> {
 
@@ -136,7 +137,7 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
         }
     }
 
-    private async alterWorkspace<T extends WorkspaceResponse<any>>(
+    private async alterWorkspace<T extends AlterWorkspaceResponse<any>>(
         requestWorkspace: Workspace,
         action: CRUDAction.UPDATE | CRUDAction.DELETE,
         userId: number,
@@ -177,6 +178,27 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
                 new DeleteWorkspaceResponse(true)
             );
             response.json(deleteResponse);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    public async getWorkspaceUsers(request: Request, response: Response, next: NextFunction) {
+        try {
+            this.model = new WorkspaceModel();
+            let userId: number = (<User>request.session["user"]).id;
+            let workspaceId: number = parseInt(request.params.id);
+
+            let workspaceUsers: User[] = await this.model.getUsersByWorkspace(workspaceId);
+            this.model.delete();
+
+            let success: boolean = (workspaceUsers != null && workspaceUsers.some(user => user.id == userId));
+            let workspaceUsersPublicInfo: UserPublicInfo[] = [];
+
+            if(success) {
+                workspaceUsersPublicInfo = workspaceUsers.map(user => user.getPublicInfo());
+            }
+            response.json(new ReadWorkspaceUsersResponse(success, workspaceUsersPublicInfo));
         } catch (error) {
             next(error);
         }
