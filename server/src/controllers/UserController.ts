@@ -1,15 +1,15 @@
 import ServerController from "./ServerController";
-import { NextFunction, Request, Response } from "express";
+import {NextFunction, Request, Response} from "express";
 import UserModel from "../models/UserModel";
-import { makeHash, verifyHash } from "../modules/encryption";
+import {makeHash, verifyHash} from "../modules/encryption";
 import User, {UserPublicInfo} from "../objects/entities/User";
-import { ValidationChain, body, validationResult } from "express-validator";
-import { globalTrim } from "../modules/sanitizers";
+import {body, Result, ValidationChain, ValidationError, validationResult} from "express-validator";
 import strip_tags from "striptags";
-import SignInResponse from "../objects/responses/SignInResponse";
-import SignUpResponse from "../objects/responses/SignUpResponse";
-import SignOutResponse from "../objects/responses/SignOutResponse";
-import StatusResponse from "../objects/responses/StatusResponse";
+import SignInResponse from "../objects/responses/users/SignInResponse";
+import SignOutResponse from "../objects/responses/users/SignOutResponse";
+import StatusResponse from "../objects/responses/users/StatusResponse";
+import FilterFactory from "../objects/filters/FilterFactory";
+import PersistUserResponse from "../objects/responses/users/PersistUserResponse";
 
 class UserController extends ServerController<UserModel> {
     private static MSG_NO_USER: string = "No existe ningún usuario asociado al email introducido."
@@ -23,46 +23,60 @@ class UserController extends ServerController<UserModel> {
         response.json(new StatusResponse(true, userPublicInfo));
     }
 
-    public createUserFilters(): ValidationChain[] {
+    public persistUserFilters(): ValidationChain[] {
         return [
-            body("name", "Máximo 25 caracteres, sin símbolos")
-                .exists()
-                .customSanitizer(value => strip_tags(value))
-                .customSanitizer(value => globalTrim(value))
-                .matches(/^[a-záéíóú\s]{1,25}$/i),
-            body("surname", "Máximo 50 caracteres, sin símbolos")
-                .exists()
-                .customSanitizer(value => strip_tags(value))
-                .customSanitizer(value => globalTrim(value))
-                .matches(/^[a-záéíóú\s]{1,50}$/i),
-            body("email", "Dirección válida de hasta 50 caracteres")
-                .exists()
-                .notEmpty()
-                .isEmail()
-                .normalizeEmail({
-                    all_lowercase: true,
-                    gmail_remove_dots: true}),
-            body("pass", "Entre 8 y 15 caracteres incluyendo mayúsculas, minúsculas, números y símbolos ($, @, !, %, *, ?, &, -)")
-                .exists()
-                .customSanitizer(value => strip_tags(value))
-                .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!%*?&-])[A-Za-z\d$@!%*?&-]{8,15}$/)
+            FilterFactory.id(),
+            FilterFactory.userName(),
+            FilterFactory.userSurname(),
+            FilterFactory.userEmail(),
+            FilterFactory.password(true, false, true), //oldPass
+            FilterFactory.password(false, true, true) //pass
         ];
     }
 
-    public async createUser(request: Request, response: Response, next: NextFunction): Promise<void> {
+    public async persistUser(request: Request, response: Response, next: NextFunction): Promise<void> {
         try {
-            let errors = validationResult(request);
+            let errors: Result<ValidationError> = validationResult(request);
             if(!errors.isEmpty()) {
-                let errorsObject = errors.mapped();
-                response.json(new SignUpResponse(false, 
+                let errorsObject: Record<string, ValidationError> = errors.mapped();
+                response.json(new PersistUserResponse(false,
                     errorsObject.name !== undefined ? errorsObject.name.msg : "",
                     errorsObject.surname !== undefined ? errorsObject.surname.msg : "",
                     errorsObject.email !== undefined ? errorsObject.email.msg : "",
+                    errorsObject.oldPass !== undefined ? errorsObject.oldPass.msg : "",
                     errorsObject.pass !== undefined ? errorsObject.pass.msg : ""
                 ));
                 return;
             }
 
+            let userId: number = parseInt(request.body.id);
+            let pass: string = request.body.pass;
+            let oldPass: string = request.body.oldPass;
+
+            if(userId == User.GUEST.id) {
+                if(pass.length == 0) {
+                    response.json(new PersistUserResponse(false, "", "", "", "",
+                        "Debes introducir una contraseña")
+                    );
+                    return;
+                }
+                await this.createUser(request, response, next);
+            } else {
+                if(pass.length > 0 && oldPass.length == 0) {
+                    response.json(new PersistUserResponse(false, "", "", "",
+                        "Debes introducir tu contraseña actual")
+                    );
+                    return;
+                }
+                await this.updateUser(request, response, next);
+            }
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    private async createUser(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
             let name: string = request.body.name;
             let surname: string = request.body.surname;
             let email: string = request.body.email;
@@ -73,24 +87,29 @@ class UserController extends ServerController<UserModel> {
             let emailExists: boolean = await this.model.emailExists(email);
             if (emailExists) {
                 this.model.delete();
-                response.json(new SignUpResponse(false, "", "", "El email introducido ya existe. Escoge otro."));
+                response.json(new PersistUserResponse(false, "", "",
+                    "El email introducido ya existe. Escoge otro.")
+                );
                 return;
             }
 
             let encryptedPass: string = await makeHash(pass);
             let newUser: User = await this.model.createUser(name, surname, email, encryptedPass);
+            this.model.delete();
+
             let success: boolean = (newUser != null);
             if(success) {
                 request.session["user"] = newUser;
             }
-            this.model.delete();
-            response.json(new SignUpResponse(success, "", "", "", "", success ? "" : "El usuario no ha podido crearse"));
+            response.json(new PersistUserResponse(success, "", "", "", "", "",
+                success ? "" : "El usuario no ha podido crearse")
+            );
         } catch (error) {
             return next(error);
         }
     }
 
-    public validateEmail(request: Request, response: Response): void {
+    private async updateUser(request: Request, response: Response, next: NextFunction): Promise<void> {
 
     }
 

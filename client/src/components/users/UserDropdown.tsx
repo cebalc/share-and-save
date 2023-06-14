@@ -3,8 +3,8 @@ import Dropdown from "react-bootstrap/Dropdown";
 import DropdownToggle from "react-bootstrap/DropdownToggle";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {LinkContainer} from "react-router-bootstrap";
-import User from "../objects/entities/User";
-import UserLevel from "../objects/enums/UserLevel";
+import User from "../../objects/entities/User";
+import UserLevel from "../../objects/enums/UserLevel";
 
 interface UserDropdownProps {
     userLevel: UserLevel,

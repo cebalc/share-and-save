@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import NavMenu from "./NavMenu";
 import Footer from "./Footer";
 import Container from "react-bootstrap/Container";
-import UserLevel from "../objects/enums/UserLevel";
+import UserLevel from "../../objects/enums/UserLevel";
 
 interface LayoutProps {
     userLevel: UserLevel,

@@ -6,7 +6,7 @@ import Workspace from "../../routes/workspace/Workspace";
 import CRUDAction from "../../objects/enums/CRUDAction";
 import Container from "react-bootstrap/Container";
 import SaveWorkspace from "../../routes/workspace/SaveWorkspace";
-import StatusFetcher from "../../objects/fetchers/StatusFetcher";
+import StatusFetcher from "../../objects/fetchers/users/StatusFetcher";
 import User from "../../objects/entities/User";
 import DeleteWorkspace from "../../routes/workspace/DeleteWorkspace";
 

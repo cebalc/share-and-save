@@ -1,5 +1,5 @@
-import Fetcher from "./Fetcher";
-import HTTPMethod from "../enums/HTTPMethod";
+import Fetcher from "../Fetcher";
+import HTTPMethod from "../../enums/HTTPMethod";
 
 class SignInFetcher extends Fetcher<string[]> {
     private static readonly URL: string = "/users/login";

@@ -1,4 +1,4 @@
-import JSONResponse from "./JSONResponse";
+import JSONResponse from "../JSONResponse";
 
 class SignOutResponse extends JSONResponse<string> {
 

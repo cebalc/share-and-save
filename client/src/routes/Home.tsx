@@ -3,7 +3,7 @@ import Alert from "react-bootstrap/Alert";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
-import SignOutFetcher from "../objects/fetchers/SignOutFetcher";
+import SignOutFetcher from "../objects/fetchers/users/SignOutFetcher";
 import CoupleAccounts from "../images/home-couple-accounts.jpg";
 import SaveMoney from "../images/save-money.jpg";
 import LogoSnS from "../images/logo_SnS.png";

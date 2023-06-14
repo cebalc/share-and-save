@@ -1,5 +1,5 @@
-import Fetcher from "./Fetcher";
-import HTTPMethod from "../enums/HTTPMethod";
+import Fetcher from "../Fetcher";
+import HTTPMethod from "../../enums/HTTPMethod";
 
 class SignOutFetcher extends Fetcher<string> {
     private static URL: string = "/users/signout";

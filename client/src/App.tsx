@@ -1,13 +1,14 @@
 import React from 'react';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
-import StatusFetcher from "./objects/fetchers/StatusFetcher";
+import StatusFetcher from "./objects/fetchers/users/StatusFetcher";
 import User from "./objects/entities/User";
-import Layout from './components/Layout';
+import Layout from './components/layout/Layout';
 import Home from './routes/Home';
 import NotFound from './routes/NotFound';
 import SignIn from "./routes/SignIn";
 import SignUp from "./routes/SignUp";
 import Dashboard from "./routes/Dashboard";
+import Settings from "./routes/Settings";
 import RecordList from "./routes/workspace/RecordList";
 import WorkspaceRouter from "./components/workspaces/WorkspaceRouter";
 import CRUDAction from "./objects/enums/CRUDAction";
@@ -53,7 +54,7 @@ class App extends React.Component<AppProps, AppState> {
             <Route path="signin" element={<SignIn onSignIn={this.updateUserStatus.bind(this)} />} />
             <Route path="signout" element={<Home signOut onSignOut={this.updateUserStatus.bind(this)} />} />
             <Route path="register" element={<SignUp onSignUp={this.updateUserStatus.bind(this)} />} />
-            <Route path="settings" element={<Home />} />
+            <Route path="settings" element={<Settings />} />
             <Route path="dashboard" element={<Dashboard userId={this.state.currentUser.id} userName={this.state.currentUser.name} />} />
           </Route>
           <Route path="/workspace" element={<Layout fluid="md" userLevel={this.state.currentUser.level} userName={this.state.currentUser.name} /> }>

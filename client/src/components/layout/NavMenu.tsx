@@ -4,9 +4,9 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import {LinkContainer} from "react-router-bootstrap";
 import NavMenuOption from "./NavMenuOption";
-import UserDropdown from "./UserDropdown";
-import LogoSnS from "../images/logo_SnS.png";
-import UserLevel from "../objects/enums/UserLevel";
+import UserDropdown from "../users/UserDropdown";
+import LogoSnS from "../../images/logo_SnS.png";
+import UserLevel from "../../objects/enums/UserLevel";
 
 interface NavMenuProps {
     userLevel: UserLevel,
