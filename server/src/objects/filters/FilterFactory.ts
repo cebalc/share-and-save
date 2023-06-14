@@ -26,10 +26,14 @@ class FilterFactory {
             .matches(/^[a-záéíóú\s]{1,50}$/i);
     }
 
-    public static userEmail(): ValidationChain {
-        return body("email", "Dirección válida de hasta 50 caracteres")
+    public static userEmail(toBeStored: boolean = true): ValidationChain {
+        let errorMsg: string = (toBeStored ?
+            "Dirección válida de hasta 50 caracteres"
+            :
+            "Debes introducir un email"
+        );
+        return body("email", errorMsg)
             .exists()
-            .notEmpty()
             .isEmail()
             .normalizeEmail({
                 all_lowercase: true,

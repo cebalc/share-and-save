@@ -12,8 +12,7 @@ import FilterFactory from "../objects/filters/FilterFactory";
 import PersistUserResponse from "../objects/responses/users/PersistUserResponse";
 
 class UserController extends ServerController<UserModel> {
-    private static MSG_NO_USER: string = "No existe ningún usuario asociado al email introducido."
-    private static MSG_INV_PASS: string = "La contraseña introducida no es correcta.";
+    private static MSG_INV_LOGIN: string = "Usuario o contraseña incorrectos";
 
     public checkStatus(request: Request, response: Response): void {
         let userPublicInfo: UserPublicInfo = User.GUEST.getPublicInfo();
@@ -115,22 +114,14 @@ class UserController extends ServerController<UserModel> {
 
     public loginFilters(): ValidationChain[] {
         return [
-            body("email", "Debes introducir un email")
-                .exists()
-                .isEmail()
-                .normalizeEmail({
-                    all_lowercase: true,
-                    gmail_remove_dots: true}),
-            body("pass", "Debes introducir una contraseña")
-                .exists()
-                .customSanitizer(value => strip_tags(value))
-                .notEmpty()
+            FilterFactory.userEmail(false),
+            FilterFactory.password()
         ];
     }
 
     public async login(request: Request, response: Response, next: NextFunction): Promise<void> {
         try {
-            let errors = validationResult(request);
+            let errors: Result<ValidationError> = validationResult(request);
             if(!errors.isEmpty()) {
                 response.json(new SignInResponse(false, errors.array().map(error => error.msg)));
                 return;
@@ -143,17 +134,17 @@ class UserController extends ServerController<UserModel> {
             let user: User = await this.model.getUserByEmail(email);
             this.model.delete();
 
-            if (user == null) {
-                response.json(new SignInResponse(false, new Array<string>(UserController.MSG_NO_USER)));
+            let passMatches: boolean = false;
+            if(user != null) {
+                passMatches = await verifyHash(pass, user.pass);
+            }
+
+            if (user == null || !passMatches) {
+                response.json(new SignInResponse(false, [UserController.MSG_INV_LOGIN]));
                 return;
             }
-            let passMatches: boolean = await verifyHash(pass, user.pass);
-            if (!passMatches) {
-                response.json(new SignInResponse(false, new Array<string>(UserController.MSG_INV_PASS)));
-            } else {
-                request.session["user"] = user;
-                response.json(new SignInResponse(true));
-            }
+            request.session["user"] = user;
+            response.json(new SignInResponse(true));
         } catch(error) {
             return next(error);
         }
