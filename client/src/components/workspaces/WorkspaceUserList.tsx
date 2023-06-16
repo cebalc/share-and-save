@@ -53,6 +53,13 @@ class WorkspaceUserList extends React.Component<WorkspaceUserListProps, Workspac
         </ListGroup>);
     }
 
+    private renderDeleteIcon(user: User): React.ReactNode {
+        if(this.props.userIsAdmin && this.props.userId !== user.id) {
+            return <UnlinkWorkspaceUserIcon workspaceId={this.props.workspaceId}
+                        removeUser={user} onRemoveUser={this.refresh.bind(this)} />
+        }
+    }
+
     private renderList(): React.ReactNode {
         if(this.state.users.length === 0) {
             return (<Container fluid>Este espacio no contiene usuarios</Container>);
@@ -64,9 +71,7 @@ class WorkspaceUserList extends React.Component<WorkspaceUserListProps, Workspac
                         <div className="fw-bold">{`${user.name} ${user.surname}`}</div>
                         <div>{user.email}</div>
                     </div>
-                    {this.props.userIsAdmin && this.props.userId !== user.id &&
-                        <UnlinkWorkspaceUserIcon workspaceId={this.props.workspaceId} removeUser={user} onRemoveUser={this.refresh.bind(this)} />
-                    }
+                    {this.renderDeleteIcon(user)}
                 </ListGroup.Item>
             )}
         </ListGroup>);
@@ -84,10 +89,7 @@ class WorkspaceUserList extends React.Component<WorkspaceUserListProps, Workspac
         if(!await usersFetcher.retrieveData()) {
             return;
         }
-        console.log("hay respuesta");
         let workspaceUsers: User[] = usersFetcher.getResponseData();
-        console.table(workspaceUsers);
-        console.log(usersFetcher.success());
         if(usersFetcher.success()) {
             this.setState({users: workspaceUsers, nothingRetrievedYet: false});
         }

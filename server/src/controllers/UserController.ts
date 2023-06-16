@@ -80,8 +80,6 @@ class UserController extends ServerController<UserModel> {
             if(persistResult.user != null) {
                 request.session["user"] = persistResult.user;
             }
-            console.log("Al terminar persistUser():");
-            console.table(request.session["user"]);
             response.json(persistResult.response);
         } catch (error) {
             return next(error);

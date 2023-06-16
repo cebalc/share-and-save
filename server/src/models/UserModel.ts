@@ -1,6 +1,7 @@
 import Model from "./Model";
 import User from "../objects/entities/User";
-import { RowDataPacket } from "mysql2";
+import UserRow from "../objects/rows/UserRow";
+import {OkPacket} from "mysql2";
 
 class UserModel extends Model {
     public async emailExists(email: string): Promise<boolean> {
@@ -9,7 +10,7 @@ class UserModel extends Model {
 
     public async createUser(name: string, surname: string, email: string, pass: string): Promise<User> {
         let sqlQuery: string = "INSERT INTO users (name, surname, email, pass) VALUES (:name, :surname, :email, :pass)";
-        let insertId: number = await super.insertSingleRecord(sqlQuery, {
+        let insertId: number = await super.getSingleInsertedRecordId(sqlQuery, {
             "name": name,
             "surname": surname,
             "email": email,
@@ -19,17 +20,6 @@ class UserModel extends Model {
             return null;
         }
         return await this.getUserById(insertId);
-        //
-        // let results: any = await super.preparedQuery(sqlQuery, {
-        //     "name": name,
-        //     "surname": surname,
-        //     "email": email,
-        //     "pass": pass
-        // });
-        // if(!<boolean>results) {
-        //     return null;
-        // }
-        // return await this.getUserByEmail(email);
     }
 
     public async getUserByEmail(email: string): Promise<User> {
@@ -42,8 +32,8 @@ class UserModel extends Model {
 
     private async getSingleUser(sqlWhere: "id = :id" | "email = :email", value: {"id": number} | {"email": string}): Promise<User> {
         let sqlQuery: string = `SELECT * FROM users WHERE ${sqlWhere}`;
-        let row: RowDataPacket = await super.getSingleRecord(sqlQuery, value);
-        return (row != null ? new User(row.id, row.name, row.surname, row.email, row.pass, row.level) : null);
+        let row: UserRow = await super.getSingleRecord<UserRow>(sqlQuery, value);
+        return (row != null ? User.ofRow(row) : null);
     }
 
     public async updateUserPersonalData(id: number, name: string, surname: string, email: string): Promise<User> {

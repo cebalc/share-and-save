@@ -1,130 +1,108 @@
 import Model from "./Model";
 import User from "../objects/entities/User";
 import Workspace from "../objects/entities/Workspace";
-import { OkPacket, RowDataPacket } from "mysql2";
+import { OkPacket } from "mysql2";
+import UserRow from "../objects/rows/UserRow";
+import WorkspaceRow from "../objects/rows/WorkspaceRow";
 
 class WorkspaceModel extends Model {
 
     public async workspaceNameExists(userId: number, name: string): Promise<boolean> {
-        let sqlQuery: string = `SELECT Count(W.id) AS wscount FROM workspace W INNER JOIN workspace_members WM
-                ON W.id = WM.workspace WHERE WM.user = :userId AND W.name = :name`;
-        let results: any = await super.preparedQuery(sqlQuery, {"userId": userId, "name": name});
-        return !(<boolean>results) || (<RowDataPacket[]>results)[0].wscount === 1;
+        let userWorkspaces: Workspace[] = await this.getWorkspacesByUser(userId);
+        if(userWorkspaces == null) {
+            return true;
+        }
+        return userWorkspaces.some(workspace => workspace.name == name);
     }
 
     public async getUsersByWorkspace(workspaceId: number): Promise<User[]> {
-        let sqlQuery: string = `
-            SELECT
+        let sqlQuery: string = `SELECT
                 U.id AS id, U.name AS name, U.surname AS surname, U.email AS email, U.pass AS pass, U.level AS level
                 FROM users U INNER JOIN workspace_members WM ON U.id = WM.user
                 WHERE WM.workspace = :workspaceId
                 ORDER BY WM.admin DESC, U.name ASC`;
-        let results: any = await super.preparedQuery(sqlQuery, {"workspaceId": workspaceId});
-        if(!<boolean>results) {
-            return null;
-        }
-        return (<RowDataPacket[]>results).map(row =>
-            new User(row.id, row.name, row.surname, row.email, row.pass, row.level)
-        );
+        let rows: UserRow[] = await this.getMultipleRecords<UserRow>(sqlQuery, {"workspaceId": workspaceId});
+        return (rows != null ? rows.map(row => User.ofRow(row)) : null);
     }
 
     public async addUserToWorkspace(workspaceId: number, userId: number, userIsAdmin: boolean = false): Promise<boolean> {
         let sqlQuery: string = `INSERT INTO workspace_members (workspace, user, admin)
                                     VALUES (:workspaceId, :userId, :userIsAdmin)`;
-        let result: any = await super.preparedQuery(sqlQuery, {
+        return await super.singleInsertedRecordSuccessful(sqlQuery, {
             "workspaceId": workspaceId,
             "userId": userId,
             "userIsAdmin": userIsAdmin
         });
-        return !(!<boolean>result || (<OkPacket>result).affectedRows != 1);
     }
 
-    public async removeAllUsersFromWorkspace(workspaceId: number): Promise<boolean> {
+    public async removeAllUsersFromWorkspace(workspaceId: number): Promise<number> {
         let sqlQuery: string = "DELETE FROM workspace_members WHERE workspace = :workspaceId";
-        let result: any = await super.preparedQuery(sqlQuery, {"workspaceId": workspaceId});
-        return <boolean>result;
+        let result: OkPacket = await super.deleteMultipleRecords(sqlQuery, {"workspaceId": workspaceId});
+        return result.affectedRows;
     }
 
     public async removeUserFromWorkspace(workspaceId: number, workspaceUserId: number): Promise<boolean> {
         let sqlQuery: string = `DELETE FROM workspace_members WHERE
                                     workspace = :workspaceId AND
                                     user = :workspaceUserId`;
-        let result: any = await super.preparedQuery(sqlQuery, {
+        return await super.deleteSingleRecord(sqlQuery, {
             "workspaceId": workspaceId,
             "workspaceUserId": workspaceUserId
         });
-        return !(!<boolean>result || (<OkPacket>result).affectedRows != 1);
-
     }
 
     public async deleteWorkspace(workspaceId: number): Promise<boolean> {
         await this.removeAllUsersFromWorkspace(workspaceId);
         let sqlQuery: string = "DELETE FROM workspace WHERE id = :workspaceId";
-        let result: any = await super.preparedQuery(sqlQuery, {"workspaceId": workspaceId});
-        return !(!<boolean>result || (<OkPacket>result).affectedRows != 1);
+        return await this.deleteSingleRecord(sqlQuery, {"workspaceId": workspaceId});
     }
 
-    public async getWorkspaceProperties(workspaceId: number, userId: number): Promise<Workspace> {
-        let sqlQuery: string = `SELECT W.name, W.description, WM.admin FROM workspace W
+    public async getWorkspace(workspaceId: number, userId: number): Promise<Workspace> {
+        let sqlQuery: string = `SELECT W.id, W.name, W.description, WM.admin FROM workspace W
                                         INNER JOIN workspace_members WM on W.id = WM.workspace
                                         WHERE W.id = :workspaceId AND WM.user = :userId`;
-        let result: any = await super.preparedQuery(sqlQuery, {"workspaceId": workspaceId, "userId": userId});
-        if(!<boolean>result || (<RowDataPacket[]>result).length != 1) {
-            return null;
-        }
-        let row: RowDataPacket = (<RowDataPacket[]>result)[0];
-        return new Workspace(workspaceId, row.name, row.description, row.admin);
+        let workspaceRow: WorkspaceRow = await super.getSingleRecord<WorkspaceRow>(sqlQuery, {
+            "workspaceId": workspaceId,
+            "userId": userId}
+        );
+        return (workspaceRow != null ? Workspace.ofRow(workspaceRow) : null);
     }
 
     public async updateWorkspaceProperties(workspace: Workspace): Promise<boolean> {
         let sqlQuery: string = "UPDATE workspace SET name = :name, description = :description WHERE id = :id";
-        let result: any = await super.preparedQuery(sqlQuery, {
+        return await super.updateSingleRecord(sqlQuery, {
             "name": workspace.name,
             "description": workspace.description,
             "id": workspace.id
         });
-        return !(!<boolean>result || (<OkPacket>result).affectedRows != 1);
     }
 
     public async getWorkspacesByUser(userId: number): Promise<Workspace[]> {
-        let sqlQuery: string = `
-            SELECT
+        let sqlQuery: string = `SELECT
                 W.id AS id, W.name AS name, W.description AS description, WM.admin AS admin
                 FROM workspace W INNER JOIN workspace_members WM ON W.id = WM.workspace
                 WHERE WM.user = :userId
                 ORDER BY W.name`;
-        let results: any = await super.preparedQuery(sqlQuery, {"userId": userId});
-        if(!<boolean>results) { //Error en la consulta
-            return null;
-        }
-        return (<RowDataPacket[]>results).map(row =>
-            new Workspace(row.id, row.name, row.description, row.admin)
-        );
+        let workspaceRows: WorkspaceRow[] = await super.getMultipleRecords<WorkspaceRow>(sqlQuery, {"userId": userId});
+        return (workspaceRows != null ? workspaceRows.map(row => Workspace.ofRow(row)) : null);
     }
 
     public async createWorkspace(userId: number, workspace: Workspace): Promise<Workspace> {
-        let createSqlQuery: string = "INSERT INTO workspace (name, description) VALUES (:name, :description)";
-        let createResult: any = await super.preparedQuery(createSqlQuery, {
+        let sqlQuery: string = "INSERT INTO workspace (name, description) VALUES (:name, :description)";
+        let workspaceId: number = await super.getSingleInsertedRecordId(sqlQuery, {
             "name": workspace.name,
-            "description": workspace.description}
-        );
-        if(!(<boolean>createResult)) {
+            "description": workspace.description
+        });
+        if(workspaceId == WorkspaceModel.ID_NULL) {
             return null;
         }
 
-        let workspaceId: number = (<OkPacket>createResult).insertId;
         let userAddedToWorkspace: boolean = await this.addUserToWorkspace(workspaceId, userId, true);
         if(!userAddedToWorkspace) {
             await this.deleteWorkspace(workspaceId);
             return null;
         }
 
-        // let addUserSqlQuery: string = "INSERT INTO workspace_members (workspace, user, admin) VALUES (:workspaceId, :userId, 1)";
-        // let addUserResult: any = await super.preparedQuery(addUserSqlQuery, {"workspaceId": workspaceId, "userId": userId});
-        // if(!(<boolean>addUserResult)) {
-        //     await this.deleteWorkspace(workspaceId);
-        //     return null;
-        // }
         workspace.id = workspaceId;
         workspace.userIsAdmin = true;
         return workspace;

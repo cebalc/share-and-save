@@ -32,6 +32,12 @@ class WorkspaceUserManager extends React.Component<WorkspaceUserManagerProps, Wo
         }
     }
 
+    private renderAddForm(): React.ReactNode {
+        if(this.props.userIsAdmin) {
+            return <WorkspaceAddUserForm workspaceId={this.props.workspaceId} onAdd={this.refreshList.bind(this)} />;
+        }
+    }
+
     public render(): React.ReactNode {
         return (
             <Container fluid className="my-2">
@@ -43,9 +49,7 @@ class WorkspaceUserManager extends React.Component<WorkspaceUserManagerProps, Wo
                          onClick={() => this.refreshList()}
                     />
                 </p>
-                {this.props.userIsAdmin &&
-                    <WorkspaceAddUserForm workspaceId={this.props.workspaceId} onAdd={this.refreshList.bind(this)} />
-                }
+                {this.renderAddForm()}
                 <WorkspaceUserList ref={this.userList} workspaceId={this.props.workspaceId} userId={this.props.userId} userIsAdmin={this.props.userIsAdmin} />
             </Container>
         );

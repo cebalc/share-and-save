@@ -48,7 +48,7 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
             let workspaceId: number = parseInt(request.params.id);
             let userId: number = (<User>request.session["user"]).id;
             this.model = new WorkspaceModel();
-            let workspace: Workspace = await this.model.getWorkspaceProperties(workspaceId, userId);
+            let workspace: Workspace = await this.model.getWorkspace(workspaceId, userId);
             this.model.delete();
             response.json(new ReadWorkspaceResponse(workspace != null, [workspace]));
         } catch (error) {
@@ -150,7 +150,7 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
         workspaceUserId: number = User.GUEST.id
     ): Promise<T> {
         this.model = new WorkspaceModel();
-        let storedWorkspace: Workspace = await this.model.getWorkspaceProperties(requestWorkspace.id, agentUserId);
+        let storedWorkspace: Workspace = await this.model.getWorkspace(requestWorkspace.id, agentUserId);
         let altered: boolean = false;
         let alterable: boolean = (storedWorkspace != null && storedWorkspace.userIsAdmin);
         if(alterable) {

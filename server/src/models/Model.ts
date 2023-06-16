@@ -48,13 +48,13 @@ abstract class Model {
      * @param values Object that maps template params with values (e.g. use {"foo": bar} to replace :foo with bar value)
      * @returns Promise that resolves into SQL query results or false if an error occurred
      */
-    protected async preparedQuery(sqlQuery: string, values?: Object): Promise<RowDataPacket[] | OkPacket | false> {
-        if(this.connectionClosed) {
-            throw new Error("La conexión a la base de datos ya está cerrada");
-        }
+    protected async preparedQuery<T extends RowDataPacket>(sqlQuery: string, values?: Object): Promise<T[] | OkPacket | false> {
         try {
-            return new Promise<RowDataPacket[] | OkPacket>((resolve, reject) => {
-                this.connection.query<RowDataPacket[] | OkPacket>(sqlQuery, values, (error, results) => {
+            if(this.connectionClosed) {
+                throw new Error("La conexión a la base de datos ya está cerrada");
+            }
+            return new Promise<T[] | OkPacket>((resolve, reject) => {
+                this.connection.query<T[] | OkPacket>(sqlQuery, values, (error, results) => {
                     if (error) {
                         reject(error);
                     }
@@ -67,34 +67,78 @@ abstract class Model {
         }
     }
 
-    protected async insertSingleRecord(sqlQuery: string, values?: Object): Promise<number> {
+    protected async insertSingleRecord(sqlQuery: string, values?: Object): Promise<OkPacket> {
         if(!sqlQuery.match(/^INSERT/i)) {
             throw new Error(`Instrucción SQL inválida, se esperaba "INSERT..."`);
         }
         let queryResult: any = await this.preparedQuery(sqlQuery, values);
         if(!<boolean>queryResult) {
-            return Model.ID_NULL;
+            return null;
         }
-        return (<OkPacket>queryResult).insertId;
+        return <OkPacket>queryResult;
     }
 
-    protected async getSingleRecord(sqlQuery: string, values?: Object): Promise<RowDataPacket> {
-        if(!sqlQuery.match(/^SELECT/i)) {
+    protected async getSingleInsertedRecordId(sqlQuery: string, values?: Object): Promise<number> {
+        let insertResult: OkPacket = await this.insertSingleRecord(sqlQuery, values);
+        return (insertResult != null ? insertResult.insertId : Model.ID_NULL);
+    }
+
+    protected async singleInsertedRecordSuccessful(sqlQuery: string, values?: Object): Promise<boolean> {
+        let insertResult: OkPacket = await this.insertSingleRecord(sqlQuery, values);
+        return (insertResult != null && insertResult.affectedRows == 1);
+    }
+
+    protected async getSingleRecord<T extends RowDataPacket>(sqlQuery: string, values?: Object): Promise<T> {
+        let queryResult: T[] = await this.getMultipleRecords<T>(sqlQuery, values);
+        if(queryResult == null || queryResult.length != 1) {
+            return null;
+        }
+        return queryResult[0];
+    }
+
+    protected async getMultipleRecords<T extends RowDataPacket>(sqlQuery: string, values?: Object): Promise<T[]> {
+        if(!sqlQuery.match(/^\s*SELECT/i)) {
             throw new Error(`Instrucción SQL inválida, se esperaba "SELECT..."`);
         }
         let queryResult: any = await this.preparedQuery(sqlQuery, values);
-        if(!<boolean>queryResult || (<RowDataPacket[]>queryResult).length != 1) {
+        if(!<boolean>queryResult) {
             return null;
         }
-        return (<RowDataPacket[]>queryResult)[0];
+        return <T[]>queryResult;
     }
 
     protected async updateSingleRecord(sqlQuery: string, values?: Object): Promise<boolean> {
-        if(!sqlQuery.match(/^UPDATE/i)) {
+        return this.alterSingleRecord(await this.updateMultipleRecords(sqlQuery, values));
+    }
+
+    protected async updateMultipleRecords(sqlQuery: string, values?: Object): Promise<OkPacket> {
+        if(!sqlQuery.match(/^\s*UPDATE/i)) {
             throw new Error(`Instrucción SQL inválida, se esperaba "UPDATE..."`);
         }
-        let queryResult: any = await this.preparedQuery(sqlQuery, values);
-        return !(!<boolean>queryResult || (<OkPacket>queryResult).affectedRows != 1);
+        return await this.alterMultipleRecords(sqlQuery, values);
+    }
+
+    protected async deleteSingleRecord(sqlQuery: string, values?: Object): Promise<boolean> {
+        return this.alterSingleRecord(await this.deleteMultipleRecords(sqlQuery, values));
+    }
+
+    protected async deleteMultipleRecords(sqlQuery: string, values?: Object): Promise<OkPacket> {
+        if(!sqlQuery.match(/^\s*DELETE/i)) {
+            throw new Error(`Instrucción SQL inválida, se esperaba "DELETE..."`);
+        }
+        return await this.alterMultipleRecords(sqlQuery, values);
+    }
+
+    private alterSingleRecord(alterResult: OkPacket): boolean {
+        return (alterResult != null && alterResult.affectedRows == 1);
+    }
+
+    private async alterMultipleRecords(sqlQuery: string, values?: Object): Promise<OkPacket> {
+        let result: any = await this.preparedQuery(sqlQuery, values);
+        if(!<boolean>result) {
+            return null;
+        }
+        return <OkPacket>result;
     }
 
     protected logError(error: mysql.QueryError): void {

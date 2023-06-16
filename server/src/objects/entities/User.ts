@@ -1,4 +1,5 @@
 import UserLevel from "../enums/UserLevel";
+import UserRow from "../rows/UserRow";
 
 interface FrontEndUser {
     id: number,
@@ -20,6 +21,10 @@ class User {
             email: (user.email === undefined ? "" : user.email),
             level: (user.level === undefined ? UserLevel.ANONYMOUS : user.level)
         };
+    }
+
+    public static ofRow(row: UserRow): User {
+        return new User(row.id, row.name, row.surname, row.email, row.pass, row.level);
     }
 
     public id: number;
