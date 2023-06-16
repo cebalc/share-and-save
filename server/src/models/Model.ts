@@ -57,10 +57,28 @@ abstract class Model {
                 });
             });
         } catch (error) {
-            console.log("Error en preparedQuery");
             this.logError(error);
             return false;
         }
+    }
+
+    protected async getSingleRecord(sqlQuery: string, values?: Object): Promise<RowDataPacket> {
+        if(!sqlQuery.match(/^SELECT/i)) {
+            throw new Error(`Instrucción SQL inválida, se esperaba "SELECT..."`);
+        }
+        let queryResult: any = await this.preparedQuery(sqlQuery, values);
+        if(!<boolean>queryResult || (<RowDataPacket[]>queryResult).length != 1) {
+            return null;
+        }
+        return (<RowDataPacket[]>queryResult)[0];
+    }
+
+    protected async updateSingleRecord(sqlQuery: string, values?: Object): Promise<boolean> {
+        if(!sqlQuery.match(/^UPDATE/i)) {
+            throw new Error(`Instrucción SQL inválida, se esperaba "UPDATE..."`);
+        }
+        let queryResult: any = await this.preparedQuery(sqlQuery, values);
+        return !(!<boolean>queryResult || (<OkPacket>queryResult).affectedRows != 1);
     }
 
     protected logError(error: mysql.QueryError): void {

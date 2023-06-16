@@ -48,10 +48,8 @@ class FilterFactory {
             :
             "Debes introducir una contraseña");
         let chain: ValidationChain = body(fieldName, errorMsg);
-        if(!optional) {
-            chain = chain.exists();
-        }
-        chain = chain.customSanitizer(value => strip_tags(value));
+        chain = (optional ? chain.optional({values: "falsy"}) : chain.exists())
+            .customSanitizer(value => strip_tags(value));
         if(toBeStored) {
             chain = chain.matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!%*?&-])[A-Za-z\d$@!%*?&-]{8,15}$/);
         }

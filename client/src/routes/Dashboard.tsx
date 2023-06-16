@@ -5,6 +5,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import {LinkContainer} from "react-router-bootstrap";
+import User from "../objects/entities/User";
 
 interface DashboardProps {
     userId: number,
@@ -29,7 +30,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     }
 
     private preventAnonymousUsers(): React.ReactNode {
-        if(this.props.userId === 0) {
+        if(this.props.userId === User.GUEST.id) {
             return (<Navigate to="/signin" />);
         }
     }
