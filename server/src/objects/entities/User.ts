@@ -1,6 +1,6 @@
 import UserLevel from "../enums/UserLevel";
 
-interface UserPublicInfo {
+interface FrontEndUser {
     id: number,
     name: string,
     surname: string,
@@ -12,8 +12,8 @@ class User {
 
     public static readonly GUEST: User = new User(0, "", "", "", "", UserLevel.ANONYMOUS);
 
-    public static extractUserPublicInfo(user: any): UserPublicInfo {
-        return <UserPublicInfo>{
+    public static makeFrontEndUser(user: any): FrontEndUser {
+        return <FrontEndUser>{
             id: (user.id === undefined ? 0 : user.id),
             name: (user.name === undefined ? "" : user.name),
             surname: (user.surname === undefined ? "" : user.surname),
@@ -38,10 +38,10 @@ class User {
         this.level = level;
     }
 
-    public getPublicInfo(): UserPublicInfo {
-        return User.extractUserPublicInfo(this);
+    public makeFrontEndUser(): FrontEndUser {
+        return User.makeFrontEndUser(this);
     }
 }
 
 export default User;
-export type { UserPublicInfo };
+export type { FrontEndUser };

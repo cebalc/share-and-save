@@ -28,10 +28,6 @@ class User {
         this.email = email;
         this.level = level;
     }
-
-    public buildFullName(): string {
-        return `${this.name} ${this.surname}`;
-    }
 }
 
 export default User;

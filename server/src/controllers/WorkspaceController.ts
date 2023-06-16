@@ -2,7 +2,7 @@ import ServerController from "./ServerController";
 import {NextFunction, Request, Response} from "express";
 import WorkspaceModel from "../models/WorkspaceModel";
 import Workspace from "../objects/entities/Workspace";
-import User, {UserPublicInfo} from "../objects/entities/User";
+import User, {FrontEndUser} from "../objects/entities/User";
 import AlterWorkspaceResponse from "../objects/responses/workspaces/AlterWorkspaceResponse";
 import PersistWorkspaceResponse from "../objects/responses/workspaces/PersistWorkspaceResponse";
 import ReadWorkspaceResponse from "../objects/responses/workspaces/ReadWorkspaceResponse";
@@ -206,12 +206,12 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
             this.model.delete();
 
             let success: boolean = (workspaceUsers != null && workspaceUsers.some(user => user.id == userId));
-            let workspaceUsersPublicInfo: UserPublicInfo[] = [];
+            let workspaceFrontEndUsers: FrontEndUser[] = [];
 
             if(success) {
-                workspaceUsersPublicInfo = workspaceUsers.map(user => user.getPublicInfo());
+                workspaceFrontEndUsers = workspaceUsers.map(user => user.makeFrontEndUser());
             }
-            response.json(new ReadWorkspaceUsersResponse(success, workspaceUsersPublicInfo));
+            response.json(new ReadWorkspaceUsersResponse(success, workspaceFrontEndUsers));
         } catch (error) {
             next(error);
         }

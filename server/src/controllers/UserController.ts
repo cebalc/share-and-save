@@ -1,15 +1,15 @@
 import ServerController from "./ServerController";
 import {NextFunction, Request, Response} from "express";
+import {Result, ValidationChain, ValidationError, validationResult} from "express-validator";
 import UserModel from "../models/UserModel";
 import {makeHash, verifyHash} from "../modules/encryption";
-import User, {UserPublicInfo} from "../objects/entities/User";
-import {Result, ValidationChain, ValidationError, validationResult} from "express-validator";
+import User, {FrontEndUser} from "../objects/entities/User";
+import UserLevel from "../objects/enums/UserLevel";
+import FilterFactory from "../objects/filters/FilterFactory";
 import SignInResponse from "../objects/responses/users/SignInResponse";
 import SignOutResponse from "../objects/responses/users/SignOutResponse";
 import StatusResponse from "../objects/responses/users/StatusResponse";
-import FilterFactory from "../objects/filters/FilterFactory";
 import PersistUserResponse from "../objects/responses/users/PersistUserResponse";
-import UserLevel from "../objects/enums/UserLevel";
 
 interface PersistUserResult {
     user: User,
@@ -20,11 +20,9 @@ class UserController extends ServerController<UserModel> {
     private static MSG_INV_LOGIN: string = "Usuario o contraseña incorrectos";
 
     public checkStatus(request: Request, response: Response): void {
-        let userPublicInfo: UserPublicInfo = User.GUEST.getPublicInfo();
+        let userPublicInfo: FrontEndUser = User.GUEST.makeFrontEndUser();
         if(request.session["user"] !== undefined) {
-            console.log("En checkStatus():");
-            console.table(request.session["user"]);
-            userPublicInfo = User.extractUserPublicInfo(request.session["user"]);
+            userPublicInfo = User.makeFrontEndUser(request.session["user"]);
         }
         response.json(new StatusResponse(true, userPublicInfo));
     }
@@ -77,7 +75,7 @@ class UserController extends ServerController<UserModel> {
                     response.json(PersistUserResponse.OLD_PASSWORD_MISSING);
                     return;
                 }
-                persistResult = await this.updateUser(requestUser, oldPass, response, next);
+                persistResult = await this.updateUser(requestUser, oldPass, next);
             }
             if(persistResult.user != null) {
                 request.session["user"] = persistResult.user;
@@ -121,7 +119,7 @@ class UserController extends ServerController<UserModel> {
         }
     }
 
-    private async updateUser(requestUser: User, oldPass: string, response: Response, next: NextFunction): Promise<PersistUserResult> {
+    private async updateUser(requestUser: User, oldPass: string, next: NextFunction): Promise<PersistUserResult> {
         try {
             this.model = new UserModel();
             let existingUser: User = await this.model.getUserById(requestUser.id);

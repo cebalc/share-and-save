@@ -3,12 +3,14 @@ import mysql, { OkPacket, RowDataPacket } from "mysql2";
 const ENV: Object = require("../modules/config").getEnvVars();
 
 abstract class Model {
-    private static CONFIG: mysql.ConnectionOptions = {
+    private static readonly CONFIG: mysql.ConnectionOptions = {
         host: ENV["MYSQL_SERVER"],
         database: ENV["MYSQL_DB_NAME"],
         user: ENV["MYSQL_DB_USER"],
         password: ENV["MYSQL_DB_PASS"]
     };
+
+    protected static readonly ID_NULL: number = 0;
 
     /**
      * Callback function, allows :field replacement syntax in SQL prepared queries
@@ -47,6 +49,9 @@ abstract class Model {
      * @returns Promise that resolves into SQL query results or false if an error occurred
      */
     protected async preparedQuery(sqlQuery: string, values?: Object): Promise<RowDataPacket[] | OkPacket | false> {
+        if(this.connectionClosed) {
+            throw new Error("La conexión a la base de datos ya está cerrada");
+        }
         try {
             return new Promise<RowDataPacket[] | OkPacket>((resolve, reject) => {
                 this.connection.query<RowDataPacket[] | OkPacket>(sqlQuery, values, (error, results) => {
@@ -60,6 +65,17 @@ abstract class Model {
             this.logError(error);
             return false;
         }
+    }
+
+    protected async insertSingleRecord(sqlQuery: string, values?: Object): Promise<number> {
+        if(!sqlQuery.match(/^INSERT/i)) {
+            throw new Error(`Instrucción SQL inválida, se esperaba "INSERT..."`);
+        }
+        let queryResult: any = await this.preparedQuery(sqlQuery, values);
+        if(!<boolean>queryResult) {
+            return Model.ID_NULL;
+        }
+        return (<OkPacket>queryResult).insertId;
     }
 
     protected async getSingleRecord(sqlQuery: string, values?: Object): Promise<RowDataPacket> {

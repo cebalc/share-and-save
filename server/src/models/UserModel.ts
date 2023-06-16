@@ -9,11 +9,27 @@ class UserModel extends Model {
 
     public async createUser(name: string, surname: string, email: string, pass: string): Promise<User> {
         let sqlQuery: string = "INSERT INTO users (name, surname, email, pass) VALUES (:name, :surname, :email, :pass)";
-        let results: any = await super.preparedQuery(sqlQuery, {"name": name, "surname": surname, "email": email, "pass": pass});
-        if(!(results as boolean)) {
+        let insertId: number = await super.insertSingleRecord(sqlQuery, {
+            "name": name,
+            "surname": surname,
+            "email": email,
+            "pass": pass
+        });
+        if(insertId == UserModel.ID_NULL) {
             return null;
         }
-        return await this.getUserByEmail(email);
+        return await this.getUserById(insertId);
+        //
+        // let results: any = await super.preparedQuery(sqlQuery, {
+        //     "name": name,
+        //     "surname": surname,
+        //     "email": email,
+        //     "pass": pass
+        // });
+        // if(!<boolean>results) {
+        //     return null;
+        // }
+        // return await this.getUserByEmail(email);
     }
 
     public async getUserByEmail(email: string): Promise<User> {

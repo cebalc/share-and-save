@@ -1,6 +1,6 @@
 import JSONResponse from "../JSONResponse";
-import {UserPublicInfo} from "../../entities/User";
+import {FrontEndUser} from "../../entities/User";
 
-class ReadWorkspaceUsersResponse extends JSONResponse<UserPublicInfo[]> {}
+class ReadWorkspaceUsersResponse extends JSONResponse<FrontEndUser[]> {}
 
 export default ReadWorkspaceUsersResponse;

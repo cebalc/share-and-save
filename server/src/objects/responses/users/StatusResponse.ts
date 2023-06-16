@@ -1,6 +1,6 @@
 import JSONResponse from "../JSONResponse";
-import { UserPublicInfo } from "../../entities/User";
+import { FrontEndUser } from "../../entities/User";
 
-class StatusResponse extends JSONResponse<UserPublicInfo> {}
+class StatusResponse extends JSONResponse<FrontEndUser> {}
 
 export default StatusResponse;
