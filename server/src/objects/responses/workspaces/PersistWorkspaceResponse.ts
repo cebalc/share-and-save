@@ -10,12 +10,12 @@ interface IPersistWorkspaceResponse {
 
 class PersistWorkspaceResponse extends AlterWorkspaceResponse<IPersistWorkspaceResponse> {
 
-    public static readonly NAME_EXISTS: PersistWorkspaceResponse = new PersistWorkspaceResponse(
-        false, "Ya tienes un espacio de trabajo con ese nombre. Usa otro.");
     public static readonly NOT_CREATED: PersistWorkspaceResponse = new PersistWorkspaceResponse(
         false, "", "", "El espacio de trabajo no ha podido crearse.");
     public static readonly NOT_UPDATED: PersistWorkspaceResponse = new PersistWorkspaceResponse(
-        false, "", "", "El espacio de trabajo no existe o no ha podido actualizarse.")
+        false, "", "", "El espacio de trabajo no existe o no ha podido actualizarse.");
+    public static readonly LIMIT_REACHED: PersistWorkspaceResponse = new PersistWorkspaceResponse(
+        false, "", "", "Error: has alcanzado el límite gratuito de espacios de trabajo.");
 
     public static success(workspaceId: number): PersistWorkspaceResponse {
         return new PersistWorkspaceResponse(true, "", "", "", workspaceId);

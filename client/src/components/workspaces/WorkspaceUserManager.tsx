@@ -41,7 +41,7 @@ class WorkspaceUserManager extends React.Component<WorkspaceUserManagerProps, Wo
     public render(): React.ReactNode {
         return (
             <Container fluid className="my-2">
-                <p className="h5 text-center">
+                <p className="h5 text-center mb-2">
                     Usuarios del espacio
                     <FontAwesomeIcon title="Actualizar" icon={["fas", "arrows-rotate"]}
                          className="mx-3 clickable"

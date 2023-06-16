@@ -6,6 +6,7 @@ import UserModel from "../models/UserModel";
 import Workspace from "../objects/entities/Workspace";
 import User from "../objects/entities/User";
 import CRUDAction from "../objects/enums/CRUDAction";
+import UserLevel from "../objects/enums/UserLevel";
 import FilterFactory from "../objects/filters/FilterFactory";
 import AlterWorkspaceResponse from "../objects/responses/workspaces/AlterWorkspaceResponse";
 import PersistWorkspaceResponse from "../objects/responses/workspaces/PersistWorkspaceResponse";
@@ -16,6 +17,8 @@ import AddWorkspaceUserResponse from "../objects/responses/workspaces/AddWorkspa
 import UnlinkWorkspaceUserResponse from "../objects/responses/workspaces/UnlinkWorkspaceUserResponse";
 
 class WorkspaceController extends ServerController<WorkspaceModel> {
+
+    private static readonly MAX_FREE_WORKSPACES: number = 5;
 
     public async getWorkspaces(request: Request, response: Response, next: NextFunction): Promise<void> {
         try {
@@ -71,26 +74,26 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
             <string>request.body.description,
             false
         );
-        let userId: number = (<User>request.session["user"]).id;
+        let currentUser: User = <User>request.session["user"];
         if(requestWorkspace.id == Workspace.NULL.id) {
-            await this.createWorkspace(requestWorkspace, userId, response, next);
+            await this.createWorkspace(requestWorkspace, currentUser, response, next);
         } else {
-            await this.updateWorkspace(requestWorkspace, userId, response, next);
+            await this.updateWorkspace(requestWorkspace, currentUser.id, response, next);
         }
     }
 
-    private async createWorkspace(requestWorkspace: Workspace, userId: number, response: Response, next: NextFunction): Promise<void> {
+    private async createWorkspace(requestWorkspace: Workspace, currentUser: User, response: Response, next: NextFunction): Promise<void> {
         try {
             this.model = new WorkspaceModel();
 
-            let workspaceNameExists: boolean = await this.model.workspaceNameExists(userId, requestWorkspace.name);
-            if(workspaceNameExists) {
+            let userWorkspaces: Workspace[] = await this.model.getWorkspacesByUser(currentUser.id);
+            if(userWorkspaces != null && currentUser.level < UserLevel.PREMIUM && userWorkspaces.length >= WorkspaceController.MAX_FREE_WORKSPACES) {
                 this.model.delete();
-                response.json(PersistWorkspaceResponse.NAME_EXISTS);
+                response.json(PersistWorkspaceResponse.LIMIT_REACHED);
                 return;
             }
 
-            let newWorkspace: Workspace = await this.model.createWorkspace(userId, requestWorkspace);
+            let newWorkspace: Workspace = await this.model.createWorkspace(currentUser.id, requestWorkspace);
             this.model.delete();
 
             if(newWorkspace == null) {

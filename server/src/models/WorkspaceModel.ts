@@ -7,14 +7,6 @@ import WorkspaceRow from "../objects/rows/WorkspaceRow";
 
 class WorkspaceModel extends Model {
 
-    public async workspaceNameExists(userId: number, name: string): Promise<boolean> {
-        let userWorkspaces: Workspace[] = await this.getWorkspacesByUser(userId);
-        if(userWorkspaces == null) {
-            return true;
-        }
-        return userWorkspaces.some(workspace => workspace.name == name);
-    }
-
     public async getUsersByWorkspace(workspaceId: number): Promise<User[]> {
         let sqlQuery: string = `SELECT
                 U.id AS id, U.name AS name, U.surname AS surname, U.email AS email, U.pass AS pass, U.level AS level
