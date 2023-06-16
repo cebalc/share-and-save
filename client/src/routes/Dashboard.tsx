@@ -8,8 +8,7 @@ import {LinkContainer} from "react-router-bootstrap";
 import User from "../objects/entities/User";
 
 interface DashboardProps {
-    userId: number,
-    userName: string
+    user: User
 }
 
 interface DashboardState {
@@ -17,10 +16,6 @@ interface DashboardState {
 }
 
 class Dashboard extends React.Component<DashboardProps, DashboardState> {
-
-    public static defaultProps = {
-        userId: 0
-    }
 
     public state: DashboardState = {
     };
@@ -30,7 +25,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     }
 
     private preventAnonymousUsers(): React.ReactNode {
-        if(this.props.userId === User.GUEST.id) {
+        if(this.props.user === User.GUEST) {
             return (<Navigate to="/signin" />);
         }
     }
@@ -39,8 +34,8 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
         return (
           <>
               {this.preventAnonymousUsers()}
-              <p className="h1 text-center">Tablero de {this.props.userName}</p>
-              <WorkspaceList userId={this.props.userId} />
+              <p className="h1 text-center">Tablero de {this.props.user.name}</p>
+              <WorkspaceList user={this.props.user} />
               <Row>
                 <Col sm={6} className="d-flex justify-content-center my-2">
                     <LinkContainer to="/settings">

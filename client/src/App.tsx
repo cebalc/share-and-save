@@ -55,7 +55,7 @@ class App extends React.Component<AppProps, AppState> {
             <Route path="signout" element={<Home signOut onSignOut={this.updateUserStatus.bind(this)} />} />
             <Route path="register" element={<SignUp onSignUp={this.updateUserStatus.bind(this)} />} />
             <Route path="settings" element={<Settings user={this.state.currentUser} onUserDataAltered={this.updateUserStatus.bind(this)} />} />
-            <Route path="dashboard" element={<Dashboard userId={this.state.currentUser.id} userName={this.state.currentUser.name} />} />
+            <Route path="dashboard" element={<Dashboard user={this.state.currentUser} />} />
           </Route>
           <Route path="/workspace" element={<Layout fluid="md" userLevel={this.state.currentUser.level} userName={this.state.currentUser.name} /> }>
             <Route path="create" element={<WorkspaceRouter crudAction={CRUDAction.CREATE} /> } />

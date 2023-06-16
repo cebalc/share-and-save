@@ -17,7 +17,6 @@ interface PersistUserResult {
 }
 
 class UserController extends ServerController<UserModel> {
-    private static MSG_INV_LOGIN: string = "Usuario o contraseña incorrectos";
 
     public checkStatus(request: Request, response: Response): void {
         let userPublicInfo: FrontEndUser = User.GUEST.makeFrontEndUser();
@@ -195,11 +194,11 @@ class UserController extends ServerController<UserModel> {
             }
 
             if (user == null || !passMatches) {
-                response.json(new SignInResponse(false, [UserController.MSG_INV_LOGIN]));
+                response.json(SignInResponse.LOGIN_INCORRECT);
                 return;
             }
             request.session["user"] = user;
-            response.json(new SignInResponse(true));
+            response.json(SignInResponse.LOGIN_OK);
         } catch(error) {
             return next(error);
         }

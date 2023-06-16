@@ -3,13 +3,15 @@ import Workspace from "../../objects/entities/Workspace";
 import ReadWorkspaceFetcher from "../../objects/fetchers/workspaces/ReadWorkspaceFetcher";
 import Container from "react-bootstrap/Container";
 import Alert from "react-bootstrap/Alert";
-import { LinkContainer } from "react-router-bootstrap";
+import {LinkContainer} from "react-router-bootstrap";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import User from "../../objects/entities/User";
+import UserLevel from "../../objects/enums/UserLevel";
 
 interface WorkspaceListProps {
-    userId: number
+    user: User
 }
 
 interface WorkspaceListState {
@@ -20,6 +22,7 @@ interface WorkspaceListState {
 class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListState> {
 
     private static readonly MSG_ERR_WORKSPACES: string = "Ha ocurrido un problema al cargar los espacios de trabajo";
+    private static readonly MAX_FREE_WORKSPACES: number = 5;
 
     public state: WorkspaceListState = {
         workspaceListError: false,
@@ -32,6 +35,10 @@ class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListSta
 
     public async componentDidMount(): Promise<void> {
         await this.getUserWorkspaceList();
+    }
+
+    private noMoreWorkspacesAllowed(): boolean {
+        return this.props.user.level < UserLevel.PREMIUM && this.state.workspaces.length >= WorkspaceList.MAX_FREE_WORKSPACES;
     }
 
     private async getUserWorkspaceList(): Promise<void> {
@@ -91,10 +98,29 @@ class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListSta
         return (
             <Container fluid className="d-flex justify-content-center my-3">
                 <LinkContainer to="/workspace/create">
-                    <Button variant="outline-primary" className="d-block">Crear nuevo espacio</Button>
+                    <Button variant="outline-primary" className="d-block"
+                            disabled={this.noMoreWorkspacesAllowed()}>
+                        Crear nuevo espacio
+                    </Button>
                 </LinkContainer>
             </Container>
         );
+    }
+
+    private renderPremiumAlert(): React.ReactNode {
+        if(this.noMoreWorkspacesAllowed()) {
+            return (
+                <Alert variant="warning">
+                    <Alert.Heading>Límite de espacios de trabajo alcanzado</Alert.Heading>
+                    <p>
+                        Los usuarios no Premium sólo disponen de {WorkspaceList.MAX_FREE_WORKSPACES} espacios gratuitos.&nbsp;
+                        <LinkContainer to="/settings">
+                            <Alert.Link>Mejora ahora tu suscripción a Usuario Premium</Alert.Link>
+                        </LinkContainer>
+                    </p>
+                </Alert>
+            );
+        }
     }
 
     public render(): React.ReactNode {
@@ -108,6 +134,7 @@ class WorkspaceList extends React.Component<WorkspaceListProps, WorkspaceListSta
                     this.renderTable()
                 }
                 {this.renderButton()}
+                {this.renderPremiumAlert()}
             </Container>
         );
     }

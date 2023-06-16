@@ -4,35 +4,35 @@ import {globalTrim} from "../../modules/sanitizers";
 
 class FilterFactory {
 
-    public static id(): ValidationChain {
-        return body("id")
+    public static id(fieldName: string = "id"): ValidationChain {
+        return body(fieldName)
             .exists()
             .isInt({min: 0});
     }
 
-    public static userName(): ValidationChain {
-        return body("name", "Máximo 25 caracteres, sin símbolos")
+    public static userName(fieldName: string = "name"): ValidationChain {
+        return body(fieldName, "Máximo 25 caracteres, sin símbolos")
             .exists()
             .customSanitizer(value => strip_tags(value))
             .customSanitizer(value => globalTrim(value))
             .matches(/^[a-záéíóú\s]{1,25}$/i);
     }
 
-    public static userSurname(): ValidationChain {
-        return body("surname", "Máximo 50 caracteres, sin símbolos")
+    public static userSurname(fieldName: string = "surname"): ValidationChain {
+        return body(fieldName, "Máximo 50 caracteres, sin símbolos")
             .exists()
             .customSanitizer(value => strip_tags(value))
             .customSanitizer(value => globalTrim(value))
             .matches(/^[a-záéíóú\s]{1,50}$/i);
     }
 
-    public static userEmail(toBeStored: boolean = true): ValidationChain {
+    public static userEmail(toBeStored: boolean = true, fieldName: string = "email"): ValidationChain {
         let errorMsg: string = (toBeStored ?
             "Dirección válida de hasta 50 caracteres"
             :
             "Debes introducir un email"
         );
-        return body("email", errorMsg)
+        return body(fieldName, errorMsg)
             .exists()
             .isEmail()
             .normalizeEmail({
@@ -57,6 +57,21 @@ class FilterFactory {
             chain = chain.notEmpty();
         }
         return chain;
+    }
+
+    public static workspaceName(fieldName: string = "name"): ValidationChain {
+        return body(fieldName, "Máximo 30 caracteres")
+            .exists()
+            .customSanitizer(value => strip_tags(value))
+            .customSanitizer(value => globalTrim(value))
+            .isLength({min: 1, max: 30});
+    }
+
+    public static workspaceDescription(fieldName: string = "description"): ValidationChain {
+        return body(fieldName, "Opcional, máximo 100 caracteres")
+            .customSanitizer(value => strip_tags(value))
+            .customSanitizer(value => globalTrim(value))
+            .isLength({max: 100});
     }
 }
 
