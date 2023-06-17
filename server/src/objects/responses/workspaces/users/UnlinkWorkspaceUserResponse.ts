@@ -1,6 +1,6 @@
-import AlterWorkspaceResponse from "./AlterWorkspaceResponse";
+import AlterWorkspaceUsersResponse from "./AlterWorkspaceUsersResponse";
 
-class UnlinkWorkspaceUserResponse extends AlterWorkspaceResponse<string> {
+class UnlinkWorkspaceUserResponse extends AlterWorkspaceUsersResponse<string> {
 
     public static readonly NOT_UNLINKED: UnlinkWorkspaceUserResponse = new UnlinkWorkspaceUserResponse(
         false, "El espacio o el usuario no existen o no se ha podido desvincular.");

@@ -8,6 +8,10 @@ class Workspace {
         return new Workspace(row.id, row.name, row.description, row.admin);
     }
 
+    public static idWrapper(id: number): Workspace {
+        return new Workspace(id, "", "", false);
+    }
+
     public id: number;
     public name: string;
     public description: string;

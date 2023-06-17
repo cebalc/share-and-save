@@ -1,6 +1,6 @@
 import express, { Express } from "express";
 import path from "path";
-import ServerRouter from "./objects/ServerRouter";
+import ServerRouter from "./objects/router/ServerRouter";
 import ServerController from "./controllers/ServerController";
 import session from "express-session";
 import cookieParser from "cookie-parser";

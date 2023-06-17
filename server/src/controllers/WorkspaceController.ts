@@ -2,7 +2,7 @@ import ServerController from "./ServerController";
 import {NextFunction, Request, Response} from "express";
 import {Result, ValidationChain, ValidationError, validationResult} from "express-validator";
 import WorkspaceModel from "../models/WorkspaceModel";
-import UserModel from "../models/UserModel";
+import WorkspaceUsersModel from "../models/WorkspaceUsersModel";
 import Workspace from "../objects/entities/Workspace";
 import User from "../objects/entities/User";
 import CRUDAction from "../objects/enums/CRUDAction";
@@ -11,10 +11,9 @@ import FilterFactory from "../objects/filters/FilterFactory";
 import AlterWorkspaceResponse from "../objects/responses/workspaces/AlterWorkspaceResponse";
 import PersistWorkspaceResponse from "../objects/responses/workspaces/PersistWorkspaceResponse";
 import ReadWorkspaceResponse from "../objects/responses/workspaces/ReadWorkspaceResponse";
-import ReadWorkspaceUsersResponse from "../objects/responses/workspaces/ReadWorkspaceUsersResponse";
 import DeleteWorkspaceResponse from "../objects/responses/workspaces/DeleteWorkspaceResponse";
-import AddWorkspaceUserResponse from "../objects/responses/workspaces/AddWorkspaceUserResponse";
-import UnlinkWorkspaceUserResponse from "../objects/responses/workspaces/UnlinkWorkspaceUserResponse";
+
+type AlterCommand = (requestWorkspace: Workspace, workspaceUserId: number, model: WorkspaceUsersModel) => Promise<boolean>;
 
 class WorkspaceController extends ServerController<WorkspaceModel> {
 
@@ -84,7 +83,7 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
 
     private async createWorkspace(requestWorkspace: Workspace, currentUser: User, response: Response, next: NextFunction): Promise<void> {
         try {
-            this.model = new WorkspaceModel();
+            this.model = new WorkspaceUsersModel();
 
             let userWorkspaces: Workspace[] = await this.model.getWorkspacesByUser(currentUser.id);
             if(userWorkspaces != null && currentUser.level < UserLevel.PREMIUM && userWorkspaces.length >= WorkspaceController.MAX_FREE_WORKSPACES) {
@@ -94,6 +93,14 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
             }
 
             let newWorkspace: Workspace = await this.model.createWorkspace(currentUser.id, requestWorkspace);
+            if(newWorkspace != null) {
+                let userAddedToWorkspace: boolean = await (<WorkspaceUsersModel>this.model).addUserToWorkspace(
+                    newWorkspace.id, currentUser.id, true);
+                if(!userAddedToWorkspace) {
+                    await this.model.deleteWorkspace(newWorkspace.id);
+                    newWorkspace = null;
+                }
+            }
             this.model.delete();
 
             if(newWorkspace == null) {
@@ -108,51 +115,61 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
 
     private async updateWorkspace(requestWorkspace: Workspace, userId: number, response: Response, next: NextFunction): Promise<void> {
         try {
+            this.model = new WorkspaceUsersModel();
             let updateResponse: PersistWorkspaceResponse = await this.alterWorkspace<PersistWorkspaceResponse>(
                 requestWorkspace,
                 CRUDAction.UPDATE,
                 userId,
+                <WorkspaceUsersModel>this.model,
                 PersistWorkspaceResponse.NOT_UPDATED,
                 PersistWorkspaceResponse.success(requestWorkspace.id)
             );
+            this.model.delete();
             response.json(updateResponse);
         } catch (error) {
             return next(error);
         }
     }
 
-    private async alterWorkspace<T extends AlterWorkspaceResponse<any>>(
+    protected async sendUpdateCommand(requestWorkspace: Workspace, workspaceUserId: number, model: WorkspaceUsersModel): Promise<boolean> {
+        return await model.updateWorkspaceProperties(requestWorkspace);
+    }
+
+    protected async sendDeleteCommand(requestWorkspace: Workspace, workspaceUserId: number, model: WorkspaceUsersModel): Promise<boolean> {
+        await model.removeAllUsersFromWorkspace(requestWorkspace.id);
+        return await model.deleteWorkspace(requestWorkspace.id);
+    }
+
+    protected async alterWorkspace<T extends AlterWorkspaceResponse<any>>(
         requestWorkspace: Workspace,
         action: CRUDAction.UPDATE | CRUDAction.DELETE,
         agentUserId: number,
+        model: WorkspaceUsersModel,
         responseOnNoAlter: T,
         responseOnAlter: T,
         workspaceUserId: number = User.GUEST.id
     ): Promise<T> {
-        this.model = new WorkspaceModel();
-        let storedWorkspace: Workspace = await this.model.getWorkspace(requestWorkspace.id, agentUserId);
+        let storedWorkspace: Workspace = await model.getWorkspace(requestWorkspace.id, agentUserId);
         let altered: boolean = false;
         let alterable: boolean = (storedWorkspace != null && storedWorkspace.userIsAdmin);
+        let alterCommands: Map<CRUDAction, AlterCommand> = new Map([
+            [CRUDAction.UPDATE, this.sendUpdateCommand],
+            [CRUDAction.DELETE, this.sendDeleteCommand]
+        ]);
         if(alterable) {
-            switch (action) {
-                case CRUDAction.UPDATE:
-                    if(workspaceUserId == User.GUEST.id) {
-                        requestWorkspace.userIsAdmin = true;
-                        altered = await this.model.updateWorkspaceProperties(requestWorkspace);
-                    } else {
-                        altered = await this.model.addUserToWorkspace(requestWorkspace.id, workspaceUserId);
-                    }
-                    break;
-                case CRUDAction.DELETE:
-                    if(workspaceUserId == User.GUEST.id) {
-                        altered = await this.model.deleteWorkspace(requestWorkspace.id);
-                    } else {
-                        altered = await this.model.removeUserFromWorkspace(requestWorkspace.id, workspaceUserId);
-                    }
-                    break;
-            }
+            altered = await alterCommands.get(action)(requestWorkspace, workspaceUserId, model);
+            // switch (action) {
+            //     case CRUDAction.UPDATE:
+            //         altered = await this.sendUpdateCommand(requestWorkspace, workspaceUserId, model);
+            //         break;
+            //     case CRUDAction.DELETE:
+            //         altered = await this.sendDeleteCommand(requestWorkspace, workspaceUserId, model);
+            //         break;
+            //     default:
+            //         altered = false;
+            //         break;
+            // }
         }
-        this.model.delete();
         if(!alterable || !altered) {
             return responseOnNoAlter;
         }
@@ -163,103 +180,17 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
         try {
             let workspaceId: number = parseInt(request.params.id);
             let userId: number = (<User>request.session["user"]).id;
+            this.model = new WorkspaceUsersModel();
             let deleteResponse: DeleteWorkspaceResponse = await this.alterWorkspace<DeleteWorkspaceResponse>(
-                new Workspace(workspaceId, "", "", false),
+                Workspace.idWrapper(workspaceId),
                 CRUDAction.DELETE,
                 userId,
+                <WorkspaceUsersModel>this.model,
                 DeleteWorkspaceResponse.NOT_DELETED,
                 DeleteWorkspaceResponse.SUCCESS
             );
+            this.model.delete();
             response.json(deleteResponse);
-        } catch (error) {
-            return next(error);
-        }
-    }
-
-    public async getWorkspaceUsers(request: Request, response: Response, next: NextFunction): Promise<void> {
-        try {
-            this.model = new WorkspaceModel();
-            let userId: number = (<User>request.session["user"]).id;
-            let workspaceId: number = parseInt(request.params.id);
-
-            let workspaceUsers: User[] = await this.model.getUsersByWorkspace(workspaceId);
-            this.model.delete();
-
-            if(workspaceUsers == null || !workspaceUsers.some(user => user.id == userId)) {
-                response.json(ReadWorkspaceUsersResponse.ERRORS);
-                return;
-            }
-            response.json(new ReadWorkspaceUsersResponse(true,
-                workspaceUsers.map(user => user.makeFrontEndUser())));
-        } catch (error) {
-            return next(error);
-        }
-    }
-
-    public addWorkspaceUserFilters(): ValidationChain {
-        return FilterFactory.userEmail();
-    }
-
-    public async addWorkspaceUser(request: Request, response: Response, next: NextFunction): Promise<void> {
-        try {
-            let errors: Result<ValidationError> = validationResult(request);
-            if(!errors.isEmpty()) {
-                let errorsObject: Record<string, ValidationError> = errors.mapped();
-                response.json(new AddWorkspaceUserResponse(false,
-                    errorsObject.email !== undefined ? errorsObject.email.msg : ""
-                ));
-                return;
-            }
-
-            let workspaceId: number = parseInt(request.params.id);
-            let workspaceUserEmail: string = request.body.email;
-            let agentUserId: number = (<User>request.session["user"]).id;
-
-            let userModel: UserModel = new UserModel();
-            let newWorkspaceUser: User = await userModel.getUserByEmail(workspaceUserEmail);
-            userModel.delete();
-            if(newWorkspaceUser == null) {
-                response.json(AddWorkspaceUserResponse.USER_NOT_FOUND);
-                return;
-            }
-
-            this.model = new WorkspaceModel();
-            let workspaceUsers: User[] = await this.model.getUsersByWorkspace(workspaceId);
-            this.model.delete();
-            if(workspaceUsers.some(user => user.id == newWorkspaceUser.id)) {
-                response.json(AddWorkspaceUserResponse.USER_LINKED);
-                return;
-            }
-
-            let addResponse: AddWorkspaceUserResponse = await this.alterWorkspace<AddWorkspaceUserResponse>(
-                new Workspace(workspaceId, "", "", false),
-                CRUDAction.UPDATE,
-                agentUserId,
-                AddWorkspaceUserResponse.USER_NOT_ADDED,
-                AddWorkspaceUserResponse.SUCCESS,
-                newWorkspaceUser.id
-            );
-            response.json(addResponse);
-        } catch (error) {
-            return next(error);
-        }
-    }
-
-    public async unlinkWorkspaceUser(request: Request, response: Response, next: NextFunction): Promise<void> {
-        try {
-            let workspaceId: number = parseInt(request.params.workspace);
-            let unlinkUserId: number = parseInt(request.params.user);
-            let agentUserId: number = (<User>request.session["user"]).id;
-
-            let unlinkResponse: UnlinkWorkspaceUserResponse = await this.alterWorkspace<UnlinkWorkspaceUserResponse>(
-                new Workspace(workspaceId, "", "", false),
-                CRUDAction.DELETE,
-                agentUserId,
-                UnlinkWorkspaceUserResponse.NOT_UNLINKED,
-                UnlinkWorkspaceUserResponse.SUCCESS,
-                unlinkUserId
-            );
-            response.json(unlinkResponse);
         } catch (error) {
             return next(error);
         }

@@ -1,11 +1,11 @@
-import AlterWorkspaceResponse from "./AlterWorkspaceResponse";
+import AlterWorkspaceUsersResponse from "./AlterWorkspaceUsersResponse";
 
-interface IAlterWorkspaceResponse {
+interface IAddWorkspaceUserResponse {
     email: string,
     global: string
 }
 
-class AddWorkspaceUserResponse extends AlterWorkspaceResponse<IAlterWorkspaceResponse> {
+class AddWorkspaceUserResponse extends AlterWorkspaceUsersResponse<IAddWorkspaceUserResponse> {
 
     public static readonly USER_NOT_FOUND: AddWorkspaceUserResponse = new AddWorkspaceUserResponse(
         false, "", "No hay usuarios con ese email");
@@ -16,7 +16,7 @@ class AddWorkspaceUserResponse extends AlterWorkspaceResponse<IAlterWorkspaceRes
     public static readonly SUCCESS: AddWorkspaceUserResponse = new AddWorkspaceUserResponse(true);
 
     public constructor(success: boolean, email: string = "", global: string = "") {
-        super(success, <IAlterWorkspaceResponse>{email, global});
+        super(success, <IAddWorkspaceUserResponse>{email, global});
     }
 }
 

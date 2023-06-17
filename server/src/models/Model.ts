@@ -3,6 +3,7 @@ import mysql, { OkPacket, RowDataPacket } from "mysql2";
 const ENV: Object = require("../modules/config").getEnvVars();
 
 abstract class Model {
+
     private static readonly CONFIG: mysql.ConnectionOptions = {
         host: ENV["MYSQL_SERVER"],
         database: ENV["MYSQL_DB_NAME"],
@@ -49,22 +50,21 @@ abstract class Model {
      * @returns Promise that resolves into SQL query results or false if an error occurred
      */
     protected async preparedQuery<T extends RowDataPacket>(sqlQuery: string, values?: Object): Promise<T[] | OkPacket | false> {
-        try {
+        return new Promise<T[] | OkPacket>((resolve, reject) => {
             if(this.connectionClosed) {
-                throw new Error("La conexión a la base de datos ya está cerrada");
+                reject("La conexión a la base de datos ya está cerrada");
             }
-            return new Promise<T[] | OkPacket>((resolve, reject) => {
-                this.connection.query<T[] | OkPacket>(sqlQuery, values, (error, results) => {
-                    if (error) {
-                        reject(error);
-                    }
-                    resolve(results);
-                });
+            let query: mysql.Query = this.connection.query<T[] | OkPacket>(sqlQuery, values, (error, results) => {
+                console.log(query.sql);
+                if(error) {
+                    reject(error);
+                }
+                resolve(results);
             });
-        } catch (error) {
+        }).catch(error => {
             this.logError(error);
             return false;
-        }
+        });
     }
 
     protected async insertSingleRecord(sqlQuery: string, values?: Object): Promise<OkPacket> {
@@ -141,7 +141,7 @@ abstract class Model {
         return <OkPacket>result;
     }
 
-    protected logError(error: mysql.QueryError): void {
+    protected logError(error: any): void {
         console.log(`Error en la base de datos: ${error}`);
     }
 
