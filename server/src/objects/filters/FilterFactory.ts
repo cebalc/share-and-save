@@ -73,6 +73,50 @@ class FilterFactory {
             .customSanitizer(value => globalTrim(value))
             .isLength({max: 100});
     }
+
+    public static cardName(): ValidationChain {
+        return body("cardName", "Máximo 30 caracteres, sin números ni símbolos")
+            .exists()
+            .customSanitizer(value => strip_tags(value))
+            .customSanitizer(value => globalTrim(value))
+            .matches(/^[a-záéíóú\s]{1,30}$/i);
+    }
+
+    public static cardNumber(): ValidationChain {
+        return body("cardNumber", "Introduce un número de tarjeta válido (16 cifras)")
+            .exists()
+            .customSanitizer(value => strip_tags(value))
+            .customSanitizer(value => globalTrim(value, false))
+            .customSanitizer(value => (<string>value).replace(/-|\./g, ""))
+            .matches(/^\d{1,16}$/);
+    }
+
+    public static cardMonth(): ValidationChain {
+        return body("month", "Mes inválido")
+            .exists()
+            .customSanitizer(value => strip_tags(value))
+            .customSanitizer(value => globalTrim(value, false))
+            .customSanitizer(value => (<string>value).replace(/-|\./g, ""))
+            .matches(/^\d{2}$/);
+    }
+
+    public static cardYear(): ValidationChain {
+        return body("year", "Año inválido")
+            .exists()
+            .customSanitizer(value => strip_tags(value))
+            .customSanitizer(value => globalTrim(value, false))
+            .customSanitizer(value => (<string>value).replace(/-|\./g, ""))
+            .matches(/^\d{4}$/);
+    }
+
+    public static cardCVV(): ValidationChain {
+        return body("cvv", "CVV inválido")
+            .exists()
+            .customSanitizer(value => strip_tags(value))
+            .customSanitizer(value => globalTrim(value, false))
+            .customSanitizer(value => (<string>value).replace(/-|\./g, ""))
+            .matches(/^\d{3}$/);
+    }
 }
 
 export default FilterFactory;

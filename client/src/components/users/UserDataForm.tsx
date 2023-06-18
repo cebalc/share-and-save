@@ -2,10 +2,10 @@ import React from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import User from "../../objects/entities/User";
-import Alert from "react-bootstrap/Alert";
 import {LinkContainer} from "react-router-bootstrap";
 import Container from "react-bootstrap/Container";
 import PersistUserFetcher, {PersistUserResponse} from "../../objects/fetchers/users/PersistUserFetcher";
+import OptionalTextAlert from "../misc/OptionalTextAlert";
 
 interface UserDataFormProps {
     user: User,
@@ -49,12 +49,6 @@ class UserDataForm extends React.Component<UserDataFormProps, UserDataFormState>
         super(props);
     }
 
-    private renderFormError(): React.ReactNode {
-        if(this.state.formError.length > 0) {
-            return (<Alert variant="danger">{this.state.formError}</Alert>);
-        }
-    }
-
     private renderOldPasswordField(): React.ReactNode {
         if(this.props.user !== User.GUEST) {
             return (
@@ -65,14 +59,6 @@ class UserDataForm extends React.Component<UserDataFormProps, UserDataFormState>
                 </Form.Group>
             );
         }
-    }
-
-    private buildReturnURL(): string {
-        let url: string = "/";
-        if(this.props.user !== User.GUEST) {
-            url += "dashboard";
-        }
-        return url;
     }
 
     private async sendUserData(): Promise<void> {
@@ -113,7 +99,7 @@ class UserDataForm extends React.Component<UserDataFormProps, UserDataFormState>
     public render(): React.ReactNode {
         return (
             <Form>
-                {this.renderFormError()}
+                <OptionalTextAlert text={this.state.formError} />
                 <Form.Group className="mb-3" controlId="name">
                     <Form.Label>Nombre</Form.Label>
                     <Form.Control type="text" placeholder="Tu nombre" defaultValue={this.props.user.name}
@@ -145,13 +131,22 @@ class UserDataForm extends React.Component<UserDataFormProps, UserDataFormState>
                 </Form.Group>
                 <Container fluid className="mx-auto mt-4 d-flex flex-row justify-content-center">
                     <Button variant="outline-primary" className="me-3" onClick={() => this.validateForm()}>Enviar</Button>
-                    <LinkContainer to={this.buildReturnURL()}>
-                        <Button variant="outline-primary">Volver</Button>
-                    </LinkContainer>
+                    <ReturnButton userIsGuest={this.props.user === User.GUEST} />
                 </Container>
             </Form>
         );
     }
+}
+
+const ReturnButton = (props: {userIsGuest: boolean}): JSX.Element => {
+    if(props.userIsGuest) {
+        return (
+            <LinkContainer to="/">
+                <Button variant="outline-primary">Volver</Button>
+            </LinkContainer>
+        );
+    }
+    return <></>;
 }
 
 export default UserDataForm;
