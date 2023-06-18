@@ -1,7 +1,6 @@
 import Model from "./Model";
 import User from "../objects/entities/User";
 import UserRow from "../objects/rows/UserRow";
-import {OkPacket} from "mysql2";
 
 class UserModel extends Model {
     public async emailExists(email: string): Promise<boolean> {

@@ -22,7 +22,7 @@ abstract class Fetcher<T> {
         };
         if(method === HTTPMethod.POST || method === HTTPMethod.PUT) {
             this.requestInit.body = requestBody;
-        };
+        }
         this.jsonResponse = null;
     }
 
