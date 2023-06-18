@@ -15,7 +15,7 @@ const SubscriptionEditor = (props: SubscriptionEditorProps): JSX.Element => {
     const editors: Map<UserLevel, JSX.Element> = new Map([
         [UserLevel.ANONYMOUS, <></>],
         [UserLevel.REGISTERED, <RegUserSubscriptionEditor userId={props.userId} onUpgrade={props.onSubscriptionEdited} />],
-        [UserLevel.PREMIUM, <PremiumSubscriptionEditor userId={props.userId} />],
+        [UserLevel.PREMIUM, <PremiumSubscriptionEditor userId={props.userId} onDowngrade={props.onSubscriptionEdited} />],
         [UserLevel.ADMIN, <AdminSubscriptionEditor />]
     ]);
 

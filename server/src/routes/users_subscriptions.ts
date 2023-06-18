@@ -13,6 +13,13 @@ router.post("/upgrade",
     }
 );
 
+router.get("/downgrade",
+    controller.requireAuth,
+    async (request, response, next) => {
+        await controller.downgradeSubscription(request, response, next);
+    }
+)
+
 createDefaultRoutes(router, controller);
 
 export default router;
