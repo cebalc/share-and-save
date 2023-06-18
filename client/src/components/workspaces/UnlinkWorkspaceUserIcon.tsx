@@ -1,5 +1,5 @@
 import React from "react";
-import BouncingIcon from "../BouncingIcon";
+import BouncingIcon from "../misc/BouncingIcon";
 import Modal from "react-bootstrap/Modal";
 import User from "../../objects/entities/User";
 import Button from "react-bootstrap/Button";

@@ -84,10 +84,7 @@ class WorkspaceUserList extends React.Component<WorkspaceUserListProps, Workspac
         if(!await usersFetcher.retrieveData()) {
             return;
         }
-        console.log("hay respuesta");
         let workspaceUsers: User[] = usersFetcher.getResponseData();
-        console.table(workspaceUsers);
-        console.log(usersFetcher.success());
         if(usersFetcher.success()) {
             this.setState({users: workspaceUsers, nothingRetrievedYet: false});
         }

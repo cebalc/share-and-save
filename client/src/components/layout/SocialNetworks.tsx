@@ -1,6 +1,6 @@
 import React from "react";
 import Container from "react-bootstrap/Container"
-import BouncingIcon from "../BouncingIcon";
+import BouncingIcon from "../misc/BouncingIcon";
 
 interface SocialNetworksProps {
 }

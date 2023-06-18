@@ -1,10 +1,13 @@
 import React from "react";
-import UserDataForm from "../components/users/UserDataForm";
 import User from "../objects/entities/User";
 import {Navigate} from "react-router-dom";
-import Alert from "react-bootstrap/Alert";
+import {LinkContainer} from "react-router-bootstrap";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
+import SubscriptionStatus from "../components/users/SubscriptionStatus";
+import UserDataForm from "../components/users/UserDataForm";
+import OptionalTextAlert from "../components/misc/OptionalTextAlert";
 
 interface SettingsProps {
     user: User
@@ -12,16 +15,20 @@ interface SettingsProps {
 }
 
 interface SettingsState {
-    showDataModifiedAlert: boolean
+
 }
 
 class Settings extends React.Component<SettingsProps, SettingsState> {
+
     public state: SettingsState = {
-        showDataModifiedAlert: false
+
     }
+
+    private readonly dataModifiedAlert: React.RefObject<OptionalTextAlert>;
 
     public constructor(props: SettingsProps | Readonly<SettingsProps>) {
         super(props);
+        this.dataModifiedAlert = React.createRef();
     }
 
     private preventAnonymousUsers(): React.ReactNode {
@@ -32,17 +39,8 @@ class Settings extends React.Component<SettingsProps, SettingsState> {
 
     private async confirmUserDataUpdate(): Promise<void> {
         await this.props.onUserDataAltered();
-        this.setState({showDataModifiedAlert: true});
-    }
-
-    private renderDataModifiedAlert(): React.ReactNode {
-        if(this.state.showDataModifiedAlert) {
-            return (
-                <Alert variant="info" onClose={() => this.setState({showDataModifiedAlert: false})} dismissible>
-                    Tus datos han sido modificados correctamente.
-                </Alert>
-            );
-        }
+        this.dataModifiedAlert.current != null &&
+            this.dataModifiedAlert.current.setState({show: true});
     }
 
     public render(): React.ReactNode {
@@ -51,16 +49,22 @@ class Settings extends React.Component<SettingsProps, SettingsState> {
                 {this.preventAnonymousUsers()}
                 <p className="h1 text-center">Ajustes del usuario</p>
                 <Row>
-                    <Col md={6} className="m-2">
+                    <Col md={5} className="px-4 my-4">
                         <p className="h3 text-center">Tus datos</p>
-                        {this.renderDataModifiedAlert()}
+                        <OptionalTextAlert ref={this.dataModifiedAlert} variant="info" dismissible
+                                           text="Tus datos han sido modificados correctamente" />
                         <UserDataForm user={this.props.user} onPersistData={this.confirmUserDataUpdate.bind(this)} />
                     </Col>
-                    <Col md={5} className="m-2">
+                    <Col md={7} className="px-4 my-4">
                         <p className="h3 text-center">Nivel de suscripción</p>
-                        <p>Tu nivel actual es {User.getLabel(this.props.user.level)}</p>
+                        <SubscriptionStatus userId={this.props.user.id} userLevel={this.props.user.level} onStatusChanged={this.props.onUserDataAltered} />
                     </Col>
                 </Row>
+                <div className="mx-auto text-center max-width-50-sm">
+                    <LinkContainer to="/dashboard">
+                        <Button variant="outline-primary">Volver al tablero</Button>
+                    </LinkContainer>
+                </div>
             </div>
         );
     }
