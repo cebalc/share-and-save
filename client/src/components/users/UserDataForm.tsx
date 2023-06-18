@@ -99,7 +99,7 @@ class UserDataForm extends React.Component<UserDataFormProps, UserDataFormState>
     public render(): React.ReactNode {
         return (
             <Form>
-                <FormError text={this.state.formError} />
+                <OptionalTextAlert text={this.state.formError} />
                 <Form.Group className="mb-3" controlId="name">
                     <Form.Label>Nombre</Form.Label>
                     <Form.Control type="text" placeholder="Tu nombre" defaultValue={this.props.user.name}
@@ -136,10 +136,6 @@ class UserDataForm extends React.Component<UserDataFormProps, UserDataFormState>
             </Form>
         );
     }
-}
-
-const FormError = (props: {text: string}): JSX.Element => {
-    return <OptionalTextAlert text={props.text} />;
 }
 
 const ReturnButton = (props: {userIsGuest: boolean}): JSX.Element => {

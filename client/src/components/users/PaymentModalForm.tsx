@@ -48,11 +48,8 @@ class PaymentModalForm extends React.Component<PaymentModalFormProps, PaymentMod
         formError: ""
     };
 
-    private formError: React.RefObject<OptionalTextAlert>;
-
     public constructor(props: PaymentModalFormProps | Readonly<PaymentModalFormProps>) {
         super(props);
-        this.formError = React.createRef();
     }
 
     private hideModal(): void {
@@ -96,7 +93,7 @@ class PaymentModalForm extends React.Component<PaymentModalFormProps, PaymentMod
                 <Modal.Body>
                     <p>Introduce tus datos de pago a continuación. Sólo se admite tarjeta de crédito.*</p>
                     <Form>
-                        <OptionalTextAlert ref={this.formError} text={this.state.formError} />
+                        <OptionalTextAlert text={this.state.formError} />
                         <Form.Group className="mb-3" controlId="card-holder">
                             <InputGroup>
                                 <InputGroup.Text id="card-holder">

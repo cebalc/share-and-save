@@ -21,8 +21,9 @@ class UserController extends ServerController<UserModel> {
 
     public checkStatus(request: Request, response: Response): void {
         let userPublicInfo: FrontEndUser = User.GUEST.makeFrontEndUser();
-        if(request.session["user"] !== undefined) {
-            userPublicInfo = User.makeFrontEndUser(request.session["user"]);
+        let sessionUser: User = super.getSessionUser(request);
+        if(sessionUser !== undefined) {
+            userPublicInfo = User.makeFrontEndUser(sessionUser);
         }
         response.json(new StatusResponse(true, userPublicInfo));
     }
@@ -78,10 +79,8 @@ class UserController extends ServerController<UserModel> {
                 persistResult = await this.updateUser(requestUser, oldPass, next);
             }
             if(persistResult.user != null) {
-                request.session["user"] = persistResult.user;
+                super.setSessionUser(request, persistResult.user);
             }
-            console.log("Al terminar persistUser():");
-            console.table(request.session["user"]);
             response.json(persistResult.response);
         } catch (error) {
             return next(error);
@@ -200,7 +199,7 @@ class UserController extends ServerController<UserModel> {
                 response.json(new SignInResponse(false, [UserController.MSG_INV_LOGIN]));
                 return;
             }
-            request.session["user"] = user;
+            super.setSessionUser(request, user);
             response.json(new SignInResponse(true));
         } catch(error) {
             return next(error);
@@ -210,8 +209,9 @@ class UserController extends ServerController<UserModel> {
     public logout(request: Request, response: Response, next: NextFunction): void {
         try {
             let userName: string = "";
-            if(request.session["user"] !== undefined) {
-                userName = (<User>request.session["user"]).name;
+            let sessionUser = super.getSessionUser(request);
+            if(sessionUser !== undefined) {
+                userName = sessionUser.name;
             }
             request.session.destroy(null);
             response.json(new SignOutResponse(userName.length > 0, userName));

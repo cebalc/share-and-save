@@ -21,11 +21,8 @@ class PremiumSubscriptionEditor extends React.Component<PremiumSubscriptionEdito
         error: ""
     }
 
-    private errorAlert: React.RefObject<OptionalTextAlert>;
-
     public constructor(props: PremiumSubscriptionEditorProps | Readonly<PremiumSubscriptionEditorProps>) {
         super(props);
-        this.errorAlert = React.createRef();
     }
 
     private showModal(): void {
@@ -63,7 +60,7 @@ class PremiumSubscriptionEditor extends React.Component<PremiumSubscriptionEdito
                     <Modal.Title>Cancelar Suscripción</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <OptionalTextAlert ref={this.errorAlert} text={this.state.error} />
+                    <OptionalTextAlert text={this.state.error} />
                     <p>Si cancelas tu suscripción perderás el acceso a todas las funciones adicionales de los usuarios Premium.</p>
                     <p>Tus espacios de trabajo existentes no se borrarán, pero no podrás añadir nuevos. ¿Continuar?</p>
                 </Modal.Body>
