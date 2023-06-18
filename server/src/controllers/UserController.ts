@@ -17,7 +17,6 @@ interface PersistUserResult {
 }
 
 class UserController extends ServerController<UserModel> {
-    private static MSG_INV_LOGIN: string = "Usuario o contraseña incorrectos";
 
     public checkStatus(request: Request, response: Response): void {
         let userPublicInfo: FrontEndUser = User.GUEST.makeFrontEndUser();
