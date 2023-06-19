@@ -1,9 +1,9 @@
 import React from "react";
-import BouncingIcon from "../misc/BouncingIcon";
+import BouncingIcon from "../../misc/BouncingIcon";
 import Modal from "react-bootstrap/Modal";
-import User from "../../objects/entities/User";
+import User from "../../../objects/entities/User";
 import Button from "react-bootstrap/Button";
-import UnlinkWorkspaceUserFetcher from "../../objects/fetchers/workspaces/UnlinkWorkspaceUserFetcher";
+import UnlinkWorkspaceUserFetcher from "../../../objects/fetchers/workspaces/users/UnlinkWorkspaceUserFetcher";
 
 interface UnlinkWorkspaceUserIconProps {
     workspaceId: number,

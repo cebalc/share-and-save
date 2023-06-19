@@ -5,7 +5,7 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import AddWorkspaceUserFetcher, {
     AddWorkspaceUserResponse
-} from "../../objects/fetchers/workspaces/AddWorkspaceUserFetcher";
+} from "../../../objects/fetchers/workspaces/users/AddWorkspaceUserFetcher";
 import Alert from "react-bootstrap/Alert";
 
 interface WorkspaceAddUserFormProps {

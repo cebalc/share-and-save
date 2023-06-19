@@ -5,7 +5,7 @@ import {LinkContainer} from "react-router-bootstrap";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
-import SubscriptionStatus from "../components/users/SubscriptionStatus";
+import SubscriptionStatus from "../components/users/subscriptions/SubscriptionStatus";
 import UserDataForm from "../components/users/UserDataForm";
 import OptionalTextAlert from "../components/misc/OptionalTextAlert";
 

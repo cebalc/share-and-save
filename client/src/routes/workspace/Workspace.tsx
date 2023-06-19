@@ -3,7 +3,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import WorkspaceEntity from "../../objects/entities/Workspace";
-import WorkspaceUserManager from "../../components/workspaces/WorkspaceUserManager";
+import WorkspaceUserManager from "../../components/workspaces/users/WorkspaceUserManager";
 import WorkspaceMenu from "../../components/workspaces/WorkspaceMenu";
 import WorkspaceCard, {WorkspaceCardSize} from "../../components/workspaces/WorkspaceCard";
 

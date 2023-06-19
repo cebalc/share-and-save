@@ -9,7 +9,6 @@ import SignIn from "./routes/SignIn";
 import SignUp from "./routes/SignUp";
 import Dashboard from "./routes/Dashboard";
 import Settings from "./routes/Settings";
-import RecordList from "./routes/workspace/RecordList";
 import WorkspaceRouter from "./components/workspaces/WorkspaceRouter";
 import CRUDAction from "./objects/enums/CRUDAction";
 
@@ -58,17 +57,17 @@ class App extends React.Component<AppProps, AppState> {
             <Route path="dashboard" element={<Dashboard user={this.state.currentUser} />} />
           </Route>
           <Route path="/workspace" element={<Layout fluid="md" userLevel={this.state.currentUser.level} userName={this.state.currentUser.name} /> }>
-            <Route path="create" element={<WorkspaceRouter crudAction={CRUDAction.CREATE} /> } />
+            <Route path="create" element={<WorkspaceRouter target="workspace" crudAction={CRUDAction.CREATE} userId={this.state.currentUser.id} /> } />
             <Route path=":id">
-              <Route index element={<WorkspaceRouter crudAction={CRUDAction.READ} userId={this.state.currentUser.id} />} />
-              <Route path="edit" element={<WorkspaceRouter crudAction={CRUDAction.UPDATE} />} />
-              <Route path="delete" element={<WorkspaceRouter crudAction={CRUDAction.DELETE} />} />
+              <Route index element={<WorkspaceRouter target="workspace" crudAction={CRUDAction.READ} userId={this.state.currentUser.id} />} />
+              <Route path="edit" element={<WorkspaceRouter target="workspace" crudAction={CRUDAction.UPDATE} />} />
+              <Route path="delete" element={<WorkspaceRouter target="workspace" crudAction={CRUDAction.DELETE} />} />
             </Route>
           </Route>
           <Route path="/workspace/:id/records" element={<Layout fluid={true} userLevel={this.state.currentUser.level} userName={this.state.currentUser.name} />}>
-            <Route index element={<RecordList />} />
+            <Route index element={<WorkspaceRouter target="records" />} />
           </Route>
-          <Route path="*" element={<Layout fluid="sm" userLevel={3} userName="Eric" />}>
+          <Route path="*" element={<Layout fluid="sm" userLevel={this.state.currentUser.level} userName={this.state.currentUser.name} />}>
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
@@ -78,4 +77,3 @@ class App extends React.Component<AppProps, AppState> {
 }
 
 export default App;
-export type { AppState };

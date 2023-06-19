@@ -16,15 +16,15 @@ class WorkspaceUsersController extends WorkspaceController {
 
     protected model: WorkspaceUsersModel;
 
-    private getWorkspaceId(request: Request): number {
-        return parseInt(request["workspaceId"]);
+    private getWorkspaceId(response: Response): number {
+        return parseInt(response.locals["workspaceId"]);
     }
 
     public async getWorkspaceUsers(request: Request, response: Response, next: NextFunction): Promise<void> {
         try {
             this.model = new WorkspaceUsersModel();
             let userId: number = (<User>request.session["user"]).id;
-            let workspaceId: number = this.getWorkspaceId(request);
+            let workspaceId: number = this.getWorkspaceId(response);
 
             let workspaceUsers: User[] = await this.model.getUsersByWorkspace(workspaceId);
             this.model.delete();
@@ -56,7 +56,7 @@ class WorkspaceUsersController extends WorkspaceController {
                 return;
             }
 
-            let workspaceId: number = this.getWorkspaceId(request);
+            let workspaceId: number = this.getWorkspaceId(response);
             let workspaceUserEmail: string = request.body.email;
             let agentUserId: number = (<User>request.session["user"]).id;
 
@@ -94,7 +94,7 @@ class WorkspaceUsersController extends WorkspaceController {
 
     public async unlinkWorkspaceUser(request: Request, response: Response, next: NextFunction): Promise<void> {
         try {
-            let workspaceId: number = this.getWorkspaceId(request);
+            let workspaceId: number = this.getWorkspaceId(response);
             let unlinkUserId: number = parseInt(request.params.user);
             let agentUserId: number = (<User>request.session["user"]).id;
 

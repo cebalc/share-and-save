@@ -1,9 +1,9 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
-import User from "../../objects/entities/User";
+import User from "../../../objects/entities/User";
 import Placeholder from "react-bootstrap/Placeholder";
 import ListGroup from "react-bootstrap/ListGroup";
-import ReadWorkspaceUsersFetcher from "../../objects/fetchers/workspaces/ReadWorkspaceUsersFetcher";
+import ReadWorkspaceUsersFetcher from "../../../objects/fetchers/workspaces/users/ReadWorkspaceUsersFetcher";
 import UnlinkWorkspaceUserIcon from "./UnlinkWorkspaceUserIcon";
 
 interface WorkspaceUserListProps {

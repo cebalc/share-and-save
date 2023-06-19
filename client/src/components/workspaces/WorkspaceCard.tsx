@@ -13,8 +13,8 @@ interface WorkspaceCardProps {
 }
 
 interface DataSizes {
-    header: React.ElementType<any>,
-    subtitle: React.ElementType<any>
+    header: React.ElementType,
+    subtitle: React.ElementType
 }
 
 const dataSizes: Map<WorkspaceCardSize, DataSizes> = new Map([
@@ -24,8 +24,8 @@ const dataSizes: Map<WorkspaceCardSize, DataSizes> = new Map([
 
 const WorkspaceCard = (props: WorkspaceCardProps): JSX.Element => {
 
-    const headerSize = (dataSizes.get(props.size) as DataSizes).header;
-    const subtitleSize = (dataSizes.get(props.size) as DataSizes).subtitle;
+    const headerSize: React.ElementType = (dataSizes.get(props.size) as DataSizes).header;
+    const subtitleSize: React.ElementType = (dataSizes.get(props.size) as DataSizes).subtitle;
 
     const buildWorkspaceDescription = (): string => {
         if(props.description.length > 0) {

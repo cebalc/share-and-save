@@ -1,4 +1,5 @@
 $primary: #0864bb;
+$paleBlue: #ececff;
 $nav-link-font-weight: bold;
 
 .brand-logo {
@@ -48,8 +49,9 @@ main {
     transition-duration: 0.30s;
 }
 
-.table-row:hover {
-    background-color: #ececff;
+.table-row:hover,
+.bg-paleblue {
+    background-color: $paleBlue;
 }
 
 .max-width-50nbp-sm,

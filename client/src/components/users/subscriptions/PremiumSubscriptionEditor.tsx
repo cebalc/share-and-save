@@ -1,8 +1,8 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import DowngradeSubscriptionFetcher from "../../objects/fetchers/users/subscriptions/DowngradeSubscriptionFetcher";
-import OptionalTextAlert from "../misc/OptionalTextAlert";
+import DowngradeSubscriptionFetcher from "../../../objects/fetchers/users/subscriptions/DowngradeSubscriptionFetcher";
+import OptionalTextAlert from "../../misc/OptionalTextAlert";
 
 interface PremiumSubscriptionEditorProps {
     userId: number,
@@ -51,7 +51,7 @@ class PremiumSubscriptionEditor extends React.Component<PremiumSubscriptionEdito
     public render(): React.ReactNode {
         return (<>
             <div className="w-100 my-4 d-flex justify-content-center">
-                <Button variant="outline-success" onClick={() => this.showModal()}>
+                <Button variant="outline-secondary" onClick={() => this.showModal()}>
                     Cancelar Suscripción
                 </Button>
             </div>

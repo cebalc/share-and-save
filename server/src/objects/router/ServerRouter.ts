@@ -25,7 +25,7 @@ class ServerRouter {
     }
 
     private findWorkspaceId(request: Request, response: Response, next: NextFunction): void {
-        request["workspaceId"] = request.params.workspace;
+        response.locals["workspaceId"] = request.params.workspace;
         next();
     }
 }

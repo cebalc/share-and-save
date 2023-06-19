@@ -1,5 +1,5 @@
 import React from "react";
-import UserLevel from "../../objects/enums/UserLevel";
+import UserLevel from "../../../objects/enums/UserLevel";
 import RegUserSubscriptionEditor from "./RegUserSubscriptionEditor";
 import PremiumSubscriptionEditor from "./PremiumSubscriptionEditor";
 import AdminSubscriptionEditor from "./AdminSubscriptionEditor";

@@ -1,9 +1,9 @@
 import React from "react";
-import UserLevel from "../../objects/enums/UserLevel";
-import LevelCard from "./LevelCard";
+import UserLevel from "../../../objects/enums/UserLevel";
+import LevelCard from "../LevelCard";
 import LevelsTable from "./LevelsTable";
 import SubscriptionEditor from "./SubscriptionEditor";
-import OptionalTextAlert from "../misc/OptionalTextAlert";
+import OptionalTextAlert from "../../misc/OptionalTextAlert";
 
 interface SubscriptionStatusProps {
     userId: number,

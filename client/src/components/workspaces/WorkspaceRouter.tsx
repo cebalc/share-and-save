@@ -6,14 +6,28 @@ import Workspace from "../../routes/workspace/Workspace";
 import CRUDAction from "../../objects/enums/CRUDAction";
 import Container from "react-bootstrap/Container";
 import SaveWorkspace from "../../routes/workspace/SaveWorkspace";
-import StatusFetcher from "../../objects/fetchers/users/StatusFetcher";
 import User from "../../objects/entities/User";
 import DeleteWorkspace from "../../routes/workspace/DeleteWorkspace";
+import RecordsTabsMenu from "./records/RecordsTabsMenu";
 
-interface WorkspaceRouterProps {
-    crudAction: CRUDAction
-    userId?: number
-}
+type WorkspaceRouterProps =
+    {
+        target: "workspace",
+        crudAction: CRUDAction.CREATE | CRUDAction.READ,
+        userId: number
+    }
+    |
+    {
+        target: "workspace",
+        crudAction: CRUDAction.UPDATE | CRUDAction.DELETE,
+        userId?: never
+    }
+    |
+    {
+        target: "records",
+        crudAction?: never,
+        userId?: never
+    };
 
 const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
 
@@ -21,7 +35,7 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
     const [restricted, setRestricted] = React.useState<boolean>(false);
     const [workspace, setWorkspace] = React.useState<WorkspaceEntity>(WorkspaceEntity.NULL);
 
-    const { id } = useParams();
+    const { id } = useParams<string>();
     const workspaceId: number = (id === undefined ? WorkspaceEntity.NULL.id : parseInt(id));
 
     const retrieveWorkspaceData = React.useCallback(() : void => {
@@ -45,31 +59,18 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
             });
     }, [workspaceId, props.crudAction]);
 
-    const checkUserAuth = React.useCallback((): void => {
-        let fetcher: StatusFetcher = new StatusFetcher();
-        fetcher.retrieveData()
-            .then(retrieved => {
-                if(!retrieved) {
-                    setRestricted(true);
-                    return Promise.reject(retrieved);
-                }
-                let currentUser: User = fetcher.getResponseData();
-                if(currentUser.id === User.GUEST.id) {
-                    setRestricted(true);
-                } else {
-                    setWorkspace(WorkspaceEntity.NULL)
-                }
-                setRetrieved(true);
-            });
-    }, []);
-
     React.useEffect(() => {
-        if(props.crudAction === CRUDAction.CREATE) {
-            checkUserAuth();
+        if (props.crudAction === CRUDAction.CREATE) {
+            if(props.userId === User.GUEST.id) {
+                setRestricted(true);
+            } else {
+                setWorkspace(WorkspaceEntity.NULL)
+            }
+            setRetrieved(true);
         } else {
             retrieveWorkspaceData();
         }
-    }, [retrieveWorkspaceData, checkUserAuth, props.crudAction]);
+    }, [retrieveWorkspaceData, props.userId, props.crudAction]);
 
     let fetchPending: boolean = !restricted && !retrieved;
     let userNotAuthenticated: boolean = restricted && !retrieved;
@@ -81,27 +82,34 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
     if(userNotAllowed) {
         return (<Navigate to="/dashboard" />);
     }
+
     if(fetchPending) {
-        return (
-            <Container fluid>
-                <p className="text-center">Recuperando información...</p>
-            </Container>
-        );
+        return <Placeholder />;
     }
 
-    let crudRoutes: Map<CRUDAction, JSX.Element> = new Map([
-        [CRUDAction.CREATE, <SaveWorkspace workspace={workspace} onSave={() => null} />],
-        [CRUDAction.READ, <Workspace workspace={workspace} userId={props.userId as number} />],
-        [CRUDAction.UPDATE, <SaveWorkspace workspace={workspace} onSave={retrieveWorkspaceData} />],
-        [CRUDAction.DELETE, <DeleteWorkspace workspace={workspace} />]
-    ]);
+    if(props.target === "records") {
+        return <RecordsTabsMenu workspace={workspace} />
+    }
 
-    return crudRoutes.get(props.crudAction) as JSX.Element;
+    if(props.target === "workspace") {
+        let crudRoutes: Map<CRUDAction, JSX.Element> = new Map([
+            [CRUDAction.CREATE, <SaveWorkspace workspace={workspace} onSave={() => null} />],
+            [CRUDAction.READ, <Workspace workspace={workspace} userId={props.userId as number} />],
+            [CRUDAction.UPDATE, <SaveWorkspace workspace={workspace} onSave={retrieveWorkspaceData} />],
+            [CRUDAction.DELETE, <DeleteWorkspace workspace={workspace} />]
+        ]);
+        return crudRoutes.get(props.crudAction) as JSX.Element;
+    }
+
+    return <></>;
 }
 
-WorkspaceRouter.defaultProps = ({
-    crudAction: CRUDAction.READ,
-    userId: 0
-} as WorkspaceRouterProps);
+const Placeholder = (): JSX.Element => {
+    return (
+        <Container fluid>
+            <p className="text-center">Recuperando información...</p>
+        </Container>
+    );
+}
 
 export default WorkspaceRouter;
