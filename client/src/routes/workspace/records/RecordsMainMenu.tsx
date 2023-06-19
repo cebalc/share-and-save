@@ -2,16 +2,16 @@ import React from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Workspace from "../../../objects/entities/Workspace";
-import WorkspaceCard, {WorkspaceCardSize} from "../WorkspaceCard";
+import WorkspaceCard, {WorkspaceCardSize} from "../../../components/workspaces/WorkspaceCard";
 import {LinkContainer} from "react-router-bootstrap";
 import Button from "react-bootstrap/Button";
-import RecordsManager from "./RecordsManager";
+import RecordsManager from "../../../components/workspaces/records/RecordsManager";
 
-interface RecordsTabsMenuProps {
+interface RecordsMainMenuProps {
     workspace: Workspace
 }
 
-interface RecordsTabsMenuState {
+interface RecordsMainMenuState {
     selectedTab: string
 }
 
@@ -21,13 +21,13 @@ interface TabData {
     child: JSX.Element
 }
 
-class RecordsTabsMenu extends React.Component<RecordsTabsMenuProps, RecordsTabsMenuState> {
+class RecordsMainMenu extends React.Component<RecordsMainMenuProps, RecordsMainMenuState> {
 
-    public state: RecordsTabsMenuState = {
+    public state: RecordsMainMenuState = {
         selectedTab: "records"
     }
 
-    public constructor(props: RecordsTabsMenuProps | Readonly<RecordsTabsMenuProps>) {
+    public constructor(props: RecordsMainMenuProps | Readonly<RecordsMainMenuProps>) {
         super(props);
     }
 
@@ -84,4 +84,4 @@ class RecordsTabsMenu extends React.Component<RecordsTabsMenuProps, RecordsTabsM
     }
 }
 
-export default RecordsTabsMenu;
+export default RecordsMainMenu;
