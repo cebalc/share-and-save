@@ -5,6 +5,7 @@ import Workspace from "../../../objects/entities/Workspace";
 import WorkspaceCard, {WorkspaceCardSize} from "../WorkspaceCard";
 import {LinkContainer} from "react-router-bootstrap";
 import Button from "react-bootstrap/Button";
+import RecordList from "./RecordList";
 
 interface RecordsTabsMenuProps {
     workspace: Workspace
@@ -39,7 +40,7 @@ class RecordsTabsMenu extends React.Component<RecordsTabsMenuProps, RecordsTabsM
             {
                 eventKey: "records",
                 title: "Movimientos",
-                child: <>Lista de movimientos</>
+                child: <RecordList />
             },
             {
                 eventKey: "lists",
@@ -72,7 +73,8 @@ class RecordsTabsMenu extends React.Component<RecordsTabsMenuProps, RecordsTabsM
             <Tabs defaultActiveKey="records" id="records-tab" justify className="bg-white"
                 onSelect={(eventKey) => this.setState({selectedTab: eventKey as string})}>
                 {tabData.map((element, index) =>
-                    <Tab key={index} eventKey={element.eventKey} title={element.title} className="bg-white rounded-bottom p-3"
+                    <Tab key={index} eventKey={element.eventKey} title={element.title}
+                        className="record-tab bg-white border border-1 rounded-bottom p-3"
                         tabClassName={this.buildTabClassName(element.eventKey)}>
                         {element.child}
                     </Tab>

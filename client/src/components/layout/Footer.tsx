@@ -45,7 +45,7 @@ class Footer extends React.Component<FooterProps, FooterState> {
                 <Row>
                     <Col className="pt-4 text-center">
                         Diseño y desarrollo: Eric Ceballos Alcantarilla<br />
-                        Share and Save &copy; 2022. Todos los derechos reservados.
+                        Share and Save &copy; 2023. Todos los derechos reservados.
                     </Col>
                 </Row>
             </Container>

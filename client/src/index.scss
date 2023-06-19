@@ -49,8 +49,7 @@ main {
     transition-duration: 0.30s;
 }
 
-.table-row:hover,
-.bg-paleblue {
+.table-row:hover {
     background-color: $paleBlue;
 }
 
@@ -129,3 +128,7 @@ main {
 }
 
 @import "../node_modules/bootstrap/scss/bootstrap";
+
+.record-tab {
+    border-color: $nav-tabs-link-active-border-color !important;
+}

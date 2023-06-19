@@ -4,11 +4,11 @@ import {Navigate, useParams} from "react-router-dom";
 import ReadWorkspaceFetcher from "../../objects/fetchers/workspaces/ReadWorkspaceFetcher";
 import Workspace from "../../routes/workspace/Workspace";
 import CRUDAction from "../../objects/enums/CRUDAction";
-import Container from "react-bootstrap/Container";
 import SaveWorkspace from "../../routes/workspace/SaveWorkspace";
 import User from "../../objects/entities/User";
 import DeleteWorkspace from "../../routes/workspace/DeleteWorkspace";
 import RecordsTabsMenu from "./records/RecordsTabsMenu";
+import GeneralPlaceholder from "../misc/GeneralPlaceholder";
 
 type WorkspaceRouterProps =
     {
@@ -84,7 +84,7 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
     }
 
     if(fetchPending) {
-        return <Placeholder />;
+        return <GeneralPlaceholder />;
     }
 
     if(props.target === "records") {
@@ -102,14 +102,6 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
     }
 
     return <></>;
-}
-
-const Placeholder = (): JSX.Element => {
-    return (
-        <Container fluid>
-            <p className="text-center">Recuperando información...</p>
-        </Container>
-    );
 }
 
 export default WorkspaceRouter;
