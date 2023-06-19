@@ -11,6 +11,7 @@ import RecordsMainMenu from "../../routes/workspace/records/RecordsMainMenu";
 import GeneralPlaceholder from "../misc/GeneralPlaceholder";
 import CreateRecord from "../../routes/workspace/records/CreateRecord";
 import AlterRecord from "../../routes/workspace/records/AlterRecord";
+import Record from "../../objects/entities/Record";
 
 type WorkspaceRouterProps =
     {
@@ -44,7 +45,9 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
     const [workspace, setWorkspace] = React.useState<WorkspaceEntity>(WorkspaceEntity.NULL);
 
     const { id } = useParams<string>();
+    const { record } = useParams<string>();
     const workspaceId: number = (id === undefined ? WorkspaceEntity.NULL.id : parseInt(id));
+    const recordId: number = (record === undefined ? Record.NEW.id : parseInt(record));
 
     const retrieveWorkspaceData = React.useCallback(() : void => {
         let fetcher: ReadWorkspaceFetcher = new ReadWorkspaceFetcher(workspaceId);
@@ -109,7 +112,7 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
         ])],
         ["record", new Map([
             [CRUDAction.CREATE, <CreateRecord workspace={workspace} />],
-            [CRUDAction.UPDATE, <AlterRecord workspace={workspace} />]
+            [CRUDAction.UPDATE, <AlterRecord workspace={workspace} recordId={recordId} />]
         ])]
     ]);
 

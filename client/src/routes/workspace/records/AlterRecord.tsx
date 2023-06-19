@@ -2,7 +2,8 @@ import React from "react";
 import Workspace from "../../../objects/entities/Workspace";
 
 interface AlterRecordProps {
-    workspace: Workspace
+    workspace: Workspace,
+    recordId: number
 }
 
 interface AlterRecordState {
@@ -21,7 +22,7 @@ class AlterRecord extends React.Component<AlterRecordProps, AlterRecordState> {
 
     public render(): React.ReactNode {
         return (<>
-            Editor de movimiento
+            Editor de movimiento nº {this.props.recordId}
         </>);
     }
 }
