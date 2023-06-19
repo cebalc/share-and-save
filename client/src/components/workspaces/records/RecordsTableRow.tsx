@@ -5,6 +5,7 @@ import { IconName } from "@fortawesome/fontawesome-svg-core";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
+import { formatEUR } from "../../../modules/misc";
 
 interface RecordsTableRowProps {
     record: Record
@@ -22,10 +23,6 @@ class RecordsTableRow extends React.Component<RecordsTableRowProps, RecordsTable
 
     public constructor(props: RecordsTableRowProps | Readonly<RecordsTableRowProps>) {
         super(props);
-    }
-
-    private formatEUR(amount: number) {
-        return amount.toLocaleString("es-ES", {style: "currency", currency: "EUR"});
     }
 
     public render(): React.ReactNode {
@@ -52,7 +49,7 @@ class RecordsTableRow extends React.Component<RecordsTableRowProps, RecordsTable
                 </CenteredCell>
                 <CenteredCell>{this.props.record.description}</CenteredCell>
                 <td className="text-end">
-                    {this.formatEUR(this.props.record.amount)}
+                    {formatEUR(this.props.record.amount)}
                 </td>
                 <CenteredCell>
                     {this.props.record.user.name}

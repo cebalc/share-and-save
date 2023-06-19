@@ -47,6 +47,13 @@ main {
     transition-property: background-color;
     transition-timing-function: ease;
     transition-duration: 0.30s;
+    border-bottom-width: 0.8px;
+    border-bottom-style: solid;
+    border-bottom-color: lightgray;
+}
+
+.table-row:last-of-type {
+    border-bottom-width: 0px;
 }
 
 .table-row:hover {

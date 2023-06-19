@@ -5,7 +5,7 @@ import Workspace from "../../../objects/entities/Workspace";
 import WorkspaceCard, {WorkspaceCardSize} from "../WorkspaceCard";
 import {LinkContainer} from "react-router-bootstrap";
 import Button from "react-bootstrap/Button";
-import RecordList from "./RecordList";
+import RecordsManager from "./RecordsManager";
 
 interface RecordsTabsMenuProps {
     workspace: Workspace
@@ -40,7 +40,7 @@ class RecordsTabsMenu extends React.Component<RecordsTabsMenuProps, RecordsTabsM
             {
                 eventKey: "records",
                 title: "Movimientos",
-                child: <RecordList />
+                child: <RecordsManager />
             },
             {
                 eventKey: "lists",

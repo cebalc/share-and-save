@@ -1,9 +1,6 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
-import Table from "react-bootstrap/Table";
-import RecordTableHeader from "./RecordTableHeader";
 import Record from "../../../objects/entities/Record"
-import RecordsTableRow from "./RecordsTableRow";
 import GeneralPlaceholder from "../../misc/GeneralPlaceholder";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
@@ -13,22 +10,24 @@ import Place from "../../../objects/entities/Place";
 import User from "../../../objects/entities/User";
 import Workspace from "../../../objects/entities/Workspace";
 import UserLevel from "../../../objects/enums/UserLevel";
+import RecordsTable from "./RecordsTable";
+import RecordsList from "./RecordsList";
 
-interface RecordListProps {
+interface RecordsManagerProps {
 
 }
 
-interface RecordListState {
+interface RecordsManagerState {
     fetching: boolean,
     screenWidth: number,
     records: Record[]
 }
 
-class RecordList extends React.Component<RecordListProps, RecordListState> {
+class RecordsManager extends React.Component<RecordsManagerProps, RecordsManagerState> {
 
     private static readonly SM_BREAKPOINT: number = 576;
 
-    public state: RecordListState = {
+    public state: RecordsManagerState = {
         fetching: false,
         screenWidth: window.innerWidth,
         // records: []
@@ -36,7 +35,7 @@ class RecordList extends React.Component<RecordListProps, RecordListState> {
             new Record(1, RecordType.SPEND, new Date(), "Descripción prueba", 100,
                 "12345", true, new Category(1, "Alimentación"), new Place(1, "Mercadona"),
                 new User(1, "Eric", "", "", UserLevel.ANONYMOUS), Workspace.NULL),
-            new Record(1, RecordType.SPEND, new Date(), "Descripción prueba", 100,
+            new Record(1, RecordType.EARN, new Date(), "Descripción prueba", 100,
                 "12345", false, new Category(1, "Alimentación"), new Place(1, "Mercadona"),
                 new User(1, "Eric", "", "", UserLevel.ANONYMOUS), Workspace.NULL),
             new Record(1, RecordType.SPEND, new Date(), "Descripción prueba", 100,
@@ -45,7 +44,7 @@ class RecordList extends React.Component<RecordListProps, RecordListState> {
         ]
     }
 
-    public constructor(props: RecordListProps | Readonly<RecordListProps>) {
+    public constructor(props: RecordsManagerProps | Readonly<RecordsManagerProps>) {
         super(props);
     }
 
@@ -61,41 +60,14 @@ class RecordList extends React.Component<RecordListProps, RecordListState> {
         this.setState({screenWidth: window.innerWidth});
     }
 
-    private renderList(): React.ReactNode {
-        return <>Paso a mostrar lista</>;
-    }
-
-    // type TINYINT NOT NULL DEFAULT 1, /* 1 = spend, 2 = earn */
-    // date DATE NOT NULL,
-    // description VARCHAR(100) DEFAULT NULL,
-    // amount DECIMAL(8, 2) DEFAULT 0.0,
-    // reference VARCHAR(50),
-    // shared BOOLEAN DEFAULT TRUE,
-    // category INT NOT NULL,
-    // place INT NOT NULL DEFAULT 1,
-    // user INT NOT NULL
-
-    private renderTable(): React.ReactNode {
-        return (
-            <Table striped hover responsive>
-                <RecordTableHeader />
-                <tbody>
-                {this.state.records.map(record =>
-                    <RecordsTableRow key={record.id} record={record} />
-                )}
-                </tbody>
-            </Table>
-        );
-    }
-
     private renderRecords(): React.ReactNode {
         if(this.state.records.length === 0) {
             return (<Alert variant="info">Todavía no has añadido registros a este espacio.</Alert>);
         }
-        if(this.state.screenWidth < RecordList.SM_BREAKPOINT) {
-            return this.renderList();
+        if(this.state.screenWidth < RecordsManager.SM_BREAKPOINT) {
+            return <RecordsList records={this.state.records} />;
         }
-        return this.renderTable();
+        return <RecordsTable records={this.state.records} />;
     }
 
     public render(): React.ReactNode {
@@ -111,4 +83,4 @@ class RecordList extends React.Component<RecordListProps, RecordListState> {
     }
 }
 
-export default RecordList;
+export default RecordsManager;
