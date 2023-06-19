@@ -12,9 +12,10 @@ import Workspace from "../../../objects/entities/Workspace";
 import UserLevel from "../../../objects/enums/UserLevel";
 import RecordsTable from "./RecordsTable";
 import RecordsList from "./RecordsList";
+import {LinkContainer} from "react-router-bootstrap";
 
 interface RecordsManagerProps {
-
+    workspace: Workspace
 }
 
 interface RecordsManagerState {
@@ -76,7 +77,9 @@ class RecordsManager extends React.Component<RecordsManagerProps, RecordsManager
         }
         return (<>
             <Container fluid className="mb-3 d-flex justify-content-center">
-                <Button variant="outline-primary">Añadir movimiento(s)</Button>
+                <LinkContainer to={`/workspace/${this.props.workspace.id}/records/create`}>
+                    <Button variant="outline-primary">Añadir movimiento(s)</Button>
+                </LinkContainer>
             </Container>
             {this.renderRecords()}
         </>);

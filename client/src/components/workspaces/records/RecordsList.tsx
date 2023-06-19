@@ -1,10 +1,10 @@
 import Record from "../../../objects/entities/Record";
 import React from "react";
-import Row from "react-bootstrap/Row";
 import Container from "react-bootstrap/Container";
 import {formatEUR} from "../../../modules/misc";
 import RecordType from "../../../objects/enums/RecordType";
 import DateTimeTools from "../../../objects/DateTimeTools";
+import { LinkContainer } from "react-router-bootstrap";
 
 interface RecordsListProps {
     records: Record[]
@@ -34,6 +34,12 @@ class RecordsList extends React.Component<RecordsListProps, RecordsListState> {
         super(props);
     }
 
+    private buildLinkURL(record: Record): string {
+        let workspaceId: number = record.workspace.id;
+        let recordId: number = record.id;
+        return `/workspace/${workspaceId}/records/${recordId}`;
+    }
+
     private buildFirstRowClassName(isEarn: boolean): string {
         let className: string = "fw-bold d-flex justify-content-between flex-wrap";
         if(isEarn) {
@@ -44,16 +50,19 @@ class RecordsList extends React.Component<RecordsListProps, RecordsListState> {
 
     public render(): React.ReactNode {
         return this.props.records.map(record =>
-            <Container fluid key={record.id} className="table-row p-2 clickable">
-                <Container fluid className={this.buildFirstRowClassName(record.type === RecordType.EARN)}>
-                    <div className="me-2">{record.description}</div>
-                    <div>{formatEUR(record.amount)}</div>
+            <LinkContainer to={this.buildLinkURL(record)}>
+                <Container fluid key={record.id} className="table-row p-2 clickable">
+                    <Container fluid className={this.buildFirstRowClassName(record.type === RecordType.EARN)}>
+                        <div className="me-2">{record.description}</div>
+                        <div>{formatEUR(record.amount)}</div>
+                    </Container>
+                    <Container fluid className="d-flex justify-content-between flex-wrap">
+                        <div>{RecordsList.buildUsersInfo(record)}</div>
+                        <div>{DateTimeTools.getFormattedDate(record.date)}</div>
+                    </Container>
                 </Container>
-                <Container fluid className="d-flex justify-content-between flex-wrap">
-                    <div>{RecordsList.buildUsersInfo(record)}</div>
-                    <div>{DateTimeTools.getFormattedDate(record.date)}</div>
-                </Container>
-            </Container>
+            </LinkContainer>
+
         );
     }
 }

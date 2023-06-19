@@ -40,24 +40,24 @@ class RecordsTabsMenu extends React.Component<RecordsTabsMenuProps, RecordsTabsM
             {
                 eventKey: "records",
                 title: "Movimientos",
-                child: <RecordsManager />
-            },
+                child: <RecordsManager workspace={this.props.workspace} />
+            } as TabData,
             {
                 eventKey: "lists",
                 title: "Resúmenes",
                 child: <>Resúmenes de gastos e ingresos</>
-            },
+            } as TabData,
             {
                 eventKey: "debts",
                 title: "Deudas",
                 child: <>Deudas de usuarios</>
-            },
+            } as TabData,
             {
                 eventKey: "advanced",
                 title: "Avanzado",
                 child: <>Funciones avanzadas</>
-            }
-        ];
+            } as TabData
+        ] as TabData[];
     }
 
     public render(): React.ReactNode {

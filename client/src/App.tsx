@@ -11,6 +11,8 @@ import Dashboard from "./routes/Dashboard";
 import Settings from "./routes/Settings";
 import WorkspaceRouter from "./components/workspaces/WorkspaceRouter";
 import CRUDAction from "./objects/enums/CRUDAction";
+import RecordEditor from "./components/workspaces/records/RecordEditor";
+import RecordGenerator from "./components/workspaces/records/RecordGenerator";
 
 interface AppProps {
 }
@@ -62,6 +64,8 @@ class App extends React.Component<AppProps, AppState> {
               <Route index element={<WorkspaceRouter target="workspace" crudAction={CRUDAction.READ} userId={this.state.currentUser.id} />} />
               <Route path="edit" element={<WorkspaceRouter target="workspace" crudAction={CRUDAction.UPDATE} />} />
               <Route path="delete" element={<WorkspaceRouter target="workspace" crudAction={CRUDAction.DELETE} />} />
+              <Route path="records/create" element={<RecordGenerator />} />
+              <Route path="records/:record" element={<RecordEditor />} />
             </Route>
           </Route>
           <Route path="/workspace/:id/records" element={<Layout fluid={true} userLevel={this.state.currentUser.level} userName={this.state.currentUser.name} />}>
