@@ -20,13 +20,18 @@ interface RecordListProps {
 
 interface RecordListState {
     fetching: boolean,
+    screenWidth: number,
     records: Record[]
 }
 
 class RecordList extends React.Component<RecordListProps, RecordListState> {
 
+    private static readonly SM_BREAKPOINT: number = 576;
+
     public state: RecordListState = {
         fetching: false,
+        screenWidth: window.innerWidth,
+        // records: []
         records: [
             new Record(1, RecordType.SPEND, new Date(), "Descripción prueba", 100,
                 "12345", true, new Category(1, "Alimentación"), new Place(1, "Mercadona"),
@@ -42,6 +47,18 @@ class RecordList extends React.Component<RecordListProps, RecordListState> {
 
     public constructor(props: RecordListProps | Readonly<RecordListProps>) {
         super(props);
+    }
+
+    public componentDidMount(): void {
+        window.addEventListener("resize", this.readScreenWidth.bind(this));
+    }
+
+    public componentWillUnmount(): void {
+        window.removeEventListener("resize", this.readScreenWidth.bind(this));
+    }
+
+    private readScreenWidth(): void {
+        this.setState({screenWidth: window.innerWidth});
     }
 
     private renderList(): React.ReactNode {
@@ -74,6 +91,9 @@ class RecordList extends React.Component<RecordListProps, RecordListState> {
     private renderRecords(): React.ReactNode {
         if(this.state.records.length === 0) {
             return (<Alert variant="info">Todavía no has añadido registros a este espacio.</Alert>);
+        }
+        if(this.state.screenWidth < RecordList.SM_BREAKPOINT) {
+            return this.renderList();
         }
         return this.renderTable();
     }

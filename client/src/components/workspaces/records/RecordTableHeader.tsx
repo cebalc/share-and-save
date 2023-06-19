@@ -27,7 +27,7 @@ const RecordTableHeader = (): JSX.Element => {
     return (
         <thead>
             <tr>
-                <th key={fieldsData().length}></th>
+                <th></th>
                 {fieldsData().map((fieldData, index) =>
                     <CellHeader key={index} {...fieldData} />
                 )}
