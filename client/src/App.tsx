@@ -63,8 +63,8 @@ class App extends React.Component<AppProps, AppState> {
               <Route path="edit" element={<WorkspaceRouter target="workspace" crudAction={CRUDAction.UPDATE} />} />
               <Route path="delete" element={<WorkspaceRouter target="workspace" crudAction={CRUDAction.DELETE} />} />
               <Route path="records">
-                <Route path="create" element={<WorkspaceRouter target="record" crudAction={CRUDAction.CREATE} />} />
-                <Route path=":record" element={<WorkspaceRouter target="record" crudAction={CRUDAction.UPDATE} />} />
+                <Route path="create" element={<WorkspaceRouter target="record" crudAction={CRUDAction.CREATE} userId={this.state.currentUser.id} />} />
+                <Route path=":record" element={<WorkspaceRouter target="record" crudAction={CRUDAction.UPDATE} userId={this.state.currentUser.id} />} />
               </Route>
             </Route>
           </Route>

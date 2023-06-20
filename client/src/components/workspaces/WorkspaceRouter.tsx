@@ -35,7 +35,7 @@ type WorkspaceRouterProps =
     {
         target: "record",
         crudAction: CRUDAction.CREATE | CRUDAction.UPDATE,
-        userId?: never
+        userId: number
     };
 
 const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
@@ -111,7 +111,7 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
             [CRUDAction.DELETE, <DeleteWorkspace workspace={workspace} />]
         ])],
         ["record", new Map([
-            [CRUDAction.CREATE, <CreateRecord workspace={workspace} />],
+            [CRUDAction.CREATE, <CreateRecord userId={props.userId as number} workspace={workspace} />],
             [CRUDAction.UPDATE, <AlterRecord workspace={workspace} recordId={recordId} />]
         ])]
     ]);
