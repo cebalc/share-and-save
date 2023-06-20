@@ -8,6 +8,10 @@ class Place extends UniqueStringEntity {
     public static ofRow(row: PlaceRow): Place {
         return new Place(row.id, row.name);
     }
+
+    public static idWrapper(id: number): Place {
+        return new Place(id, "");
+    }
 }
 
 export default Place;

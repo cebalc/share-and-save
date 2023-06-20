@@ -17,14 +17,18 @@ import AddPlaceModalForm from "../../../components/workspaces/records/AddPlaceMo
 import ReadPlacesFetcher from "../../../objects/fetchers/workspaces/records/ReadPlacesFetcher";
 import ReadCategoriesFetcher from "../../../objects/fetchers/workspaces/records/ReadCategoriesFetcher";
 import ReadWorkspaceUsersFetcher from "../../../objects/fetchers/workspaces/users/ReadWorkspaceUsersFetcher";
+import OptionalTextAlert from "../../../components/misc/OptionalTextAlert";
+import AddRecordFetcher, {AddRecordResponse} from "../../../objects/fetchers/workspaces/records/AddRecordFetcher";
+import {Navigate} from "react-router-dom";
 
 interface CreateRecordProps {
     userId: number,
-    workspace: Workspace
+    workspace: Workspace,
 }
 
 interface CreateRecordState {
     fetching: boolean,
+    createdId: number,
     workspaceUsers: User[],
     categories: Category[],
     places: Place[],
@@ -40,13 +44,15 @@ interface CreateRecordState {
     category: number,
     place: number,
     reference: string,
-    referenceError: string
+    referenceError: string,
+    formError: string
 }
 
 class CreateRecord extends React.Component<CreateRecordProps, CreateRecordState> {
 
     public state: CreateRecordState = {
         fetching: true,
+        createdId: Record.NEW.id,
         workspaceUsers: [],
         categories: [],
         places: [],
@@ -62,7 +68,8 @@ class CreateRecord extends React.Component<CreateRecordProps, CreateRecordState>
         category: Category.NULL.id,
         place: Place.NULL.id,
         reference: "",
-        referenceError: ""
+        referenceError: "",
+        formError: ""
     };
 
     private addPlaceForm: React.RefObject<AddPlaceModalForm>;
@@ -161,11 +168,54 @@ class CreateRecord extends React.Component<CreateRecordProps, CreateRecordState>
         this.addPlaceForm.current?.setState({show: true});
     }
 
+    private async createRecord(): Promise<void> {
+        this.setState({fetching: true});
+        await this.processCreateRequest();
+    }
+
+    private async processCreateRequest(): Promise<void> {
+        let fetcher: AddRecordFetcher = new AddRecordFetcher(
+            this.props.workspace.id,
+            this.state.type,
+            this.state.date,
+            this.state.description,
+            this.state.amount,
+            this.state.user,
+            this.state.shared,
+            this.state.category,
+            this.state.place,
+            this.state.reference
+        );
+        if(!await fetcher.retrieveData()) {
+            this.setState({
+                formError: "Error en la conexión al servidor",
+                fetching: false})
+            return;
+        }
+        let responseData: AddRecordResponse = fetcher.getResponseData();
+        this.setState({
+            fetching: false,
+            dateError: responseData.date,
+            descriptionError: responseData.description,
+            amountError: responseData.amount,
+            referenceError: responseData.reference,
+            formError: responseData.global,
+            createdId: responseData.id
+        });
+    }
+
+    private redirectIfCreated(): React.ReactNode {
+        if(this.state.createdId !== Record.NEW.id) {
+            return <Navigate to={`/workspace/${this.props.workspace.id}/records?r=${this.state.createdId}&created`} />;
+        }
+    }
+
     public render(): React.ReactNode {
-        console.log(this.state);
         return (<>
+            {this.redirectIfCreated()}
             <p className="h1 text-center mb-4">Añadir movimiento</p>
             <Form className="max-width-50nbp-sm mx-auto">
+                <OptionalTextAlert text={this.state.formError} />
                 <Row>
                     <Col sm={6} className="mb-3 d-flex justify-content-start align-items-start">
                         <Button variant="secondary" disabled className="text-dark bg-secondary bg-opacity-25">
@@ -276,12 +326,13 @@ class CreateRecord extends React.Component<CreateRecordProps, CreateRecordState>
                             <FontAwesomeIcon icon={["fas", "barcode"]} size="1x" />
                         </InputGroup.Text>
                         <Form.Control placeholder="Referencia interna" aria-describedby="reference"
-                                      onChange={event => this.setState({description: event.target.value})} />
+                                      onChange={event => this.setState({reference: event.target.value})} />
                     </InputGroup>
-                    <Form.Text className="text-danger">{this.state.descriptionError}</Form.Text>
+                    <Form.Text className="text-danger">{this.state.referenceError}</Form.Text>
                 </Form.Group>
                 <Container fluid className="mx-auto mt-4 d-flex flex-row justify-content-center">
-                    <Button variant="outline-primary" className="me-3" disabled={this.state.fetching}>Enviar</Button>
+                    <Button variant="outline-primary" className="me-3" disabled={this.state.fetching}
+                        onClick={() => this.createRecord()}>Enviar</Button>
                     <LinkContainer to={`/workspace/${this.props.workspace.id}/records`}>
                         <Button variant="outline-secondary">Volver</Button>
                     </LinkContainer>

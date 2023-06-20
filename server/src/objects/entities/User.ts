@@ -27,6 +27,10 @@ class User {
         return new User(row.id, row.name, row.surname, row.email, row.pass, row.level);
     }
 
+    public static idWrapper(id: number): User {
+        return new User(id, "", "", "", "", UserLevel.ANONYMOUS);
+    }
+
     public id: number;
     public name: string;
     public surname: string;

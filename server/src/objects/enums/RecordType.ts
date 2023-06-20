@@ -11,7 +11,7 @@ class RecordType {
         return this.OBJECT_ARRAY;
     }
 
-    public static of(id: number): RecordType | undefined {
+    public static of(id: number): RecordType {
         return this.OBJECT_ARRAY.find(object => object.id === id);
     }
 

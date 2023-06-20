@@ -53,7 +53,7 @@ class RecordsTableRow extends React.Component<RecordsTableRowProps, RecordsTable
                         {this.props.record.type.label}
                     </CenteredCell>
                     <CenteredCell>
-                        {DateTimeTools.getFormattedDate(this.props.record.date)}
+                        {DateTimeTools.getFormattedDate(new Date(this.props.record.date))}
                     </CenteredCell>
                     <CenteredCell>{this.props.record.description}</CenteredCell>
                     <td className="text-end">

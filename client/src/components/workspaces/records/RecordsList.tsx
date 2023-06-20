@@ -58,7 +58,7 @@ class RecordsList extends React.Component<RecordsListProps, RecordsListState> {
                     </Container>
                     <Container fluid className="d-flex justify-content-between flex-wrap">
                         <div>{RecordsList.buildUsersInfo(record)}</div>
-                        <div>{DateTimeTools.getFormattedDate(record.date)}</div>
+                        <div>{DateTimeTools.getFormattedDate(new Date(record.date))}</div>
                     </Container>
                 </Container>
             </LinkContainer>

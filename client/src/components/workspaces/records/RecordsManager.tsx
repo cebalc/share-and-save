@@ -4,12 +4,12 @@ import Record from "../../../objects/entities/Record"
 import GeneralPlaceholder from "../../misc/GeneralPlaceholder";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
-import RecordType from "../../../objects/enums/RecordType";
-import Category from "../../../objects/entities/Category";
-import Place from "../../../objects/entities/Place";
-import User from "../../../objects/entities/User";
+// import RecordType from "../../../objects/enums/RecordType";
+// import Category from "../../../objects/entities/Category";
+// import Place from "../../../objects/entities/Place";
+// import User from "../../../objects/entities/User";
 import Workspace from "../../../objects/entities/Workspace";
-import UserLevel from "../../../objects/enums/UserLevel";
+// import UserLevel from "../../../objects/enums/UserLevel";
 import RecordsTable from "./RecordsTable";
 import RecordsList from "./RecordsList";
 import {LinkContainer} from "react-router-bootstrap";
@@ -31,18 +31,18 @@ class RecordsManager extends React.Component<RecordsManagerProps, RecordsManager
     public state: RecordsManagerState = {
         fetching: false,
         screenWidth: window.innerWidth,
-        // records: []
-        records: [
-            new Record(1, RecordType.SPEND, new Date(), "Descripción prueba", 100,
-                "12345", true, new Category(1, "Alimentación"), new Place(1, "Mercadona"),
-                new User(1, "Eric", "", "", UserLevel.ANONYMOUS), Workspace.NULL),
-            new Record(1, RecordType.EARN, new Date(), "Descripción prueba", 100,
-                "12345", false, new Category(1, "Alimentación"), new Place(1, "Mercadona"),
-                new User(1, "Eric", "", "", UserLevel.ANONYMOUS), Workspace.NULL),
-            new Record(1, RecordType.SPEND, new Date(), "Descripción prueba", 100,
-                "12345", true, new Category(1, "Alimentación"), new Place(1, "Mercadona"),
-                new User(1, "Eric", "", "", UserLevel.ANONYMOUS), Workspace.NULL)
-        ]
+        records: []
+        // records: [
+        //     new Record(1, RecordType.SPEND, new Date(), "Descripción prueba", 100,
+        //         "12345", true, new Category(1, "Alimentación"), new Place(1, "Mercadona"),
+        //         new User(1, "Eric", "", "", UserLevel.ANONYMOUS), Workspace.NULL),
+        //     new Record(1, RecordType.EARN, new Date(), "Descripción prueba", 100,
+        //         "12345", false, new Category(1, "Alimentación"), new Place(1, "Mercadona"),
+        //         new User(1, "Eric", "", "", UserLevel.ANONYMOUS), Workspace.NULL),
+        //     new Record(1, RecordType.SPEND, new Date(), "Descripción prueba", 100,
+        //         "12345", true, new Category(1, "Alimentación"), new Place(1, "Mercadona"),
+        //         new User(1, "Eric", "", "", UserLevel.ANONYMOUS), Workspace.NULL)
+        // ]
     }
 
     public constructor(props: RecordsManagerProps | Readonly<RecordsManagerProps>) {

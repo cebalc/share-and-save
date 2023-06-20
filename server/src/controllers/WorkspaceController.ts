@@ -1,4 +1,3 @@
-import ServerController from "./ServerController";
 import {NextFunction, Request, Response} from "express";
 import {Result, ValidationChain, ValidationError, validationResult} from "express-validator";
 import WorkspaceModel from "../models/WorkspaceModel";
@@ -12,10 +11,11 @@ import AlterWorkspaceResponse from "../objects/responses/workspaces/AlterWorkspa
 import PersistWorkspaceResponse from "../objects/responses/workspaces/PersistWorkspaceResponse";
 import ReadWorkspaceResponse from "../objects/responses/workspaces/ReadWorkspaceResponse";
 import DeleteWorkspaceResponse from "../objects/responses/workspaces/DeleteWorkspaceResponse";
+import WorkspaceDependentController from "./WorkspaceDependentController";
 
 type AlterCommand = (requestWorkspace: Workspace, workspaceUserId: number, model: WorkspaceUsersModel) => Promise<boolean>;
 
-class WorkspaceController extends ServerController<WorkspaceModel> {
+class WorkspaceController extends WorkspaceDependentController<WorkspaceModel> {
 
     private static readonly MAX_FREE_WORKSPACES: number = 5;
 
@@ -158,17 +158,6 @@ class WorkspaceController extends ServerController<WorkspaceModel> {
         ]);
         if(alterable) {
             altered = await alterCommands.get(action)(requestWorkspace, workspaceUserId, model);
-            // switch (action) {
-            //     case CRUDAction.UPDATE:
-            //         altered = await this.sendUpdateCommand(requestWorkspace, workspaceUserId, model);
-            //         break;
-            //     case CRUDAction.DELETE:
-            //         altered = await this.sendDeleteCommand(requestWorkspace, workspaceUserId, model);
-            //         break;
-            //     default:
-            //         altered = false;
-            //         break;
-            // }
         }
         if(!alterable || !altered) {
             return responseOnNoAlter;

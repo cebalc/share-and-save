@@ -1,12 +1,13 @@
 import {body, ValidationChain} from "express-validator";
 import strip_tags from "striptags";
 import {globalTrim} from "../../modules/sanitizers";
+import RecordType from "../enums/RecordType";
 
 class FilterFactory {
 
     public static string(fieldName: string, maxLength: number, required: boolean, errorMsg: string = null): ValidationChain {
         if(errorMsg == null) {
-            errorMsg = `Requerido, máximo ${maxLength} caracteres`;
+            errorMsg = `${required ? "Requerido" : "Opcional"}, máximo ${maxLength} caracteres`;
         }
         let chain: ValidationChain = body(fieldName, errorMsg);
         chain = (required ? chain.exists() : chain.optional({values: "falsy"}));
@@ -78,18 +79,15 @@ class FilterFactory {
 
     public static workspaceName(fieldName: string = "name"): ValidationChain {
         return this.requiredString(fieldName, 30);
-        // return body(fieldName, "Requerido, máximo 30 caracteres")
-        //     .exists()
-        //     .customSanitizer(value => strip_tags(value))
-        //     .customSanitizer(value => globalTrim(value))
-        //     .isLength({min: 1, max: 30});
     }
 
     public static workspaceDescription(fieldName: string = "description"): ValidationChain {
-        return body(fieldName, "Opcional, máximo 100 caracteres")
-            .customSanitizer(value => strip_tags(value))
-            .customSanitizer(value => globalTrim(value))
-            .isLength({max: 100});
+        return this.string(fieldName, 100, false);
+        // return body(fieldName, "Opcional, máximo 100 caracteres")
+        //     .optional({values: "falsy"})
+        //     .customSanitizer(value => strip_tags(value))
+        //     .customSanitizer(value => globalTrim(value))
+        //     .isLength({max: 100});
     }
 
     public static cardName(): ValidationChain {
@@ -138,11 +136,38 @@ class FilterFactory {
 
     public static placeName(fieldName: string = "name"): ValidationChain {
         return this.requiredString(fieldName, 30);
-        // return body(fieldName, "Máximo 30 caracteres")
-        //     .exists()
-        //     .customSanitizer(value => strip_tags(value))
-        //     .customSanitizer(value => globalTrim(value))
-        //     .isLength({min: 1, max: 30});
+    }
+
+    public static recordType(fieldName: string = "type"): ValidationChain {
+        return body(fieldName, "")
+            .exists()
+            .isInt()
+            .custom(value => RecordType.values().some(type => type.id === value));
+    }
+
+    public static date(fieldName: string = "date"): ValidationChain {
+        return body(fieldName, "Introduce una fecha válida")
+            .exists()
+            .customSanitizer(value => strip_tags(value))
+            .customSanitizer(value => globalTrim(value))
+            .isDate();
+    }
+
+    public static recordDescription(fieldName: string = "description"): ValidationChain {
+        return this.string(fieldName, 100, false);
+    }
+
+    public static recordAmount(fieldName: string = "amount"): ValidationChain {
+        return body(fieldName, "Cantidad numérica positiva")
+            .exists()
+            .customSanitizer(value => strip_tags((<number>value).toString()))
+            .customSanitizer(value => (<string>value).replace(",", "."))
+            .isNumeric()
+            .custom(value => parseFloat(value) >= 0.0);
+    }
+
+    public static recordReference(fieldName: string = "reference"): ValidationChain {
+        return this.string(fieldName, 50, false);
     }
 }
 

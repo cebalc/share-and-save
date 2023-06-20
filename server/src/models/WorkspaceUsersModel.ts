@@ -12,7 +12,13 @@ class WorkspaceUsersModel extends WorkspaceModel {
                 WHERE WM.workspace = :workspaceId
                 ORDER BY WM.admin DESC, U.name ASC`;
         let rows: UserRow[] = await super.getMultipleRecords<UserRow>(sqlQuery, {"workspaceId": workspaceId});
+        console.table(rows);
         return (rows != null ? rows.map(row => User.ofRow(row)) : null);
+    }
+
+    public async isUserInWorkspace(userId: number, workspaceId: number): Promise<boolean> {
+        let workspaceUsers: User[] = await this.getUsersByWorkspace(workspaceId);
+        return workspaceUsers != null && workspaceUsers.some(user => user.id == userId);
     }
 
     public async addUserToWorkspace(workspaceId: number, userId: number, userIsAdmin: boolean = false): Promise<boolean> {

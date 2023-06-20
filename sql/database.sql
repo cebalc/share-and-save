@@ -93,7 +93,7 @@ CREATE TABLE record (
     date DATE NOT NULL,
     description VARCHAR(100) DEFAULT NULL,
     amount DECIMAL(8, 2) DEFAULT 0.0,
-    reference VARCHAR(50),
+    reference VARCHAR(50) DEFAULT NULL,
     shared BOOLEAN DEFAULT TRUE,
     category INT NOT NULL,
     place INT NOT NULL DEFAULT 1,

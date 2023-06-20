@@ -8,6 +8,10 @@ class Category extends UniqueStringEntity {
     public static ofRow(row: CategoryRow): Category {
         return new Category(row.id, row.name);
     }
+
+    public static idWrapper(id: number): Category {
+        return new Category(id, "");
+    }
 }
 
 export default Category;
