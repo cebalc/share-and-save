@@ -1,6 +1,8 @@
 import Model from "./Model";
 import Place from "../objects/entities/Place";
+import Category from "../objects/entities/Category";
 import PlaceRow from "../objects/rows/PlaceRow";
+import CategoryRow from "../objects/rows/CategoryRow";
 
 class RecordDependenciesModel extends Model {
 
@@ -29,6 +31,18 @@ class RecordDependenciesModel extends Model {
 
     public async placeNameExists(name: string): Promise<boolean> {
         return await this.getPlaceByName(name) != null;
+    }
+
+    public async getAllPlaces(): Promise<Place[]> {
+        let sqlQuery: string = "SELECT * FROM place ORDER BY name";
+        let rows: PlaceRow[] = await super.getMultipleRecords<PlaceRow>(sqlQuery);
+        return (rows != null ? rows.map(row => Place.ofRow(row)) : null);
+    }
+
+    public async getAllCategories(): Promise<Category[]> {
+        let sqlQuery: string = "SELECT * FROM category ORDER BY name";
+        let rows: CategoryRow[] = await super.getMultipleRecords<CategoryRow>(sqlQuery);
+        return (rows != null ? rows.map(row => Category.ofRow(row)) : null);
     }
 }
 

@@ -5,6 +5,9 @@ import FilterFactory from "../objects/filters/FilterFactory";
 import AddPlaceResponse from "../objects/responses/recordCommons/AddPlaceResponse";
 import RecordDependenciesModel from "../models/RecordDependenciesModel";
 import Place from "../objects/entities/Place";
+import ReadPlacesResponse from "../objects/responses/recordCommons/ReadPlacesResponse";
+import Category from "../objects/entities/Category";
+import ReadCategoriesResponse from "../objects/responses/recordCommons/ReadCategoriesResponse";
 
 class RecordDependenciesController extends ServerController<RecordDependenciesModel> {
 
@@ -39,6 +42,38 @@ class RecordDependenciesController extends ServerController<RecordDependenciesMo
                 return;
             }
             response.json(AddPlaceResponse.success(newPlace.id));
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    public async getAllPlaces(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
+            this.model = new RecordDependenciesModel();
+            let places: Place[] = await this.model.getAllPlaces();
+            this.model.delete();
+
+            if(places == null) {
+                response.json(ReadPlacesResponse.NONE);
+                return;
+            }
+            response.json(new ReadPlacesResponse(true, places));
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    public async getAllCategories(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
+            this.model = new RecordDependenciesModel();
+            let categories: Category[] = await this.model.getAllCategories();
+            this.model.delete();
+
+            if(categories == null) {
+                response.json(ReadCategoriesResponse.NONE);
+                return;
+            }
+            response.json(new ReadPlacesResponse(true, categories));
         } catch (error) {
             return next(error);
         }

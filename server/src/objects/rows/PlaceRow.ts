@@ -1,8 +1,5 @@
-import {RowDataPacket} from "mysql2";
+import UniqueStringEntityRow from "./UniqueStringEntityRow";
 
-interface PlaceRow extends RowDataPacket {
-    id: number,
-    name: string
-}
+interface PlaceRow extends UniqueStringEntityRow {}
 
 export default PlaceRow;

@@ -15,6 +15,20 @@ router.post("/places",
     }
 );
 
+router.get("/places",
+    controller.requireAuth,
+    async (request, response, next) => {
+        await controller.getAllPlaces(request, response, next);
+    }
+);
+
+router.get("/categories",
+    controller.requireAuth,
+    async (request, response, next) => {
+        await controller.getAllCategories(request, response, next);
+    }
+);
+
 createDefaultRoutes(router, controller);
 
 export default router;

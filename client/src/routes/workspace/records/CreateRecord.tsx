@@ -14,6 +14,9 @@ import RecordType from "../../../objects/enums/RecordType";
 import Category from "../../../objects/entities/Category";
 import Place from "../../../objects/entities/Place";
 import AddPlaceModalForm from "../../../components/workspaces/records/AddPlaceModalForm";
+import ReadPlacesFetcher from "../../../objects/fetchers/workspaces/records/ReadPlacesFetcher";
+import ReadCategoriesFetcher from "../../../objects/fetchers/workspaces/records/ReadCategoriesFetcher";
+import ReadWorkspaceUsersFetcher from "../../../objects/fetchers/workspaces/users/ReadWorkspaceUsersFetcher";
 
 interface CreateRecordProps {
     userId: number,
@@ -21,6 +24,7 @@ interface CreateRecordProps {
 }
 
 interface CreateRecordState {
+    fetching: boolean,
     workspaceUsers: User[],
     categories: Category[],
     places: Place[],
@@ -42,6 +46,7 @@ interface CreateRecordState {
 class CreateRecord extends React.Component<CreateRecordProps, CreateRecordState> {
 
     public state: CreateRecordState = {
+        fetching: true,
         workspaceUsers: [],
         categories: [],
         places: [],
@@ -68,21 +73,88 @@ class CreateRecord extends React.Component<CreateRecordProps, CreateRecordState>
     }
 
     public async componentDidMount(): Promise<void> {
-        await this.loadSelectsData();
+        this.setState({fetching: true});
+        await this.reloadSelectControlsData();
     }
 
-    private async loadSelectsData(onlyPlaces: boolean = false, newPlaceId: number = Place.NULL.id): Promise<void> {
-        console.log("Update place selector");
-        if(newPlaceId !== Place.NULL.id) {
-            console.log(`Select new place (id = ${newPlaceId}) in place selector`);
+    private async reloadUsers(newUserId: number = User.GUEST.id): Promise<boolean> {
+        let fetcher: ReadWorkspaceUsersFetcher = new ReadWorkspaceUsersFetcher(this.props.workspace.id);
+        if(!await fetcher.retrieveData()) {
+            return false;
         }
-        if(!onlyPlaces) {
-            console.log("Update user and category selectors");
+        let responseData: User[] = fetcher.getResponseData();
+        let markedUser: number = User.GUEST.id;
+        if(responseData.length > 0 && responseData.some(user => user.id === this.props.userId)) {
+            markedUser = this.props.userId;
+            if(responseData.some(user => user.id === newUserId)) {
+                markedUser = newUserId;
+            }
         }
+        this.setState({
+            workspaceUsers: responseData,
+            user: markedUser
+        });
+        return fetcher.success();
+    }
+
+    private async reloadCategories(newCategoryId: number = this.state.category): Promise<boolean> {
+        let fetcher: ReadCategoriesFetcher = new ReadCategoriesFetcher();
+        if(!await fetcher.retrieveData()) {
+            return false;
+        }
+        let responseData: Category[] = fetcher.getResponseData();
+        let markedCategory: number = Category.NULL.id;
+        if(responseData.length > 0) {
+            markedCategory = responseData[0].id;
+            if(responseData.some(category => category.id === newCategoryId)) {
+                markedCategory = this.state.category;
+            }
+        }
+        this.setState({
+            categories: responseData,
+            category: markedCategory
+        });
+        return fetcher.success();
+    }
+
+    private async reloadPlaces(newPlaceId: number = this.state.place): Promise<boolean> {
+        let placesFetcher: ReadPlacesFetcher = new ReadPlacesFetcher();
+        if(!await placesFetcher.retrieveData()) {
+            return false;
+        }
+        let responseData: Place[] = placesFetcher.getResponseData();
+        let markedPlace: number = Place.NULL.id;
+        if(responseData.length > 0) {
+            markedPlace = responseData[0].id;
+            if(responseData.some(place => place.id === newPlaceId)) {
+                markedPlace = this.state.place;
+            }
+        }
+        this.setState({
+            places: responseData,
+            place: markedPlace
+        });
+        return placesFetcher.success();
+    }
+
+    private async reloadSelectControlsData(
+        newUserId: number = this.state.user,
+        newCategoryId: number = this.state.category,
+        newPlaceId: number = this.state.place
+    ): Promise<void> {
+        let promises: Promise<boolean>[] = [
+            this.reloadUsers(newUserId),
+            this.reloadCategories(newCategoryId),
+            this.reloadPlaces(newPlaceId)
+        ];
+        return Promise.allSettled(promises)
+            .then(() => this.setState({fetching: false}));
     }
 
     private async updatePlaceSelector(newPlaceId: number): Promise<void> {
-        await this.loadSelectsData(true, newPlaceId);
+        this.setState({fetching: true});
+        await this.reloadPlaces(newPlaceId)
+            .then(() => this.setState({fetching: false}));
     }
 
     private showAddPlaceModalForm(): void {
@@ -90,6 +162,7 @@ class CreateRecord extends React.Component<CreateRecordProps, CreateRecordState>
     }
 
     public render(): React.ReactNode {
+        console.log(this.state);
         return (<>
             <p className="h1 text-center mb-4">Añadir movimiento</p>
             <Form className="max-width-50nbp-sm mx-auto">
@@ -112,7 +185,7 @@ class CreateRecord extends React.Component<CreateRecordProps, CreateRecordState>
                                     <FontAwesomeIcon icon={["fas", "calendar-days"]} size="1x" />
                                 </InputGroup.Text>
                                 <Form.Control type="date" placeholder="dd/mm/aaaa" aria-describedby="date"
-                                              onChange={event => {this.setState({date: event.target.value}); console.log(event.target.value)}} />
+                                              onChange={event => this.setState({date: event.target.value})} />
                             </InputGroup>
                             <Form.Text className="text-danger">{this.state.dateError}</Form.Text>
                         </Form.Group>
@@ -150,7 +223,7 @@ class CreateRecord extends React.Component<CreateRecordProps, CreateRecordState>
                                 <Form.Select disabled={this.state.workspaceUsers.length === 0} defaultValue={this.state.user}
                                     onChange={event => this.setState({user: parseInt(event.target.value)})}>
                                     {this.state.workspaceUsers.map(user =>
-                                        <option key={user.id} value={user.id} selected={user.id === this.props.userId}>{user.name}</option>
+                                        <option key={user.id} value={user.id}>{user.name}</option>
                                     )}
                                 </Form.Select>
                             </Col>
@@ -175,7 +248,7 @@ class CreateRecord extends React.Component<CreateRecordProps, CreateRecordState>
                     <Form.Select disabled={this.state.categories.length === 0} defaultValue={this.state.category}
                         onChange={event => this.setState({category: parseInt(event.target.value)})}>
                         {this.state.categories.map(category =>
-                            <option key={category.id} value={category.id} selected={category.id === this.state.category}>
+                            <option key={category.id} value={category.id}>
                                 {category.name}
                             </option>
                         )}
@@ -188,7 +261,7 @@ class CreateRecord extends React.Component<CreateRecordProps, CreateRecordState>
                     <Form.Select disabled={this.state.places.length === 0} defaultValue={this.state.place}
                         onChange={event => this.setState({place: parseInt(event.target.value)})}>
                         {this.state.places.map(place =>
-                            <option key={place.id} value={place.id} selected={place.id === this.state.place}>
+                            <option key={place.id} value={place.id}>
                                 {place.name}
                             </option>
                         )}
@@ -208,7 +281,7 @@ class CreateRecord extends React.Component<CreateRecordProps, CreateRecordState>
                     <Form.Text className="text-danger">{this.state.descriptionError}</Form.Text>
                 </Form.Group>
                 <Container fluid className="mx-auto mt-4 d-flex flex-row justify-content-center">
-                    <Button variant="outline-primary" className="me-3">Enviar</Button>
+                    <Button variant="outline-primary" className="me-3" disabled={this.state.fetching}>Enviar</Button>
                     <LinkContainer to={`/workspace/${this.props.workspace.id}/records`}>
                         <Button variant="outline-secondary">Volver</Button>
                     </LinkContainer>
