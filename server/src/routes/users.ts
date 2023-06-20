@@ -5,6 +5,8 @@ import {createDefaultRoutes} from "../modules/routing";
 const router: Router = Router();
 const userController: UserController = new UserController();
 
+// Base path: /users
+
 router.get("/status", userController.checkStatus);
 
 router.post("/",

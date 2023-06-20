@@ -1,9 +1,10 @@
 import { Express, Request, Response, NextFunction } from "express";
 import api from "../../routes/api";
 import users from "../../routes/users";
+import users_subscriptions from "../../routes/users_subscriptions";
 import workspaces from "../../routes/workspaces";
 import workspaces_users from "../../routes/workspaces_users";
-import users_subscriptions from "../../routes/users_subscriptions";
+import records from "../../routes/records";
 
 class ServerRouter {
     public constructor(app: Express) {
@@ -17,6 +18,7 @@ class ServerRouter {
             this.findWorkspaceId,
             workspaces_users);
         app.use("/workspaces", workspaces);
+        app.use("/records", records);
     }
 
     private findUserId(request: Request, response: Response, next: NextFunction): void {

@@ -4,6 +4,23 @@ import {globalTrim} from "../../modules/sanitizers";
 
 class FilterFactory {
 
+    public static string(fieldName: string, maxLength: number, required: boolean, errorMsg: string = null): ValidationChain {
+        if(errorMsg == null) {
+            errorMsg = `Requerido, máximo ${maxLength} caracteres`;
+        }
+        let chain: ValidationChain = body(fieldName, errorMsg);
+        chain = (required ? chain.exists() : chain.optional({values: "falsy"}));
+        chain = chain
+            .customSanitizer(value => strip_tags(value))
+            .customSanitizer(value => globalTrim(value))
+            .isLength({min: 1, max: maxLength});
+        return chain;
+    }
+
+    public static requiredString(fieldName: string, maxLength: number, errorMsg: string = null): ValidationChain {
+        return this.string(fieldName, maxLength, true, errorMsg);
+    }
+
     public static id(fieldName: string = "id"): ValidationChain {
         return body(fieldName)
             .exists()
@@ -60,11 +77,12 @@ class FilterFactory {
     }
 
     public static workspaceName(fieldName: string = "name"): ValidationChain {
-        return body(fieldName, "Máximo 30 caracteres")
-            .exists()
-            .customSanitizer(value => strip_tags(value))
-            .customSanitizer(value => globalTrim(value))
-            .isLength({min: 1, max: 30});
+        return this.requiredString(fieldName, 30);
+        // return body(fieldName, "Requerido, máximo 30 caracteres")
+        //     .exists()
+        //     .customSanitizer(value => strip_tags(value))
+        //     .customSanitizer(value => globalTrim(value))
+        //     .isLength({min: 1, max: 30});
     }
 
     public static workspaceDescription(fieldName: string = "description"): ValidationChain {
@@ -116,6 +134,15 @@ class FilterFactory {
             .customSanitizer(value => globalTrim(value, false))
             .customSanitizer(value => (<string>value).replace(/-|\./g, ""))
             .matches(/^\d{3}$/);
+    }
+
+    public static placeName(fieldName: string = "name"): ValidationChain {
+        return this.requiredString(fieldName, 30);
+        // return body(fieldName, "Máximo 30 caracteres")
+        //     .exists()
+        //     .customSanitizer(value => strip_tags(value))
+        //     .customSanitizer(value => globalTrim(value))
+        //     .isLength({min: 1, max: 30});
     }
 }
 

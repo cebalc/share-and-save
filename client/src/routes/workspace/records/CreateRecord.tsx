@@ -71,12 +71,18 @@ class CreateRecord extends React.Component<CreateRecordProps, CreateRecordState>
         await this.loadSelectsData();
     }
 
-    private async loadSelectsData(onlyPlaces: boolean = false): Promise<void> {
-
+    private async loadSelectsData(onlyPlaces: boolean = false, newPlaceId: number = Place.NULL.id): Promise<void> {
+        console.log("Update place selector");
+        if(newPlaceId !== Place.NULL.id) {
+            console.log(`Select new place (id = ${newPlaceId}) in place selector`);
+        }
+        if(!onlyPlaces) {
+            console.log("Update user and category selectors");
+        }
     }
 
     private async updatePlaceSelector(newPlaceId: number): Promise<void> {
-
+        await this.loadSelectsData(true, newPlaceId);
     }
 
     private showAddPlaceModalForm(): void {

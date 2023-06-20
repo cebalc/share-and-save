@@ -4,6 +4,7 @@ import ServerRouter from "./objects/router/ServerRouter";
 import ServerController from "./controllers/ServerController";
 import session from "express-session";
 import cookieParser from "cookie-parser";
+import Model from "./models/Model";
 
 const ENV: Object = require("./modules/config").getEnvVars();
 const app: Express = express();
@@ -28,7 +29,7 @@ app.use(session({
 }));
 
 new ServerRouter(app);
-const serverController = new ServerController();
+const serverController: ServerController<Model> = new ServerController();
 
 /* Default requests are sent to React front-end app */
 app.get("*", serverController.redirectToClientRouter);
