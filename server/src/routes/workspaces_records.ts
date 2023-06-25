@@ -9,9 +9,9 @@ const controller: RecordController = new RecordController();
 
 router.post("/",
     controller.requireAuth,
-    controller.createRecordFilters(),
+    controller.saveRecordFilters(),
     async (request, response, next) => {
-        await controller.createRecord(request, response, next);
+        await controller.saveRecord(request, response, next);
     }
 );
 

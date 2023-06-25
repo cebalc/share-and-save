@@ -185,6 +185,7 @@ class SaveRecordForm extends React.Component<SaveRecordFormProps, SaveRecordForm
     private async processSaveRequest(): Promise<void> {
         let fetcher: SaveRecordFetcher = new SaveRecordFetcher(
             this.props.workspace.id,
+            this.props.record.id,
             this.state.type,
             this.state.date,
             this.state.description,
@@ -224,6 +225,7 @@ class SaveRecordForm extends React.Component<SaveRecordFormProps, SaveRecordForm
     }
 
     public render(): React.ReactNode {
+        console.log(this.props.record);
         return (<>
             <Form className="max-width-50nbp-sm mx-auto">
                 <OptionalTextAlert text={this.state.formError} />

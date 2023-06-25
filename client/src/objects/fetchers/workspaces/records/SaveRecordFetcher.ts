@@ -16,12 +16,13 @@ class SaveRecordFetcher extends Fetcher<SaveRecordResponse> {
         return `/workspaces/${workspaceId}/records`;
     }
 
-    public constructor(workspaceId: number, type: number, date: string, description: string, amount: number,
+    public constructor(workspaceId: number, recordId: number, type: number, date: string, description: string, amount: number,
                        user: number, shared: boolean, category: number, place: number, reference: string) {
         super(
             SaveRecordFetcher.buildURL(workspaceId),
             HTTPMethod.POST,
             JSON.stringify({
+                id: recordId,
                 type: type,
                 date: date,
                 description: description,
