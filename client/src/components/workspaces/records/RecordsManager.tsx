@@ -14,6 +14,7 @@ import RecordsTable from "./RecordsTable";
 import RecordsList from "./RecordsList";
 import {LinkContainer} from "react-router-bootstrap";
 import ReadRecordsFetcher from "../../../objects/fetchers/workspaces/records/ReadRecordsFetcher";
+import {scrollIntoHTMLElement} from "../../../modules/misc";
 
 interface RecordsManagerProps {
     workspace: Workspace
@@ -43,7 +44,13 @@ class RecordsManager extends React.Component<RecordsManagerProps, RecordsManager
 
     public async componentDidMount(): Promise<void> {
         window.addEventListener("resize", this.readScreenWidth.bind(this));
-        await this.retrieveRecords();
+        await this.retrieveRecords()
+            .then(() => {
+                let searchParams: URLSearchParams = new URLSearchParams(window.location.search);
+                if(searchParams.has("created") && searchParams.has("r")) {
+                    scrollIntoHTMLElement(`r-${searchParams.get("r")}`)
+                }
+            });
     }
 
     public componentWillUnmount(): void {

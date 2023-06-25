@@ -17,11 +17,11 @@ interface RecordsListState {
 class RecordsList extends React.Component<RecordsListProps, RecordsListState> {
 
     private static buildUsersInfo(record: Record): string {
-        const actionVerbs: Map<RecordType, string> = new Map([
-            [RecordType.SPEND, "Pagado"],
-            [RecordType.EARN, "Ingresado"]
-        ]);
-        let actionVerb: string = actionVerbs.get(record.type) as string;
+        let recordType = RecordType.of(record.type.id);
+        let actionVerb: string = "Aportado";
+        if(recordType !== undefined) {
+            actionVerb = recordType.verb;
+        }
         let sharedStatus: string = (record.shared ? "común" : "individual");
         return `${actionVerb} por ${record.user.name} (${sharedStatus})`;
     }
@@ -50,8 +50,8 @@ class RecordsList extends React.Component<RecordsListProps, RecordsListState> {
 
     public render(): React.ReactNode {
         return this.props.records.map(record =>
-            <LinkContainer to={this.buildLinkURL(record)}>
-                <Container fluid key={record.id} className="table-row p-2 clickable">
+            <LinkContainer key={record.id} to={this.buildLinkURL(record)}>
+                <Container fluid className="table-row p-2 clickable" id={`r-${record.id}`}>
                     <Container fluid className={this.buildFirstRowClassName(record.type === RecordType.EARN)}>
                         <div className="me-2">{record.description}</div>
                         <div>{formatEUR(record.amount)}</div>

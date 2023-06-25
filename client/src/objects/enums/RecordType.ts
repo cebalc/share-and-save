@@ -1,6 +1,6 @@
 class RecordType {
-    public static readonly SPEND: RecordType = new RecordType(1, "Gasto");
-    public static readonly EARN: RecordType = new RecordType(2, "Ingreso");
+    public static readonly SPEND: RecordType = new RecordType(1, "Gasto", "Pagado");
+    public static readonly EARN: RecordType = new RecordType(2, "Ingreso", "Ingresadog");
 
     private static readonly OBJECT_ARRAY: RecordType[] = [
         this.SPEND,
@@ -15,12 +15,14 @@ class RecordType {
         return this.OBJECT_ARRAY.find(object => object.id === id);
     }
 
-    public id: number;
-    public label: string;
+    public readonly id: number;
+    public readonly label: string;
+    public readonly verb: string;
 
-    private constructor(id: number, label: string) {
+    private constructor(id: number, label: string, verb: string) {
         this.id = id;
         this.label = label;
+        this.verb = verb;
     }
 }
 
