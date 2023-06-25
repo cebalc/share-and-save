@@ -1,13 +1,13 @@
 import JSONResponse from "../../JSONResponse";
 import Record from "../../../entities/Record";
 
-class ReadRecordsResponse extends JSONResponse<Record[]> {
+class ReadRecordResponse extends JSONResponse<Record[]> {
 
-    public static readonly NONE: ReadRecordsResponse = new ReadRecordsResponse(false, []);
+    public static readonly ERRORS: ReadRecordResponse = new ReadRecordResponse(false, []);
 
     public constructor(success: boolean, records: Record[] = []) {
         super(success, records);
     }
 }
 
-export default ReadRecordsResponse;
+export default ReadRecordResponse;

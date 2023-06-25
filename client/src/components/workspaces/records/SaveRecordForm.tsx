@@ -20,13 +20,14 @@ import ReadWorkspaceUsersFetcher from "../../../objects/fetchers/workspaces/user
 import ReadCategoriesFetcher from "../../../objects/fetchers/recordDependencies/ReadCategoriesFetcher";
 import ReadPlacesFetcher from "../../../objects/fetchers/recordDependencies/ReadPlacesFetcher";
 import SaveRecordFetcher, {SaveRecordResponse} from "../../../objects/fetchers/workspaces/records/SaveRecordFetcher";
+import DateTimeTools from "../../../objects/DateTimeTools";
 
 interface SaveRecordFormProps {
     userId: number,
     workspace: Workspace,
     record: Record,
     onSave: (savedRecordId: number) => void,
-    onDelete?: () => Promise<void>
+    onDelete?: () => void
 }
 
 interface SaveRecordFormState {
@@ -60,7 +61,9 @@ class SaveRecordForm extends React.Component<SaveRecordFormProps, SaveRecordForm
         categories: [],
         places: [],
         type: this.props.record.type.id,
-        date: (this.props.record !== Record.NEW ? this.props.record.date : ""),
+        date: (this.props.record !== Record.NEW ?
+                    DateTimeTools.getFormattedDate(new Date(this.props.record.date), "sv-SE")
+                : ""),
         dateError: "",
         description: this.props.record.description,
         descriptionError: "",
@@ -225,7 +228,6 @@ class SaveRecordForm extends React.Component<SaveRecordFormProps, SaveRecordForm
     }
 
     public render(): React.ReactNode {
-        console.log(this.props.record);
         return (<>
             <Form className="max-width-50nbp-sm mx-auto">
                 <OptionalTextAlert text={this.state.formError} />
@@ -354,7 +356,7 @@ class SaveRecordForm extends React.Component<SaveRecordFormProps, SaveRecordForm
             </Form>
             <AddPlaceModalForm ref={this.addPlaceForm} onPlaceAdded={this.updatePlaceSelector.bind(this)} />
             <DeleteRecordForm ref={this.deleteRecordForm}
-                  onDelete={this.props.onDelete !== undefined ? this.props.onDelete : async () => {return}} />
+                  onDelete={this.props.onDelete !== undefined ? this.props.onDelete : () => {return}} />
         </>);
     }
 }

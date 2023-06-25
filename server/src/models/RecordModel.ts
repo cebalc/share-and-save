@@ -16,7 +16,13 @@ class RecordModel extends WorkspaceUsersModel {
         });
     }
 
-    public async readRecordsByWorkspace(workspaceId: number): Promise<Record[]> {
+    public async readRecordsByWorkspace(workspaceId: number, recordId: number = Record.NEW.id): Promise<Record[]> {
+        let recordFilter: string = "";
+        let values: Object = {"workspaceId": workspaceId};
+        if(recordId != Record.NEW.id) {
+            recordFilter = "AND R.id = :recordId";
+            values["recordId"] = recordId;
+        }
         let sqlQuery: string = `SELECT 
                                     R.id AS id, R.type AS type_id, R.date AS date, R.description AS description,
                                     R.amount AS amount, R.reference AS reference, R.shared AS shared,
@@ -28,8 +34,9 @@ class RecordModel extends WorkspaceUsersModel {
                                     ) INNER JOIN place P ON P.id = R.place
                                 ) INNER JOIN users U ON U.id = R.user
                                 WHERE R.workspace = :workspaceId
+                                ${recordFilter}
                                 ORDER BY R.date, P.name, R.reference, R.type`;
-        let rows: FullRecordRow[] = await super.getMultipleRecords<FullRecordRow>(sqlQuery, {"workspaceId": workspaceId});
+        let rows: FullRecordRow[] = await super.getMultipleRecords<FullRecordRow>(sqlQuery, values);
         return (rows != null ? rows.map(row => Record.ofFullRow(row)) : null);
     }
 }

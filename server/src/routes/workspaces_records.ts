@@ -22,6 +22,13 @@ router.get("/",
     }
 );
 
+router.get("/:id",
+    controller.requireAuth,
+    async (request, response, next) => {
+        await controller.readWorkspaceRecords(request, response, next);
+    }
+);
+
 createDefaultRoutes(router, controller);
 
 export default router;

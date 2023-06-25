@@ -1,7 +1,7 @@
 import React from "react";
 
 interface DeleteRecordFormProps {
-    onDelete: () => Promise<void>
+    onDelete: () => void
 }
 
 interface DeleteRecordFormState {

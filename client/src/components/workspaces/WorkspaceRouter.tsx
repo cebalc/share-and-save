@@ -112,7 +112,7 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
         ])],
         ["record", new Map([
             [CRUDAction.CREATE, <CreateRecord userId={props.userId as number} workspace={workspace} />],
-            [CRUDAction.UPDATE, <AlterRecord workspace={workspace} recordId={recordId} />]
+            [CRUDAction.UPDATE, <AlterRecord workspace={workspace} recordId={recordId}  userId={props.userId as number}/>]
         ])]
     ]);
 

@@ -5,7 +5,7 @@ import FilterFactory from "../objects/filters/FilterFactory";
 import SaveRecordResponse from "../objects/responses/workspaces/records/SaveRecordResponse";
 import RecordModel from "../models/RecordModel";
 import RecordEntity from "../objects/entities/Record";
-import ReadRecordsResponse from "../objects/responses/workspaces/records/ReadRecordsResponse";
+import ReadRecordResponse from "../objects/responses/workspaces/records/ReadRecordResponse";
 import RecordType from "../objects/enums/RecordType";
 import Category from "../objects/entities/Category";
 import Place from "../objects/entities/Place";
@@ -106,17 +106,23 @@ class RecordController extends WorkspaceDependentController<RecordModel> {
             let currentUserAllowed: boolean = await this.model.isUserInWorkspace(workspaceId, currentUserId);
             if(!currentUserAllowed) {
                 this.model.delete();
-                response.json();
+                response.json(ReadRecordResponse.ERRORS);
                 return;
             }
 
-            let records: RecordEntity[] = await this.model.readRecordsByWorkspace(workspaceId);
+            let recordId: number = 0;
+            if(request.params.id !== undefined) {
+                recordId = parseInt(request.params.id);
+            }
+
+            let records: RecordEntity[] = await this.model.readRecordsByWorkspace(workspaceId, recordId);
             this.model.delete();
+
             if(records == null) {
-                response.json(ReadRecordsResponse.NONE);
+                response.json(ReadRecordResponse.ERRORS);
                 return;
             }
-            response.json(new ReadRecordsResponse(true, records));
+            response.json(new ReadRecordResponse(true, records));
         } catch (error) {
             return next(error);
         }

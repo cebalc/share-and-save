@@ -19,13 +19,14 @@ class DateTimeTools {
 
     /** Obtiene la fecha en formato dd/mm/aa a partir de un objecto Date
      * @param date El objeto Date del que se quiere extraer la fecha
+     * @param locale El código Locale deseado, por defecto es-ES
      * @returns La fecha formateada como string
      */
-    public static getFormattedDate(date: Date): string {
+    public static getFormattedDate(date: Date, locale: string = DateTimeTools.LOCALE_ES): string {
         const DTF_OPTIONS: DateTimeFormatOptions = {
             dateStyle: "short"
         } as DateTimeFormatOptions;
-        const DTF: Intl.DateTimeFormat = new Intl.DateTimeFormat(DateTimeTools.LOCALE_ES, DTF_OPTIONS);
+        const DTF: Intl.DateTimeFormat = new Intl.DateTimeFormat(locale, DTF_OPTIONS);
         return DTF.format(date);
     }
 

@@ -13,7 +13,7 @@ import Workspace from "../../../objects/entities/Workspace";
 import RecordsTable from "./RecordsTable";
 import RecordsList from "./RecordsList";
 import {LinkContainer} from "react-router-bootstrap";
-import ReadRecordsFetcher from "../../../objects/fetchers/workspaces/records/ReadRecordsFetcher";
+import ReadRecordFetcher from "../../../objects/fetchers/workspaces/records/ReadRecordFetcher";
 import {scrollIntoHTMLElement} from "../../../modules/misc";
 
 interface RecordsManagerProps {
@@ -58,7 +58,7 @@ class RecordsManager extends React.Component<RecordsManagerProps, RecordsManager
     }
 
     private async retrieveRecords(): Promise<void> {
-        let fetcher: ReadRecordsFetcher = new ReadRecordsFetcher(this.props.workspace.id);
+        let fetcher: ReadRecordFetcher = new ReadRecordFetcher(this.props.workspace.id);
         if(!await fetcher.retrieveData()) {
             this.setState({
                 fetching: false,
