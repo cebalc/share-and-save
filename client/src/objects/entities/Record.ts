@@ -19,7 +19,7 @@ class Record {
     public workspace: Workspace;
 
     public static readonly NEW: Record = new Record(0, RecordType.SPEND, "", "", 0.0,
-        "", false, Category.NULL, Place.NULL, User.GUEST, Workspace.NULL);
+        "", true, Category.NULL, Place.NULL, User.GUEST, Workspace.NULL);
 
     constructor(id: number, type: RecordType, date: string, description: string, amount: number, reference: string,
                 shared: boolean, category: Category, place: Place, user: User, workspace: Workspace) {

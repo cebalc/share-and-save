@@ -1,7 +1,7 @@
 import Fetcher from "../../Fetcher";
 import HTTPMethod from "../../../enums/HTTPMethod";
 
-interface AddRecordResponse {
+interface SaveRecordResponse {
     date: string,
     description: string,
     amount: string,
@@ -10,7 +10,7 @@ interface AddRecordResponse {
     id: number
 }
 
-class AddRecordFetcher extends Fetcher<AddRecordResponse> {
+class SaveRecordFetcher extends Fetcher<SaveRecordResponse> {
 
     private static buildURL(workspaceId: number): string {
         return `/workspaces/${workspaceId}/records`;
@@ -19,7 +19,7 @@ class AddRecordFetcher extends Fetcher<AddRecordResponse> {
     public constructor(workspaceId: number, type: number, date: string, description: string, amount: number,
                        user: number, shared: boolean, category: number, place: number, reference: string) {
         super(
-            AddRecordFetcher.buildURL(workspaceId),
+            SaveRecordFetcher.buildURL(workspaceId),
             HTTPMethod.POST,
             JSON.stringify({
                 type: type,
@@ -36,5 +36,5 @@ class AddRecordFetcher extends Fetcher<AddRecordResponse> {
     }
 }
 
-export default AddRecordFetcher;
-export type { AddRecordResponse };
+export default SaveRecordFetcher;
+export type { SaveRecordResponse };

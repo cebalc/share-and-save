@@ -47,7 +47,7 @@ class RecordsManager extends React.Component<RecordsManagerProps, RecordsManager
         await this.retrieveRecords()
             .then(() => {
                 let searchParams: URLSearchParams = new URLSearchParams(window.location.search);
-                if(searchParams.has("created") && searchParams.has("r")) {
+                if(searchParams.has("saved") && searchParams.has("r")) {
                     scrollIntoHTMLElement(`r-${searchParams.get("r")}`)
                 }
             });
