@@ -3,6 +3,8 @@ import Workspace from "./Workspace";
 import User from "./User";
 import Category from "./Category";
 import Place from "./Place";
+import FullRecordRow from "../rows/FullRecordRow";
+import RecordRow from "../rows/RecordRow";
 
 class Record {
 
@@ -20,6 +22,30 @@ class Record {
 
     public static readonly NEW: Record = new Record(0, RecordType.SPEND, "", "", 0.0,
         "", false, Category.NULL, Place.NULL, User.GUEST, Workspace.NULL);
+
+    public static ofRow(row: RecordRow): Record {
+        return new Record(
+            row.id,
+            RecordType.of(row.type_id),
+            row.date,
+            row.description,
+            row.amount,
+            row.reference,
+            row.shared,
+            Category.idWrapper(row.category_id),
+            Place.idWrapper(row.place_id),
+            User.idWrapper(row.user_id),
+            Workspace.idWrapper(row.workspace_id)
+        );
+    }
+
+    public static ofFullRow(row: FullRecordRow): Record {
+        let record: Record = Record.ofRow(row);
+        record.category.name = row.category_name;
+        record.place.name = row.place_name;
+        record.user.name = row.user_name;
+        return record;
+    }
 
     constructor(id: number, type: RecordType, date: string, description: string, amount: number, reference: string,
                 shared: boolean, category: Category, place: Place, user: User, workspace: Workspace) {

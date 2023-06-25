@@ -1,6 +1,6 @@
-import Fetcher from "../../Fetcher";
-import HTTPMethod from "../../../enums/HTTPMethod";
-import Category from "../../../entities/Category";
+import Fetcher from "../Fetcher";
+import HTTPMethod from "../../enums/HTTPMethod";
+import Category from "../../entities/Category";
 
 class ReadCategoriesFetcher extends Fetcher<Category[]> {
 

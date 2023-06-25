@@ -1,6 +1,6 @@
-import Fetcher from "../../Fetcher";
-import HTTPMethod from "../../../enums/HTTPMethod";
-import Place from "../../../entities/Place";
+import Fetcher from "../Fetcher";
+import HTTPMethod from "../../enums/HTTPMethod";
+import Place from "../../entities/Place";
 
 class ReadPlacesFetcher extends Fetcher<Place[]> {
 

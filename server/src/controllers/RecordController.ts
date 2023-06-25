@@ -5,6 +5,7 @@ import FilterFactory from "../objects/filters/FilterFactory";
 import AddRecordResponse from "../objects/responses/workspaces/records/AddRecordResponse";
 import RecordModel from "../models/RecordModel";
 import RecordEntity from "../objects/entities/Record";
+import ReadRecordsResponse from "../objects/responses/workspaces/records/ReadRecordsResponse";
 
 class RecordController extends WorkspaceDependentController<RecordModel> {
 
@@ -47,13 +48,11 @@ class RecordController extends WorkspaceDependentController<RecordModel> {
             let userId: number = parseInt(request.body.user);
             let workspaceId: number = super.getWorkspaceId(response);
 
-            console.log("Usuario que llega: " + userId);
-            console.log("Espacio que llega: " + workspaceId);
-
             this.model = new RecordModel();
+            let currentUserId: number = super.getSessionUser(request).id;
 
-            let userIsAllowed: boolean = await this.model.isUserInWorkspace(userId, workspaceId);
-            if(!userIsAllowed) {
+            let usersAllowed: boolean = await this.model.isUserInWorkspace(workspaceId, userId, currentUserId);
+            if(!usersAllowed) {
                 this.model.delete();
                 response.json(AddRecordResponse.USER_NOT_ALLOWED);
                 return;
@@ -67,6 +66,31 @@ class RecordController extends WorkspaceDependentController<RecordModel> {
                 return;
             }
             response.json(AddRecordResponse.success(newRecordId));
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    public async readWorkspaceRecords(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
+            let workspaceId: number = super.getWorkspaceId(response);
+            let currentUserId: number = super.getSessionUser(request).id;
+            this.model = new RecordModel();
+
+            let currentUserAllowed: boolean = await this.model.isUserInWorkspace(workspaceId, currentUserId);
+            if(!currentUserAllowed) {
+                this.model.delete();
+                response.json();
+                return;
+            }
+
+            let records: RecordEntity[] = await this.model.readRecordsByWorkspace(workspaceId);
+            this.model.delete();
+            if(records == null) {
+                response.json(ReadRecordsResponse.NONE);
+                return;
+            }
+            response.json(new ReadRecordsResponse(true, records));
         } catch (error) {
             return next(error);
         }

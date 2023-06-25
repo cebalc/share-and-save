@@ -2,12 +2,12 @@ import ServerController from "./ServerController";
 import {Result, ValidationChain, ValidationError, validationResult} from "express-validator";
 import { Request, Response, NextFunction } from "express";
 import FilterFactory from "../objects/filters/FilterFactory";
-import AddPlaceResponse from "../objects/responses/recordCommons/AddPlaceResponse";
+import AddPlaceResponse from "../objects/responses/recordDependencies/AddPlaceResponse";
 import RecordDependenciesModel from "../models/RecordDependenciesModel";
 import Place from "../objects/entities/Place";
-import ReadPlacesResponse from "../objects/responses/recordCommons/ReadPlacesResponse";
+import ReadPlacesResponse from "../objects/responses/recordDependencies/ReadPlacesResponse";
 import Category from "../objects/entities/Category";
-import ReadCategoriesResponse from "../objects/responses/recordCommons/ReadCategoriesResponse";
+import ReadCategoriesResponse from "../objects/responses/recordDependencies/ReadCategoriesResponse";
 
 class RecordDependenciesController extends ServerController<RecordDependenciesModel> {
 

@@ -35,20 +35,7 @@ class RecordsTableRow extends React.Component<RecordsTableRowProps, RecordsTable
     public render(): React.ReactNode {
         return (
             <LinkContainer to={this.buildLinkURL()}>
-                <tr className="clickable">
-                    <CenteredCell>
-                        <ButtonGroup size="sm">
-                            <Button variant="outline-primary">
-                                <FontAwesomeIcon icon={["fas", "pencil"]} size="1x" />
-                            </Button>
-                            <Button variant="outline-secondary">
-                                <FontAwesomeIcon icon={["fas", "hand-holding-dollar"]} size="1x" />
-                            </Button>
-                            <Button variant="outline-danger">
-                                <FontAwesomeIcon icon={["fas", "xmark"]} size="1x" />
-                            </Button>
-                        </ButtonGroup>
-                    </CenteredCell>
+                <tr className="clickable" id={`r-${this.props.record.id}`}>
                     <CenteredCell>
                         {this.props.record.type.label}
                     </CenteredCell>

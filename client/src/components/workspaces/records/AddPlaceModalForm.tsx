@@ -5,7 +5,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import OptionalTextAlert from "../../misc/OptionalTextAlert";
 import Button from "react-bootstrap/Button";
-import AddPlaceFetcher, {AddPlaceResponse} from "../../../objects/fetchers/workspaces/records/AddPlaceFetcher";
+import AddPlaceFetcher, {AddPlaceResponse} from "../../../objects/fetchers/recordDependencies/AddPlaceFetcher";
 
 interface AddPlaceModalFormProps {
     onPlaceAdded: (newPlaceId: number) => Promise<void>

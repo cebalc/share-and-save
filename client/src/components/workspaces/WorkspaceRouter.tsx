@@ -117,26 +117,6 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
     ]);
 
     return (crudRoutes.get(props.target) as Map<CRUDAction, JSX.Element>).get(props.crudAction) as JSX.Element;
-
-    // if(props.target === "workspace") {
-    //     let crudRoutes: Map<CRUDAction, JSX.Element> = new Map([
-    //         [CRUDAction.CREATE, <SaveWorkspace workspace={workspace} onSave={() => null} />],
-    //         [CRUDAction.READ, <Workspace workspace={workspace} userId={props.userId as number} />],
-    //         [CRUDAction.UPDATE, <SaveWorkspace workspace={workspace} onSave={retrieveWorkspaceData} />],
-    //         [CRUDAction.DELETE, <DeleteWorkspace workspace={workspace} />]
-    //     ]);
-    //     return crudRoutes.get(props.crudAction) as JSX.Element;
-    // }
-    //
-    // if(props.target === "record") {
-    //     let crudRoutes: Map<CRUDAction, JSX.Element> = new Map([
-    //         [CRUDAction.CREATE, <CreateRecord workspace={workspace} />],
-    //         [CRUDAction.UPDATE, <AlterRecord workspace={workspace} />]
-    //     ]);
-    //     return crudRoutes.get(props.crudAction) as JSX.Element;
-    // }
-    //
-    // return <></>;
 }
 
 export default WorkspaceRouter;

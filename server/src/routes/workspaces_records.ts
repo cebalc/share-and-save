@@ -1,5 +1,6 @@
 import { Router } from "express";
 import RecordController from "../controllers/RecordController";
+import {createDefaultRoutes} from "../modules/routing";
 
 const router: Router = Router();
 const controller: RecordController = new RecordController();
@@ -13,5 +14,14 @@ router.post("/",
         await controller.createRecord(request, response, next);
     }
 );
+
+router.get("/",
+    controller.requireAuth,
+    async (request, response, next) => {
+        await controller.readWorkspaceRecords(request, response, next);
+    }
+);
+
+createDefaultRoutes(router, controller);
 
 export default router;
