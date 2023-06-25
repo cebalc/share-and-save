@@ -44,7 +44,6 @@ class AlterRecord extends React.Component<AlterRecordProps, AlterRecordState> {
             this.setState({fetching: false});
         }
         let responseData: Record[] = fetcher.getResponseData();
-        console.log(responseData);
         this.setState({
             fetching: false,
             record: fetcher.success() ? responseData[0] : null
@@ -67,7 +66,7 @@ class AlterRecord extends React.Component<AlterRecordProps, AlterRecordState> {
 
     private redirectIfDeleted(): React.ReactNode {
         if(this.state.deleted) {
-            return <Navigate to={`/workspace/${this.props.workspace}/records`} />;
+            return <Navigate to={`/workspace/${this.props.workspace.id}/records`} />;
         }
     }
 

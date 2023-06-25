@@ -71,8 +71,8 @@ class SaveRecordForm extends React.Component<SaveRecordFormProps, SaveRecordForm
         amountError: "",
         user: this.props.record.user.id,
         shared: this.props.record.shared,
-        category: Category.NULL.id,
-        place: Place.NULL.id,
+        category: this.props.record.category.id,
+        place: this.props.record.place.id,
         reference: this.props.record.reference,
         referenceError: "",
         formError: ""
@@ -142,7 +142,7 @@ class SaveRecordForm extends React.Component<SaveRecordFormProps, SaveRecordForm
         if(responseData.length > 0) {
             markedPlace = responseData[0].id;
             if(responseData.some(place => place.id === newPlaceId)) {
-                markedPlace = this.state.place;
+                markedPlace = newPlaceId;
             }
         }
         this.setState({
@@ -236,7 +236,7 @@ class SaveRecordForm extends React.Component<SaveRecordFormProps, SaveRecordForm
                         <Button variant="secondary" disabled className="text-dark bg-secondary bg-opacity-25">
                             <FontAwesomeIcon icon={["fas", "plus-minus"]} size="1x" />
                         </Button>
-                        <Form.Select defaultValue={this.state.type}
+                        <Form.Select value={this.state.type}
                                      onChange={event => this.setState({type: parseInt(event.target.value)})}>
                             {RecordType.values().map(type =>
                                 <option key={type.id} value={type.id}>{type.label}</option>
@@ -285,7 +285,7 @@ class SaveRecordForm extends React.Component<SaveRecordFormProps, SaveRecordForm
                                 <Button variant="secondary" disabled className="text-dark bg-secondary bg-opacity-25">
                                     <FontAwesomeIcon icon={["fas", "user"]} size="1x" />
                                 </Button>
-                                <Form.Select disabled={this.state.workspaceUsers.length === 0} defaultValue={this.state.user}
+                                <Form.Select disabled={this.state.workspaceUsers.length === 0} value={this.state.user}
                                              onChange={event => this.setState({user: parseInt(event.target.value)})}>
                                     {this.state.workspaceUsers.map(user =>
                                         <option key={user.id} value={user.id}>{user.name}</option>
@@ -310,7 +310,7 @@ class SaveRecordForm extends React.Component<SaveRecordFormProps, SaveRecordForm
                     <Button variant="secondary" disabled className="text-dark bg-secondary bg-opacity-25">
                         <FontAwesomeIcon icon={["fas", "cart-shopping"]} size="1x" />
                     </Button>
-                    <Form.Select disabled={this.state.categories.length === 0} defaultValue={this.state.category}
+                    <Form.Select disabled={this.state.categories.length === 0} value={this.state.category}
                                  onChange={event => this.setState({category: parseInt(event.target.value)})}>
                         {this.state.categories.map(category =>
                             <option key={category.id} value={category.id}>
@@ -323,7 +323,7 @@ class SaveRecordForm extends React.Component<SaveRecordFormProps, SaveRecordForm
                     <Button variant="secondary" disabled className="text-dark bg-secondary bg-opacity-25">
                         <FontAwesomeIcon icon={["fas", "shop"]} size="1x" />
                     </Button>
-                    <Form.Select disabled={this.state.places.length === 0} defaultValue={this.state.place}
+                    <Form.Select disabled={this.state.places.length === 0} value={this.state.place}
                                  onChange={event => this.setState({place: parseInt(event.target.value)})}>
                         {this.state.places.map(place =>
                             <option key={place.id} value={place.id}>
@@ -355,7 +355,7 @@ class SaveRecordForm extends React.Component<SaveRecordFormProps, SaveRecordForm
                 </Container>
             </Form>
             <AddPlaceModalForm ref={this.addPlaceForm} onPlaceAdded={this.updatePlaceSelector.bind(this)} />
-            <DeleteRecordForm ref={this.deleteRecordForm}
+            <DeleteRecordForm ref={this.deleteRecordForm} recordId={this.props.record.id} workspaceId={this.props.workspace.id}
                   onDelete={this.props.onDelete !== undefined ? this.props.onDelete : () => {return}} />
         </>);
     }

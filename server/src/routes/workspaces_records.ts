@@ -29,6 +29,13 @@ router.get("/:id",
     }
 );
 
+router.delete("/:id",
+    controller.requireAuth,
+    async (request, response, next) => {
+        await controller.deleteWorkspaceRecord(request, response, next);
+    }
+);
+
 createDefaultRoutes(router, controller);
 
 export default router;

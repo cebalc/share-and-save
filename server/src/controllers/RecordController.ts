@@ -11,6 +11,7 @@ import Category from "../objects/entities/Category";
 import Place from "../objects/entities/Place";
 import User from "../objects/entities/User";
 import Workspace from "../objects/entities/Workspace";
+import DeleteRecordResponse from "../objects/responses/workspaces/records/DeleteRecordResponse";
 
 class RecordController extends WorkspaceDependentController<RecordModel> {
 
@@ -127,6 +128,34 @@ class RecordController extends WorkspaceDependentController<RecordModel> {
                 return;
             }
             response.json(new ReadRecordResponse(true, records));
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    public async deleteWorkspaceRecord(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
+            let workspaceId: number = super.getWorkspaceId(response);
+            let currentUserId: number = super.getSessionUser(request).id;
+
+            this.model = new RecordModel();
+
+            let currentUserAllowed: boolean = await this.model.isUserInWorkspace(workspaceId, currentUserId);
+            if(!currentUserAllowed) {
+                this.model.delete();
+                response.json(DeleteRecordResponse.NOT_ALLOWED);
+                return;
+            }
+
+            let recordId: number = parseInt(request.params.id);
+            let deleted: boolean = await this.model.deleteWorkspaceRecord(recordId);
+            this.model.delete();
+
+            if(!deleted) {
+                response.json(DeleteRecordResponse.NOT_DELETED);
+                return;
+            }
+            response.json(DeleteRecordResponse.SUCCESS);
         } catch (error) {
             return next(error);
         }

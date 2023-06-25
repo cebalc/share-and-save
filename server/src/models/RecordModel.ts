@@ -60,6 +60,11 @@ class RecordModel extends WorkspaceUsersModel {
             "workspaceId": changedRecord.workspace.id
         });
     }
+
+    public async deleteWorkspaceRecord(recordId: number): Promise<boolean> {
+        let sqlQuery: string = `DELETE FROM record WHERE id = :recordId`;
+        return await super.deleteSingleRecord(sqlQuery, {"recordId": recordId});
+    }
 }
 
 export default RecordModel;
