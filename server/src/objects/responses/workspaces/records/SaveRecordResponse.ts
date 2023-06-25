@@ -16,6 +16,8 @@ class SaveRecordResponse extends JSONResponse<ISaveRecordResponse> {
         "", "", "","Error: No formas parte de este espacio.");
     public static readonly NOT_ADDED: SaveRecordResponse = new SaveRecordResponse(false, "", "",
         "", "", "El movimiento no ha podido crearse.");
+    public static readonly NOT_EDITED: SaveRecordResponse = new SaveRecordResponse(false, "", "",
+        "", "", "El movimiento no ha podido actualizarse");
 
     public static success(savedRecordId: number): SaveRecordResponse {
         return new SaveRecordResponse(true, "", "", "", "", "", savedRecordId);

@@ -39,6 +39,27 @@ class RecordModel extends WorkspaceUsersModel {
         let rows: FullRecordRow[] = await super.getMultipleRecords<FullRecordRow>(sqlQuery, values);
         return (rows != null ? rows.map(row => Record.ofFullRow(row)) : null);
     }
+
+    public async updateRecord(changedRecord: Record): Promise<boolean> {
+        let sqlQuery: string = `UPDATE record SET
+                                    type = :typeId, date = :date, description = :description,
+                                    amount = :amount, reference = :reference, shared = :shared,
+                                    category = :categoryId, place = :placeId, user = :userId
+                                WHERE id = :recordId AND workspace = :workspaceId`;
+        return await super.updateSingleRecord(sqlQuery, {
+            "typeId": changedRecord.type.id,
+            "date": changedRecord.date,
+            "description": changedRecord.description,
+            "amount": changedRecord.amount,
+            "reference": changedRecord.reference,
+            "shared": changedRecord.shared,
+            "categoryId": changedRecord.category.id,
+            "placeId": changedRecord.place.id,
+            "userId": changedRecord.user.id,
+            "recordId": changedRecord.id,
+            "workspaceId": changedRecord.workspace.id
+        });
+    }
 }
 
 export default RecordModel;

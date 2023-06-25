@@ -73,7 +73,7 @@ class SaveRecordForm extends React.Component<SaveRecordFormProps, SaveRecordForm
         shared: this.props.record.shared,
         category: Category.NULL.id,
         place: Place.NULL.id,
-        reference: "",
+        reference: this.props.record.reference,
         referenceError: "",
         formError: ""
     }

@@ -83,7 +83,6 @@ class RecordController extends WorkspaceDependentController<RecordModel> {
 
     private async createRecord(requestRecord: RecordEntity, response: Response): Promise<void> {
         let newRecordId: number = await this.model.createRecord(requestRecord);
-        console.log("Se ha intentado crear el nuevo registro (id " + newRecordId + ")");
         this.model.delete();
         if(newRecordId == RecordEntity.NEW.id) {
             response.json(SaveRecordResponse.NOT_ADDED);
@@ -93,8 +92,13 @@ class RecordController extends WorkspaceDependentController<RecordModel> {
     }
 
     private async editRecord(requestRecord: RecordEntity, response: Response): Promise<void> {
-
+        let updated: boolean = await this.model.updateRecord(requestRecord);
         this.model.delete();
+        if(!updated) {
+            response.json(SaveRecordResponse.NOT_EDITED);
+            return;
+        }
+        response.json(SaveRecordResponse.success(requestRecord.id));
     }
 
     public async readWorkspaceRecords(request: Request, response: Response, next: NextFunction): Promise<void> {
