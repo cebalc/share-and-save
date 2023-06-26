@@ -14,6 +14,11 @@ import DateToIcon from "../../../../images/DateToSvg";
 import User from "../../../../objects/entities/User";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import ReadWorkspaceUsersFetcher from "../../../../objects/fetchers/workspaces/users/ReadWorkspaceUsersFetcher";
+import OptionalTextAlert from "../../../misc/OptionalTextAlert";
+import FilterRecordsFetcher from "../../../../objects/fetchers/workspaces/records/FilterRecordsFetcher";
+import MakeSummaryFetcher from "../../../../objects/fetchers/workspaces/records/MakeSummaryFetcher";
+import SummaryData from "../../../../objects/entities/SummaryData";
+import Summary from "./Summary";
 
 interface SummariesManagerProps {
     userId: number,
@@ -22,15 +27,18 @@ interface SummariesManagerProps {
 }
 
 interface SummariesManagerState {
+    fetching: boolean
     records: Record[],
     users: User[],
+    summaryData: SummaryData[]
     activeKeys: string[],
     dateFrom: string,
     dateFromError: string,
     dateTo: string,
     dateToError: string,
     summarizeByUser: boolean,
-    user: number
+    user: number,
+    formError: string
 }
 
 class SummariesManager extends React.Component<SummariesManagerProps, SummariesManagerState> {
@@ -40,15 +48,18 @@ class SummariesManager extends React.Component<SummariesManagerProps, SummariesM
     private static KEY_RECORDS: string = "records";
 
     public state: SummariesManagerState = {
+        fetching: true,
         records: [],
         users: [],
+        summaryData: [],
         activeKeys: [SummariesManager.KEY_FORM],
         dateFrom: "",
         dateFromError: "",
         dateTo: "",
         dateToError: "",
         summarizeByUser: false,
-        user: this.props.userId
+        user: this.props.userId,
+        formError: ""
     };
 
     private radioCommon: HTMLElement | null;
@@ -85,6 +96,10 @@ class SummariesManager extends React.Component<SummariesManagerProps, SummariesM
     private async reloadUsers(newUserId: number = this.props.userId): Promise<boolean> {
         let fetcher: ReadWorkspaceUsersFetcher = new ReadWorkspaceUsersFetcher(this.props.workspace.id);
         if(!await fetcher.retrieveData()) {
+            this.setState({
+                fetching: false,
+                formError: "Error en la conexión al servidor"
+            });
             return false;
         }
         let responseData: User[] = fetcher.getResponseData();
@@ -96,10 +111,70 @@ class SummariesManager extends React.Component<SummariesManagerProps, SummariesM
             }
         }
         this.setState({
+            fetching: false,
             users: responseData,
             user: markedUser
         });
         return fetcher.success();
+    }
+
+    private async getRecordFilteredList(): Promise<boolean> {
+        let fetcher: FilterRecordsFetcher = new FilterRecordsFetcher(
+            this.props.workspace.id,
+            this.state.dateFrom,
+            this.state.dateTo,
+            this.state.summarizeByUser,
+            this.state.user
+        );
+        if(!await fetcher.retrieveData()) {
+            return false;
+        }
+        let responseData: Record[] = fetcher.getResponseData();
+        if(!fetcher.success()) {
+            return false;
+        }
+        this.setState({
+            records: responseData
+        })
+        return true;
+    }
+
+    private async getSummary(): Promise<boolean> {
+        let fetcher: MakeSummaryFetcher = new MakeSummaryFetcher(
+            this.props.workspace.id,
+            this.state.dateFrom,
+            this.state.dateTo,
+            this.state.summarizeByUser,
+            this.state.user
+        );
+        if(!await fetcher.retrieveData()) {
+            return false;
+        }
+        let responseData: SummaryData[] = fetcher.getResponseData();
+        if(!fetcher.success()) {
+            return false;
+        }
+        this.setState({
+            summaryData: responseData
+        });
+        return true;
+    }
+
+    private async calculate(): Promise<void> {
+        this.setState({fetching: true});
+        let promises: Promise<boolean>[] = [
+            this.getRecordFilteredList(),
+            this.getSummary()
+        ];
+        return Promise.allSettled(promises)
+            .then(results => {
+                let errors: boolean = results.some(result => result.status === "rejected");
+                this.setState({
+                    fetching: false,
+                    formError: (errors ? "Error en la solicitud al servidor" : ""),
+                    activeKeys: (errors ? [SummariesManager.KEY_FORM] : [SummariesManager.KEY_SUMMARY, SummariesManager.KEY_RECORDS])
+                });
+            });
     }
 
     public render(): React.ReactNode {
@@ -112,6 +187,7 @@ class SummariesManager extends React.Component<SummariesManagerProps, SummariesM
                     </Accordion.Header>
                     <Accordion.Body>
                         <Form className="mx-auto max-width-75nbp-lg">
+                            <OptionalTextAlert text={this.state.formError} />
                             <Row>
                                 <Col md={6} className="px-4 d-flex flex-column justify-content-start">
                                     <div className="h5 text-center mb-4">Intervalo de fechas (opcional)</div>
@@ -144,7 +220,6 @@ class SummariesManager extends React.Component<SummariesManagerProps, SummariesM
                                                 label="Gastos comunes a todos los usuarios del espacio"/>
                                     <Form.Check type="radio" name="report-type" id="opt-single" disabled={this.state.users.length === 0}
                                                 label="Gastos e ingresos individuales de un usuario" />
-
                                     <Container fluid className="my-3 d-flex justify-content-start">
                                         <Button variant="secondary" disabled className="text-dark bg-secondary bg-opacity-25">
                                             <FontAwesomeIcon icon={["fas", "user"]} size="1x" />
@@ -159,7 +234,8 @@ class SummariesManager extends React.Component<SummariesManagerProps, SummariesM
                                 </Col>
                             </Row>
                             <Container fluid className="mt-4 mb-2 d-flex justify-content-center">
-                                <Button variant="outline-primary">Calcular</Button>
+                                <Button variant="outline-primary" disabled={this.state.fetching}
+                                    onClick={() => this.calculate()}>Calcular</Button>
                             </Container>
                         </Form>
                     </Accordion.Body>
@@ -169,7 +245,7 @@ class SummariesManager extends React.Component<SummariesManagerProps, SummariesM
                         <span className="fw-bold">Resumen</span>
                     </Accordion.Header>
                     <Accordion.Body>
-                        Cuerpo del resumen
+                        <Summary summaryData={this.state.summaryData} />
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item eventKey={SummariesManager.KEY_RECORDS}>
