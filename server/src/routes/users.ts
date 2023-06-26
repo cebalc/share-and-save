@@ -25,6 +25,13 @@ router.post("/login",
 
 router.get("/signout", userController.logout);
 
+router.post("/password/restore",
+    userController.restorePasswordFilters(),
+    async (request, response, next) => {
+        await userController.restorePassword(request, response, next);
+    }
+);
+
 createDefaultRoutes(router, userController);
 
 export default router;

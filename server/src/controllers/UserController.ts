@@ -10,6 +10,11 @@ import SignInResponse from "../objects/responses/users/SignInResponse";
 import SignOutResponse from "../objects/responses/users/SignOutResponse";
 import StatusResponse from "../objects/responses/users/StatusResponse";
 import PersistUserResponse from "../objects/responses/users/PersistUserResponse";
+import RestorePasswordResponse from "../objects/responses/users/RestorePasswordResponse";
+import nodemailer from "nodemailer";
+import {getSMTPConfigOptions} from "../modules/config";
+import SMTPTransport from "nodemailer/lib/smtp-transport";
+import crypto from "crypto";
 
 interface PersistUserResult {
     user: User,
@@ -218,6 +223,69 @@ class UserController extends ServerController<UserModel> {
             response.json(new SignOutResponse(userName.length > 0, userName));
         } catch (error) {
             next(error);
+        }
+    }
+
+    public restorePasswordFilters(): ValidationChain {
+        return FilterFactory.restoredEmail();
+    }
+
+    public async restorePassword(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
+            let errors: Result<ValidationError> = validationResult(request);
+            if(!errors.isEmpty()) {
+                let errorsObject: Record<string, ValidationError> = errors.mapped();
+                response.json(new RestorePasswordResponse(false,
+                    errorsObject.email !== undefined ? errorsObject.email.msg : "",
+                ));
+                return;
+            }
+
+            let emailAddress: string = request.body.email;
+            this.model = new UserModel();
+            let user: User = await this.model.getUserByEmail(emailAddress);
+            console.log("Usuario recuperado: " + user);
+
+            if(user != null) {
+                let cryptoBuffer: Buffer = crypto.randomBytes(16);
+                let newPassword: string = cryptoBuffer.toString("hex");
+                let encryptedNewPassword: string = await makeHash(newPassword);
+
+                let passwordUpdated: boolean = await this.model.updateUserPassword(user.id, encryptedNewPassword);
+                if(passwordUpdated) {
+                    let createTransport = nodemailer.createTransport(
+                        getSMTPConfigOptions()
+                    );
+
+                    let email = {
+                        from: "shareandsave.app@gmail.com",
+                        to: emailAddress,
+                        subject: "Restablecer contraseña en Share & Save",
+                        html: `
+                            <div>
+                                <p>Hola ${user.name},</p>
+                                <p>Estás recibiendo este correo porque has solicitado restablecer tu contraseña en Share & Save.</p>
+                                <p>Tu contraseña anterior ha sido actualizada a la siguiente:</p>
+                                <p>${newPassword}</p>
+                                <p>Por favor, cámbiala de nuevo en cuanto inicies sesión. Muchas gracias.</p>
+                            </div>
+                        `
+                    };
+
+                    await new Promise<SMTPTransport.SentMessageInfo>((resolve, reject) => {
+                        createTransport.sendMail(email, (error, info) => {
+                            if(error) {
+                                reject(error);
+                            }
+                            resolve(info);
+                        })
+                    }).catch(error => {console.log("Error al enviar email"); console.log(error)});
+                }
+            }
+            this.model.delete();
+            response.json(RestorePasswordResponse.SUCCESS);
+        } catch (error) {
+            return next(error);
         }
     }
 }

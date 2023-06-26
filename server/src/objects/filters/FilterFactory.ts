@@ -59,6 +59,12 @@ class FilterFactory {
             });
     }
 
+    public static restoredEmail(fieldName: string = "email"): ValidationChain {
+        return body(fieldName, "Escribe una dirección de email con formato válido")
+            .exists()
+            .isEmail();
+    }
+
     public static password(old: boolean = false, toBeStored: boolean = false, optional: boolean = false): ValidationChain {
         let fieldName: string = (old ? "oldPass" : "pass");
         let errorMsg: string = (toBeStored ?
