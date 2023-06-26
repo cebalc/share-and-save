@@ -73,12 +73,12 @@ class Home extends React.Component<HomeProps, HomeState> {
             {this.renderSignOutAlert()}
             <Container className="my-3">
                 <Col className="text-center d-flex flex-column align-items-middle">
-                    <p className="h1">Share and Save</p>
+                    <p className="display-4">Share and Save</p>
                     <img src={LogoSnS} alt="S&S" className="d-block mx-auto main-logo" />
                     <p className="h5">Compartir experiencias nunca fue tan divertido</p>
                 </Col>
             </Container>
-            <div className="mx-auto max-width-75nbp-md">
+            <div className="mx-auto max-width-50nbp-md">
                 <Row>
                     <Col sm={5} className="my-4">
                         <img src={CoupleAccounts} alt="Familia y amigos compartiendo gastos" className="img-fluid mx-auto rounded-4" />
@@ -92,7 +92,7 @@ class Home extends React.Component<HomeProps, HomeState> {
                         <img src={SaveMoney} alt="Ahorra dinero" className="img-fluid mx-auto rounded-4" />
                     </Col>
                     <Col sm={7} className="my-4 lead text-justify">
-                        Texto
+                        No sacrifiques experiencias, mejor organiza tu economía y sigue haciendo crecer tus ahorros. ¡Todo gracias a Share & Save!
                     </Col>
                 </Row>
             </div>

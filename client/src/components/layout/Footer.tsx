@@ -33,7 +33,7 @@ class Footer extends React.Component<FooterProps, FooterState> {
                                 <p className="lead fw-bold">Menú</p>
                                 <Container fluid className="d-flex flex-column">
                                     <Link to="/about" className="link-light link-footer d-block py-1">Quiénes somos</Link>
-                                    <Link to="/privacy-policy" className="link-light link-footer d-block py-1">Política de privacidad</Link>
+                                    <div className="clickable link-light link-footer d-block py-1">Política de privacidad</div>
                                 </Container>
                             </Col>
                         </Row>
