@@ -5,8 +5,8 @@ import RecordsTable from "./RecordsTable";
 import React from "react";
 
 interface RecordRendererProps {
-    records: Record[]
-    showList: boolean
+    records: Record[],
+    showList: boolean,
     noRecordsMsg: string
 }
 

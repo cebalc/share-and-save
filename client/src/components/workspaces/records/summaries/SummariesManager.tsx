@@ -15,8 +15,12 @@ import User from "../../../../objects/entities/User";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import ReadWorkspaceUsersFetcher from "../../../../objects/fetchers/workspaces/users/ReadWorkspaceUsersFetcher";
 import OptionalTextAlert from "../../../misc/OptionalTextAlert";
-import FilterRecordsFetcher from "../../../../objects/fetchers/workspaces/records/FilterRecordsFetcher";
-import MakeSummaryFetcher from "../../../../objects/fetchers/workspaces/records/MakeSummaryFetcher";
+import FilterRecordsFetcher, {
+    FilterRecordsResponse
+} from "../../../../objects/fetchers/workspaces/records/FilterRecordsFetcher";
+import MakeSummaryFetcher, {
+    MakeSummaryResponse
+} from "../../../../objects/fetchers/workspaces/records/MakeSummaryFetcher";
 import SummaryData from "../../../../objects/entities/SummaryData";
 import Summary from "./Summary";
 
@@ -30,8 +34,7 @@ interface SummariesManagerState {
     fetching: boolean
     records: Record[],
     users: User[],
-    summaryData: SummaryData[]
-    activeKeys: string[],
+    summaryData: SummaryData[],
     dateFrom: string,
     dateFromError: string,
     dateTo: string,
@@ -43,16 +46,11 @@ interface SummariesManagerState {
 
 class SummariesManager extends React.Component<SummariesManagerProps, SummariesManagerState> {
 
-    private static KEY_FORM: string = "form";
-    private static KEY_SUMMARY: string = "summary";
-    private static KEY_RECORDS: string = "records";
-
     public state: SummariesManagerState = {
         fetching: true,
         records: [],
         users: [],
         summaryData: [],
-        activeKeys: [SummariesManager.KEY_FORM],
         dateFrom: "",
         dateFromError: "",
         dateTo: "",
@@ -129,14 +127,17 @@ class SummariesManager extends React.Component<SummariesManagerProps, SummariesM
         if(!await fetcher.retrieveData()) {
             return false;
         }
-        let responseData: Record[] = fetcher.getResponseData();
+        let responseData: FilterRecordsResponse = fetcher.getResponseData();
         if(!fetcher.success()) {
             return false;
         }
         this.setState({
-            records: responseData
+            dateFromError: responseData.dateFrom,
+            dateToError: responseData.dateTo,
+            formError: responseData.global,
+            records: responseData.records
         })
-        return true;
+        return fetcher.success();
     }
 
     private async getSummary(): Promise<boolean> {
@@ -150,14 +151,17 @@ class SummariesManager extends React.Component<SummariesManagerProps, SummariesM
         if(!await fetcher.retrieveData()) {
             return false;
         }
-        let responseData: SummaryData[] = fetcher.getResponseData();
+        let responseData: MakeSummaryResponse = fetcher.getResponseData();
         if(!fetcher.success()) {
             return false;
         }
         this.setState({
-            summaryData: responseData
+            dateFromError: responseData.dateFrom,
+            dateToError: responseData.dateTo,
+            formError: responseData.global,
+            summaryData: responseData.summaryData
         });
-        return true;
+        return fetcher.success();
     }
 
     private async calculate(): Promise<void> {
@@ -168,20 +172,18 @@ class SummariesManager extends React.Component<SummariesManagerProps, SummariesM
         ];
         return Promise.allSettled(promises)
             .then(results => {
-                let errors: boolean = results.some(result => result.status === "rejected");
+                let errors: boolean = results.some(result => !result);
                 this.setState({
                     fetching: false,
-                    formError: (errors ? "Error en la solicitud al servidor" : ""),
-                    activeKeys: (errors ? [SummariesManager.KEY_FORM] : [SummariesManager.KEY_SUMMARY, SummariesManager.KEY_RECORDS])
+                    formError: (errors ? "Error en la solicitud al servidor" : "")
                 });
             });
     }
 
     public render(): React.ReactNode {
-        console.log("Resumir por usuario: " + this.state.summarizeByUser)
         return (<>
-            <Accordion defaultActiveKey={this.state.activeKeys} alwaysOpen>
-                <Accordion.Item eventKey={SummariesManager.KEY_FORM}>
+            <Accordion defaultActiveKey={["form", "summary", "records"]} alwaysOpen>
+                <Accordion.Item eventKey="form">
                     <Accordion.Header>
                         <span className="fw-bold">Filtros de selección</span>
                     </Accordion.Header>
@@ -240,7 +242,7 @@ class SummariesManager extends React.Component<SummariesManagerProps, SummariesM
                         </Form>
                     </Accordion.Body>
                 </Accordion.Item>
-                <Accordion.Item eventKey={SummariesManager.KEY_SUMMARY}>
+                <Accordion.Item eventKey="summary">
                     <Accordion.Header>
                         <span className="fw-bold">Resumen</span>
                     </Accordion.Header>
@@ -248,13 +250,13 @@ class SummariesManager extends React.Component<SummariesManagerProps, SummariesM
                         <Summary summaryData={this.state.summaryData} />
                     </Accordion.Body>
                 </Accordion.Item>
-                <Accordion.Item eventKey={SummariesManager.KEY_RECORDS}>
+                <Accordion.Item eventKey="records">
                     <Accordion.Header>
                         <span className="fw-bold">Movimientos</span>
                     </Accordion.Header>
                     <Accordion.Body>
                         <RecordRenderer records={this.state.records} showList={this.props.showRecordsAsList}
-                            noRecordsMsg="No se han encontrado movimientos con las características solicitadas" />
+                                        noRecordsMsg="No se han encontrado movimientos con las características solicitadas" />
                     </Accordion.Body>
                 </Accordion.Item>
             </Accordion>

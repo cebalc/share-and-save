@@ -12,6 +12,10 @@ import Place from "../objects/entities/Place";
 import User from "../objects/entities/User";
 import Workspace from "../objects/entities/Workspace";
 import DeleteRecordResponse from "../objects/responses/workspaces/records/DeleteRecordResponse";
+import FilterRecordsResponse from "../objects/responses/workspaces/records/FilterRecordsResponse";
+import MakeSummaryResponse from "../objects/responses/workspaces/records/MakeSummaryResponse";
+import { SummaryData } from "../objects/entities/SummaryData";
+
 
 class RecordController extends WorkspaceDependentController<RecordModel> {
 
@@ -102,7 +106,7 @@ class RecordController extends WorkspaceDependentController<RecordModel> {
         response.json(SaveRecordResponse.success(requestRecord.id));
     }
 
-    public async readWorkspaceRecords(request: Request, response: Response, next: NextFunction): Promise<void> {
+    public async readRecords(request: Request, response: Response, next: NextFunction): Promise<void> {
         try {
             let workspaceId: number = super.getWorkspaceId(response);
             let currentUserId: number = super.getSessionUser(request).id;
@@ -133,7 +137,7 @@ class RecordController extends WorkspaceDependentController<RecordModel> {
         }
     }
 
-    public async deleteWorkspaceRecord(request: Request, response: Response, next: NextFunction): Promise<void> {
+    public async deleteRecord(request: Request, response: Response, next: NextFunction): Promise<void> {
         try {
             let workspaceId: number = super.getWorkspaceId(response);
             let currentUserId: number = super.getSessionUser(request).id;
@@ -156,6 +160,114 @@ class RecordController extends WorkspaceDependentController<RecordModel> {
                 return;
             }
             response.json(DeleteRecordResponse.SUCCESS);
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    public getSummaryFilters(): ValidationChain[] {
+        return [
+            FilterFactory.date("dateFrom", false),
+            FilterFactory.date("dateTo", false),
+            FilterFactory.id("user")
+        ];
+    }
+
+    public async getSummary(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
+            let errors: Result<ValidationError> = validationResult(request);
+            if(!errors.isEmpty()) {
+                let errorsObject: Record<string, ValidationError> = errors.mapped();
+                response.json(new MakeSummaryResponse(false,
+                    errorsObject.dateFrom !== undefined ? errorsObject.dateFrom.msg : "",
+                    errorsObject.dateTo !== undefined ? errorsObject.dateTo.msg : ""
+                ));
+                return;
+            }
+
+            let dateFrom: string = request.body.dateFrom;
+            let dateTo: string = request.body.dateTo;
+
+            console.log("Valor recibido de dateFrom = " + dateFrom);
+            console.log("Valor recibido de dateTo = " + dateTo);
+
+            if(dateFrom.length > 0 && dateTo.length > 0 && new Date(dateFrom) > new Date(dateTo)) {
+                response.json(MakeSummaryResponse.REVERSED_DATES);
+                return;
+            }
+
+            let workspaceId: number = super.getWorkspaceId(response);
+            let currentUserId: number = super.getSessionUser(request).id;
+            this.model = new RecordModel();
+
+            let currentUserAllowed: boolean = await this.model.isUserInWorkspace(workspaceId, currentUserId);
+            if(!currentUserAllowed) {
+                this.model.delete();
+                response.json(MakeSummaryResponse.ERRORS);
+                return;
+            }
+
+            let summarizeByUser: boolean = new RegExp(/true/i).test(request.body.summarizeByUser);
+            let userId: number = parseInt(request.body.user);
+
+            let summaryData: SummaryData[] = await this.model.getSummaryData(workspaceId, dateFrom, dateTo, summarizeByUser, userId);
+            this.model.delete();
+
+            if(summaryData == null) {
+                response.json(MakeSummaryResponse.ERRORS);
+                return;
+            }
+            response.json(MakeSummaryResponse.success(summaryData));
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    public async getRecordsFilteredList(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
+            let errors: Result<ValidationError> = validationResult(request);
+            if(!errors.isEmpty()) {
+                let errorsObject: Record<string, ValidationError> = errors.mapped();
+                response.json(new FilterRecordsResponse(false,
+                    errorsObject.dateFrom !== undefined ? errorsObject.dateFrom.msg : "",
+                    errorsObject.dateTo !== undefined ? errorsObject.dateTo.msg : ""
+                ));
+                return;
+            }
+
+            let dateFrom: string = request.body.dateFrom;
+            let dateTo: string = request.body.dateTo;
+
+            console.log("Valor recibido de dateFrom = " + dateFrom);
+            console.log("Valor recibido de dateTo = " + dateTo);
+
+            if(dateFrom.length > 0 && dateTo.length > 0 && new Date(dateFrom) > new Date(dateTo)) {
+                response.json(FilterRecordsResponse.REVERSED_DATES);
+                return;
+            }
+
+            let workspaceId: number = super.getWorkspaceId(response);
+            let currentUserId: number = super.getSessionUser(request).id;
+            this.model = new RecordModel();
+
+            let currentUserAllowed: boolean = await this.model.isUserInWorkspace(workspaceId, currentUserId);
+            if(!currentUserAllowed) {
+                this.model.delete();
+                response.json(FilterRecordsResponse.ERRORS);
+                return;
+            }
+
+            let summarizeByUser: boolean = new RegExp(/true/i).test(request.body.summarizeByUser);
+            let userId: number = parseInt(request.body.user);
+
+            let records: RecordEntity[] = await this.model.readRecordsWithFilters(workspaceId, dateFrom, dateTo, summarizeByUser, userId);
+            this.model.delete();
+
+            if(records == null) {
+                response.json(FilterRecordsResponse.ERRORS);
+                return;
+            }
+            response.json(FilterRecordsResponse.success(records));
         } catch (error) {
             return next(error);
         }

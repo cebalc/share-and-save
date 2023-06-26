@@ -17,4 +17,4 @@ interface SummaryData {
     categories: CategorySummary[]
 }
 
-export default SummaryData;
+export { SummaryData, CategorySummary, UserSummary };

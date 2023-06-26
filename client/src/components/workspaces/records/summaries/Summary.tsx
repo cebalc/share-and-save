@@ -21,6 +21,8 @@ class Summary extends React.Component<SummaryProps, SummaryState> {
 
 
     public render(): React.ReactNode {
+        console.log("Valor de summaryProps que recibe el componente Summary");
+        console.log(this.props.summaryData);
         return <>Tabla de resumen</>;
     }
 }

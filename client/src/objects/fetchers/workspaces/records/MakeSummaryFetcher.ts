@@ -2,8 +2,14 @@ import Fetcher from "../../Fetcher";
 import SummaryData from "../../../entities/SummaryData";
 import HTTPMethod from "../../../enums/HTTPMethod";
 
+interface MakeSummaryResponse {
+    dateFrom: string,
+    dateTo: string,
+    global: string,
+    summaryData: SummaryData[]
+}
 
-class MakeSummaryFetcher extends Fetcher<SummaryData[]> {
+class MakeSummaryFetcher extends Fetcher<MakeSummaryResponse> {
 
     private static buildURL(workspaceId: number): string {
         return `/workspaces/${workspaceId}/records/summarize`;
@@ -23,3 +29,4 @@ class MakeSummaryFetcher extends Fetcher<SummaryData[]> {
 }
 
 export default MakeSummaryFetcher;
+export type { MakeSummaryResponse };

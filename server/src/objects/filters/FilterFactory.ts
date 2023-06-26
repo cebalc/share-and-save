@@ -145,9 +145,10 @@ class FilterFactory {
             .custom(value => RecordType.values().some(type => type.id === value));
     }
 
-    public static date(fieldName: string = "date"): ValidationChain {
-        return body(fieldName, "Introduce una fecha válida")
-            .exists()
+    public static date(fieldName: string = "date", required: boolean = true): ValidationChain {
+        let chain: ValidationChain = body(fieldName, "Introduce una fecha válida");
+        chain = (required ? chain.exists() : chain.optional({values: "falsy"}));
+        return chain
             .customSanitizer(value => strip_tags(value))
             .customSanitizer(value => globalTrim(value))
             .isDate();

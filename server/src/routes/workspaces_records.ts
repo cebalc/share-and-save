@@ -18,21 +18,37 @@ router.post("/",
 router.get("/",
     controller.requireAuth,
     async (request, response, next) => {
-        await controller.readWorkspaceRecords(request, response, next);
+        await controller.readRecords(request, response, next);
     }
 );
 
 router.get("/:id",
     controller.requireAuth,
     async (request, response, next) => {
-        await controller.readWorkspaceRecords(request, response, next);
+        await controller.readRecords(request, response, next);
     }
 );
 
 router.delete("/:id",
     controller.requireAuth,
     async (request, response, next) => {
-        await controller.deleteWorkspaceRecord(request, response, next);
+        await controller.deleteRecord(request, response, next);
+    }
+);
+
+router.post("/filter",
+    controller.requireAuth,
+    controller.getSummaryFilters(),
+    async (request, response, next) => {
+        await controller.getRecordsFilteredList(request, response, next);
+    }
+);
+
+router.post("/summarize",
+    controller.requireAuth,
+    controller.getSummaryFilters(),
+    async (request, response, next) => {
+        await controller.getSummary(request, response, next);
     }
 );
 

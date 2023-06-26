@@ -2,7 +2,14 @@ import Fetcher from "../../Fetcher";
 import Record from "../../../entities/Record";
 import HTTPMethod from "../../../enums/HTTPMethod";
 
-class FilterRecordsFetcher extends Fetcher<Record[]> {
+interface FilterRecordsResponse {
+    dateFrom: string,
+    dateTo: string,
+    global: string,
+    records: Record[]
+}
+
+class FilterRecordsFetcher extends Fetcher<FilterRecordsResponse> {
 
     private static buildURL(workspaceId: number): string {
         return `/workspaces/${workspaceId}/records/filter`;
@@ -22,3 +29,4 @@ class FilterRecordsFetcher extends Fetcher<Record[]> {
 }
 
 export default FilterRecordsFetcher;
+export type { FilterRecordsResponse };
