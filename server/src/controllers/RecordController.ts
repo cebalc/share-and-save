@@ -1,5 +1,5 @@
 import {Result, ValidationChain, ValidationError, validationResult} from "express-validator";
-import { Request, Response, NextFunction } from "express";
+import {NextFunction, Request, Response} from "express";
 import WorkspaceDependentController from "./WorkspaceDependentController";
 import FilterFactory from "../objects/filters/FilterFactory";
 import SaveRecordResponse from "../objects/responses/workspaces/records/SaveRecordResponse";
@@ -14,7 +14,9 @@ import Workspace from "../objects/entities/Workspace";
 import DeleteRecordResponse from "../objects/responses/workspaces/records/DeleteRecordResponse";
 import FilterRecordsResponse from "../objects/responses/workspaces/records/FilterRecordsResponse";
 import MakeSummaryResponse from "../objects/responses/workspaces/records/MakeSummaryResponse";
-import { SummaryData } from "../objects/entities/SummaryData";
+import {CategorySummary, SummaryData, UserSummary} from "../objects/entities/SummaryData";
+import SummaryRow from "../objects/rows/SummaryRow";
+import UserLevel from "../objects/enums/UserLevel";
 
 
 class RecordController extends WorkspaceDependentController<RecordModel> {
@@ -210,13 +212,16 @@ class RecordController extends WorkspaceDependentController<RecordModel> {
             let summarizeByUser: boolean = new RegExp(/true/i).test(request.body.summarizeByUser);
             let userId: number = parseInt(request.body.user);
 
-            let summaryData: SummaryData[] = await this.model.getSummaryData(workspaceId, dateFrom, dateTo, summarizeByUser, userId);
+            // let summaryData: SummaryData[] = await this.model.getSummaryData(workspaceId, dateFrom, dateTo, summarizeByUser, userId);
+            let summaryRows: SummaryRow[] = await this.model.getSummaryData(workspaceId, dateFrom, dateTo, summarizeByUser, userId);
             this.model.delete();
 
-            if(summaryData == null) {
+            // if(summaryData == null) {
+            if(summaryRows == null) {
                 response.json(MakeSummaryResponse.ERRORS);
                 return;
             }
+            let summaryData: SummaryData[] = this.formatSummaryRows(summaryRows);
             response.json(MakeSummaryResponse.success(summaryData));
         } catch (error) {
             return next(error);
@@ -271,6 +276,89 @@ class RecordController extends WorkspaceDependentController<RecordModel> {
         } catch (error) {
             return next(error);
         }
+    }
+
+    private formatSummaryRows(summaryRows: SummaryRow[]): SummaryData[] {
+        let typesMap: Map<number, RecordType> = new Map();
+        let categoriesMap: Map<number, Category> = new Map();
+        let usersMap: Map<number, User> = new Map();
+        let summaryMap: Map<number, Map<number, Map<number, number>>> = new Map();
+        summaryRows.forEach(row => {
+            typesMap.set(row.type_id, RecordType.of(row.type_id));
+            categoriesMap.set(row.category_id, new Category(row.category_id, row.category_name));
+            usersMap.set(row.user_id, new User(row.user_id, row.user_name, "", "", "", UserLevel.ANONYMOUS));
+        });
+        typesMap.forEach((recordType, typeId) => {
+            summaryMap.set(typeId, new Map());
+            categoriesMap.forEach((category, categoryId) => {
+                summaryMap.get(typeId).set(categoryId, new Map());
+                usersMap.forEach((user, userId) => {
+                    summaryMap.get(typeId).get(categoryId).set(userId, 0);
+                });
+            });
+        });
+        summaryRows.forEach(row => {
+            summaryMap.get(row.type_id).get(row.category_id).set(row.user_id, row.sum_amount);
+        });
+
+        let summaryData: SummaryData[] = [];
+        typesMap.forEach((recordType, typeId) => {
+            summaryData.push(<SummaryData>{
+                type: recordType,
+                categories: []
+            });
+            let currentSummary: SummaryData = summaryData.find(summary=> summary.type == recordType);
+            categoriesMap.forEach((category, categoryId) => {
+                currentSummary.categories.push(<CategorySummary>{
+                    category: category,
+                    users: []
+                });
+                let currentCategorySummary: CategorySummary = currentSummary.categories.find(catSum =>
+                    catSum.category == category);
+                usersMap.forEach((user, userId) => {
+                    currentCategorySummary.users.push(<UserSummary>{
+                        user: user,
+                        value: summaryMap.get(typeId).get(categoryId).get(userId)})
+                })
+            })
+        })
+
+        return summaryData;
+
+
+
+        // let currentSummary: SummaryData = null;
+        //
+        // let currentCategorySummary: CategorySummary = null;
+        // let currentUserSummary: UserSummary = null;
+        // for(let row of summaryRows) {
+        //     if(currentSummary == null || currentSummary.type.id != row.type_id) {
+        //         summaryData.push(<SummaryData>{
+        //             type: RecordType.of(row.type_id),
+        //             categories: <CategorySummary[]>[]});
+        //         currentCategorySummary = null;
+        //         currentUserSummary = null;
+        //     }
+        //     currentSummary = summaryData.find(summary => summary.type.id == row.type_id);
+        //     if(currentCategorySummary == null || currentCategorySummary.category.id != row.category_id) {
+        //         currentSummary.categories.push(<CategorySummary>{
+        //             category: new Category(row.category_id, row.category_name),
+        //             users: <UserSummary[]>[]
+        //         });
+        //         currentUserSummary = null;
+        //     }
+        //     currentCategorySummary = currentSummary.categories.find(summary =>
+        //         summary.category.id == row.category_id);
+        //     if(currentUserSummary == null || currentUserSummary.user.id != row.user_id) {
+        //         currentCategorySummary.users.push(<UserSummary>{
+        //             user: new User(row.user_id, row.user_name, "", "", "", UserLevel.ANONYMOUS),
+        //             value: row.sum_amount
+        //         });
+        //     }
+        //     currentUserSummary = currentCategorySummary.users.find(summary =>
+        //         summary.user.id == row.user_id);
+        // }
+        // return summaryData;
     }
 }
 

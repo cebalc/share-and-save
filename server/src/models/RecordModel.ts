@@ -109,7 +109,8 @@ class RecordModel extends WorkspaceUsersModel {
     }
 
     public async getSummaryData(workspaceId: number, dateFrom: string, dateTo: string,
-                                summarizeByUser: boolean, userId: number = User.GUEST.id): Promise<SummaryData[]> {
+                                summarizeByUser: boolean, userId: number = User.GUEST.id): Promise<SummaryRow[]> {
+                                // summarizeByUser: boolean, userId: number = User.GUEST.id): Promise<SummaryData[]> {
         let searchFilters: string = "";
         let values: Object = {
             "workspaceId": workspaceId
@@ -132,43 +133,7 @@ class RecordModel extends WorkspaceUsersModel {
                                    WHERE R.workspace = :workspaceId ${searchFilters}
                                    GROUP BY R.type, R.category, C.name, R.user, U.name
                                    ORDER BY R.type, C.name, U.name`;
-        let rows: SummaryRow[] = await super.getMultipleRecords<SummaryRow>(sqlQuery, values);
-        if(rows == null) {
-            return null;
-        }
-        let summaryData: SummaryData[] = [];
-        let currentSummary: SummaryData = null;
-
-        let currentCategorySummary: CategorySummary = null;
-        let currentUserSummary: UserSummary = null;
-        for(let row of rows) {
-            if(currentSummary == null || currentSummary.type.id != row.type_id) {
-                summaryData.push(<SummaryData>{
-                    type: RecordType.of(row.type_id),
-                    categories: <CategorySummary[]>[]});
-                currentCategorySummary = null;
-                currentUserSummary = null;
-            }
-            currentSummary = summaryData.find(summary => summary.type.id == row.type_id);
-            if(currentCategorySummary == null || currentCategorySummary.category.id != row.category_id) {
-                currentSummary.categories.push(<CategorySummary>{
-                    category: new Category(row.category_id, row.category_name),
-                    users: <UserSummary[]>[]
-                });
-                currentUserSummary = null;
-            }
-            currentCategorySummary = currentSummary.categories.find(summary =>
-                summary.category.id == row.category_id);
-            if(currentUserSummary == null || currentUserSummary.user.id != row.user_id) {
-                currentCategorySummary.users.push(<UserSummary>{
-                    user: new User(row.user_id, row.user_name, "", "", "", UserLevel.ANONYMOUS),
-                    value: row.sum_amount
-                });
-            }
-            currentUserSummary = currentCategorySummary.users.find(summary =>
-                summary.user.id == row.user_id);
-        }
-        return summaryData;
+        return await super.getMultipleRecords<SummaryRow>(sqlQuery, values);
     }
 }
 
