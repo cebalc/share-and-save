@@ -69,7 +69,7 @@ class App extends React.Component<AppProps, AppState> {
             </Route>
           </Route>
           <Route path="/workspace/:id/records" element={<Layout fluid={true} userLevel={this.state.currentUser.level} userName={this.state.currentUser.name} />}>
-            <Route index element={<WorkspaceRouter target="records" userLevel={this.state.currentUser.level} />} />
+            <Route index element={<WorkspaceRouter target="records" userId={this.state.currentUser.id} userLevel={this.state.currentUser.level} />} />
           </Route>
           <Route path="*" element={<Layout fluid="sm" userLevel={this.state.currentUser.level} userName={this.state.currentUser.name} />}>
             <Route path="*" element={<NotFound />} />

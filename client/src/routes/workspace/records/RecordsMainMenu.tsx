@@ -12,11 +12,13 @@ import SummariesManager from "../../../components/workspaces/records/summaries/S
 
 interface RecordsMainMenuProps {
     workspace: Workspace,
+    userId: number,
     userLevel: number
 }
 
 interface RecordsMainMenuState {
     selectedTab: string
+    screenWidth: number
 }
 
 interface TabData {
@@ -27,12 +29,31 @@ interface TabData {
 
 class RecordsMainMenu extends React.Component<RecordsMainMenuProps, RecordsMainMenuState> {
 
+    private static readonly SM_BREAKPOINT: number = 576;
+
     public state: RecordsMainMenuState = {
-        selectedTab: "records"
+        selectedTab: "records",
+        screenWidth: window.innerWidth
     }
 
     public constructor(props: RecordsMainMenuProps | Readonly<RecordsMainMenuProps>) {
         super(props);
+    }
+
+    public componentDidMount(): void {
+        window.addEventListener("resize", this.readScreenWidth.bind(this));
+    }
+
+    public componentWillUnmount(): void {
+        window.removeEventListener("resize", this.readScreenWidth.bind(this));
+    }
+
+    private readScreenWidth(): void {
+        this.setState({screenWidth: window.innerWidth});
+    }
+
+    private showRecordsAsList(): boolean {
+        return (this.state.screenWidth < RecordsMainMenu.SM_BREAKPOINT);
     }
 
     private buildTabClassName(eventKey: string): string {
@@ -44,12 +65,13 @@ class RecordsMainMenu extends React.Component<RecordsMainMenuProps, RecordsMainM
             {
                 eventKey: "records",
                 title: "Movimientos",
-                child: <RecordsManager workspace={this.props.workspace} />
+                child: <RecordsManager workspace={this.props.workspace} showRecordsAsList={this.showRecordsAsList()} />
             } as TabData,
             {
                 eventKey: "lists",
                 title: "Resúmenes",
-                child: <SummariesManager />
+                child: <SummariesManager userId={this.props.userId} workspace={this.props.workspace}
+                             showRecordsAsList={this.showRecordsAsList()}/>
             } as TabData,
             {
                 eventKey: "debts",

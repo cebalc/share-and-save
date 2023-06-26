@@ -32,7 +32,7 @@ type WorkspaceRouterProps =
     {
         target: "records",
         crudAction?: never,
-        userId?: never,
+        userId: number,
         userLevel: UserLevel
     }
     |
@@ -105,7 +105,7 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
     }
 
     if(props.target === "records") {
-        return <RecordsMainMenu workspace={workspace} userLevel={props.userLevel} />
+        return <RecordsMainMenu workspace={workspace} userId={props.userId} userLevel={props.userLevel} />
     }
 
     let crudRoutes: Map<string, Map<CRUDAction, JSX.Element>> = new Map([

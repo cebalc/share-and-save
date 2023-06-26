@@ -5,31 +5,31 @@ import GeneralPlaceholder from "../../misc/GeneralPlaceholder";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Workspace from "../../../objects/entities/Workspace";
-import RecordsTable from "./RecordsTable";
-import RecordsList from "./RecordsList";
 import {LinkContainer} from "react-router-bootstrap";
 import ReadRecordFetcher from "../../../objects/fetchers/workspaces/records/ReadRecordFetcher";
 import {scrollIntoHTMLElement} from "../../../modules/misc";
+import RecordRenderer from "./RecordRenderer";
 
 interface RecordsManagerProps {
     workspace: Workspace
+    showRecordsAsList: boolean
 }
 
 interface RecordsManagerState {
     fetching: boolean,
     fetchError: boolean,
-    screenWidth: number,
+    //screenWidth: number,
     records: Record[]
 }
 
 class RecordsManager extends React.Component<RecordsManagerProps, RecordsManagerState> {
 
-    private static readonly SM_BREAKPOINT: number = 576;
+    //private static readonly SM_BREAKPOINT: number = 576;
 
     public state: RecordsManagerState = {
         fetching: true,
         fetchError: false,
-        screenWidth: window.innerWidth,
+        //screenWidth: window.innerWidth,
         records: []
     }
 
@@ -38,7 +38,6 @@ class RecordsManager extends React.Component<RecordsManagerProps, RecordsManager
     }
 
     public async componentDidMount(): Promise<void> {
-        window.addEventListener("resize", this.readScreenWidth.bind(this));
         await this.retrieveRecords()
             .then(() => {
                 let searchParams: URLSearchParams = new URLSearchParams(window.location.search);
@@ -46,10 +45,6 @@ class RecordsManager extends React.Component<RecordsManagerProps, RecordsManager
                     scrollIntoHTMLElement(`r-${searchParams.get("r")}`)
                 }
             });
-    }
-
-    public componentWillUnmount(): void {
-        window.removeEventListener("resize", this.readScreenWidth.bind(this));
     }
 
     private async retrieveRecords(): Promise<void> {
@@ -69,21 +64,12 @@ class RecordsManager extends React.Component<RecordsManagerProps, RecordsManager
         });
     }
 
-    private readScreenWidth(): void {
-        this.setState({screenWidth: window.innerWidth});
-    }
-
     private renderRecords(): React.ReactNode {
         if(this.state.fetchError) {
             return <Alert variant="danger">Error al recuperar los movimientos</Alert>
         }
-        if(this.state.records.length === 0) {
-            return (<Alert variant="info">Todavía no has añadido registros a este espacio.</Alert>);
-        }
-        if(this.state.screenWidth < RecordsManager.SM_BREAKPOINT) {
-            return <RecordsList records={this.state.records} />;
-        }
-        return <RecordsTable records={this.state.records} />;
+        return <RecordRenderer records={this.state.records} showList={this.props.showRecordsAsList}
+                   noRecordsMsg="Todavía no has añadido registros a este espacio." />
     }
 
     public render(): React.ReactNode {
