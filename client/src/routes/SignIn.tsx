@@ -4,6 +4,9 @@ import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
 import SignInFetcher from "../objects/fetchers/users/SignInFetcher";
 import { Navigate } from "react-router-dom";
+import Container from "react-bootstrap/Container";
+import RestorePasswordForm from "../components/users/RestorePasswordForm";
+import OptionalTextAlert from "../components/misc/OptionalTextAlert";
 
 interface SignInProps {
     onSignIn: () => Promise<void>
@@ -24,8 +27,17 @@ class SignIn extends React.Component<SignInProps, SignInState> {
         signedIn: false
     }
 
+    private readonly restorePasswordForm: React.RefObject<RestorePasswordForm>;
+    private readonly alertRestored: React.RefObject<OptionalTextAlert>;
+
     public constructor(props: SignInProps | Readonly<SignInProps>) {
         super(props);
+        this.restorePasswordForm = React.createRef();
+        this.alertRestored = React.createRef();
+    }
+
+    private showRestorePasswordForm(): void {
+        this.restorePasswordForm.current?.setState({show: true});
     }
 
     private redirectIfSignedIn(): React.ReactNode {
@@ -34,12 +46,18 @@ class SignIn extends React.Component<SignInProps, SignInState> {
         }
     }
 
+    private showAlertRestored(): void {
+        this.alertRestored.current?.setState({show: true});
+    }
+
     public render(): React.ReactNode {
         return (
             <div className="max-width-50nbp-sm mx-auto">
                 <p className="h1 text-center mb-4">Iniciar sesión</p>
                 <Form>
                     {this.redirectIfSignedIn()}
+                    <OptionalTextAlert ref={this.alertRestored} variant="info" dismissible
+                           text="Formulario enviado. Revisa tu buzón de correo electrónico" />
                     {this.state.errors.map((error: string, index: number) =>
                         <Alert key={index} variant="danger">{error}</Alert>
                     )}
@@ -58,8 +76,16 @@ class SignIn extends React.Component<SignInProps, SignInState> {
                                           }
                                       }} />
                     </Form.Group>
-                    <Button variant="outline-primary" onClick={() => this.checkUserData()}>Enviar</Button>
+                    <Container fluid className="mx-auto mt-4 d-flex flex-row justify-content-center">
+                        <Button variant="outline-primary" className="me-3" onClick={() => this.checkUserData()}>
+                            Enviar
+                        </Button>
+                        <Button variant="outline-danger" onClick={() => this.showRestorePasswordForm()}>
+                            Olvidé la contraseña
+                        </Button>
+                    </Container>
                 </Form>
+                <RestorePasswordForm ref={this.restorePasswordForm} onFormSubmitted={this.showAlertRestored.bind(this)} />
             </div>
 
         );
