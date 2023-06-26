@@ -4,12 +4,7 @@ import Record from "../../../objects/entities/Record"
 import GeneralPlaceholder from "../../misc/GeneralPlaceholder";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
-// import RecordType from "../../../objects/enums/RecordType";
-// import Category from "../../../objects/entities/Category";
-// import Place from "../../../objects/entities/Place";
-// import User from "../../../objects/entities/User";
 import Workspace from "../../../objects/entities/Workspace";
-// import UserLevel from "../../../objects/enums/UserLevel";
 import RecordsTable from "./RecordsTable";
 import RecordsList from "./RecordsList";
 import {LinkContainer} from "react-router-bootstrap";

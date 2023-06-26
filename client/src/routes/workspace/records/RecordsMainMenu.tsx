@@ -6,9 +6,13 @@ import WorkspaceCard, {WorkspaceCardSize} from "../../../components/workspaces/W
 import {LinkContainer} from "react-router-bootstrap";
 import Button from "react-bootstrap/Button";
 import RecordsManager from "../../../components/workspaces/records/RecordsManager";
+import DebtsManager from "../../../components/workspaces/records/debts/DebtsManager";
+import AdvancedFeaturesManager from "../../../components/workspaces/records/advanced/AdvancedFeaturesManager";
+import SummariesManager from "../../../components/workspaces/records/summaries/SummariesManager";
 
 interface RecordsMainMenuProps {
-    workspace: Workspace
+    workspace: Workspace,
+    userLevel: number
 }
 
 interface RecordsMainMenuState {
@@ -45,17 +49,17 @@ class RecordsMainMenu extends React.Component<RecordsMainMenuProps, RecordsMainM
             {
                 eventKey: "lists",
                 title: "Resúmenes",
-                child: <>Resúmenes de gastos e ingresos</>
+                child: <SummariesManager />
             } as TabData,
             {
                 eventKey: "debts",
                 title: "Deudas",
-                child: <>Deudas de usuarios</>
+                child: <DebtsManager />
             } as TabData,
             {
                 eventKey: "advanced",
                 title: "Avanzado",
-                child: <>Funciones avanzadas</>
+                child: <AdvancedFeaturesManager userLevel={this.props.userLevel} />
             } as TabData
         ] as TabData[];
     }

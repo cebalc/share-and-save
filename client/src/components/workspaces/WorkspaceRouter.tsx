@@ -12,30 +12,35 @@ import GeneralPlaceholder from "../misc/GeneralPlaceholder";
 import CreateRecord from "../../routes/workspace/records/CreateRecord";
 import AlterRecord from "../../routes/workspace/records/AlterRecord";
 import Record from "../../objects/entities/Record";
+import UserLevel from "../../objects/enums/UserLevel";
 
 type WorkspaceRouterProps =
     {
         target: "workspace",
         crudAction: CRUDAction.CREATE | CRUDAction.READ,
-        userId: number
+        userId: number,
+        userLevel?: never
     }
     |
     {
         target: "workspace",
         crudAction: CRUDAction.UPDATE | CRUDAction.DELETE,
-        userId?: never
+        userId?: never,
+        userLevel?: never
     }
     |
     {
         target: "records",
         crudAction?: never,
-        userId?: never
+        userId?: never,
+        userLevel: UserLevel
     }
     |
     {
         target: "record",
         crudAction: CRUDAction.CREATE | CRUDAction.UPDATE,
-        userId: number
+        userId: number,
+        userLevel?: never
     };
 
 const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
@@ -100,7 +105,7 @@ const WorkspaceRouter = (props: WorkspaceRouterProps): JSX.Element => {
     }
 
     if(props.target === "records") {
-        return <RecordsMainMenu workspace={workspace} />
+        return <RecordsMainMenu workspace={workspace} userLevel={props.userLevel} />
     }
 
     let crudRoutes: Map<string, Map<CRUDAction, JSX.Element>> = new Map([

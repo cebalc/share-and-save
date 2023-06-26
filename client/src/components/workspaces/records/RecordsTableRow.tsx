@@ -3,8 +3,6 @@ import Record from "../../../objects/entities/Record";
 import DateTimeTools from "../../../objects/DateTimeTools";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import Button from "react-bootstrap/Button";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { formatEUR } from "../../../modules/misc";
 import {LinkContainer} from "react-router-bootstrap";
 
